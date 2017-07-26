@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_camera"
+            android:title="Reg. details" />
+        <item
+            android:id="@+id/nav_gallery"
+            android:title="Payments" />
+        <item
+            android:id="@+id/nav_sMessagelideshow"
+            android:title="Message" />
+        <item
+            android:id="@+id/nav_slideshChatow"
+            android:title="Chat"/>
+        <item
+            android:id="@+id/Search"
+            android:title="Search" /><item
+            android:id="@+id/Upload"
+            android:title="Upload" />
+        <item
+            android:id="@+id/nav_logout"
+            android:title="Logout" />
+    </group>
+
+
+</menu>

@@ -1,0 +1,445 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.capri4physio">
+
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="com.google.android.providers.gsf.permission.READ_GSERVICES" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.READ_CONTACTS" />
+    <uses-permission android:name="android.permission.CALL_PHONE" />
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+
+    <uses-feature android:name="android.hardware.camera" />
+
+    <uses-permission android:name="android.permission.CALL_PHONE" />
+
+    <uses-library android:name="com.google.android.maps" />
+
+    <uses-feature android:name="android.hardware.camera.autofocus" />
+    <uses-feature
+        android:glEsVersion="0x00020000"
+        android:required="true" />
+
+    <application
+        android:name=".CapriApplication"
+        android:allowBackup="true"
+        android:icon="@drawable/app_icon"
+        android:label="@string/app_name"
+        android:largeHeap="true"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme">
+        <activity
+            android:name=".activity.SplashActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize"
+            android:theme="@style/AppTheme.NoActionBar">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".activity.PatientDashboardActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".activity.StudentDashboardActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".activity.BranchAdminActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".activity.CropActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".fragment.assessment.MotorActivity0"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".fragment.assessment.MotorActivity1"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".fragment.assessment.MotorActivity2"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".fragment.assessment.MotorActivity3"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".fragment.assessment.MotorActivity4"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".fragment.assessment.MotorActivity5"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".fragment.assessment.MotorActivity6"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".fragment.assessment.MotorActivity7"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".fragment.AddAppointmentActivitytbyPatient"
+            android:label="Book Enquiry"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".fragment.assessment.MotorActivity8"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".fragment.assessment.MotorActivity9"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".fragment.assessment.MotorActivity19"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".fragment.assessment.FragementActi"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".fragment.assessment.FragementActi1"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".fragment.assessment.FragementActi2"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".fragment.assessment.FragementActi3"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".fragment.assessment.FragementActi4"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".fragment.assessment.FragementActi5"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".fragment.assessment.FragementActi6"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".fragment.assessment.FragementActi7"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".fragment.assessment.FragementActi8"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".fragment.assessment.FragementActi9"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".fragment.assessment.FragementActi10"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".fragment.assessment.FragementActi11"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".fragment.assessment.FragementActi12"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".fragment.assessment.FragementActi13"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".fragment.assessment.FragementActi14"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.PopupOverlay"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".fragment.assessment.FragementActi15"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.PopupOverlay"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name="viewreport.SensoryReportFirst"
+            android:label="View Case Report" />
+        <activity
+            android:name=".fragment.assessment.MapActivity"
+            android:label="Book Clinic"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.AppBarOverlay"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".fragment.assessment.MeasureActivi"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".fragment.assessment.ApiActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".fragment.assessment.GetLUserList"
+            android:label="Manage Appointments" />
+        <activity
+            android:name=".fragment.assessment.AddAppointments"
+            android:label="Add Appointments"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".fragment.assessment.ViewpatientActivity"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".fragment.assessment.EditpatientActivity"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".fragment.assessment.CancelAppointmentPatient"
+            android:label="Cancel Appointments" />
+        <activity android:name=".fragment.assessment.Viewpatientinlist" />
+        <activity android:name=".fragment.assessment.GetFeedbackActivity" />
+        <activity
+            android:name=".fragment.assessment.GetLUserList1"
+            android:label="Cancel Appointments" />
+        <activity
+            android:name=".fragment.assessment.UpdateStaff"
+            android:label="Update Staff"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".fragment.assessment.CancelAppointmentStaff"
+            android:label="Cancel Appointments" />
+        <activity
+            android:name=".fragment.assessment.DoFeedbackActivity"
+            android:label="Patient Feedback"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".fragment.ViewStaff"
+            android:label="Manage Staff" />
+        <activity
+            android:name=".model.assessment.MotorExamActivity"
+            android:windowSoftInputMode="adjustPan" />
+        <activity android:name=".fragment.assessment.ViewDetailStaff" />
+        <activity
+            android:name=".model.assessment.AddStaff"
+            android:label="Add Staff"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan" />
+        <activity android:name=".fragment.assessment.MainActivity" />
+        <activity
+            android:name=".fragment.assessment.FragementActiSensory1"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".fragment.BillingActivity"
+            android:label="Create Invoice"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".fragment.assessment.AddMotorExamFragment"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".fragment.assessment.BillAmountDialog"
+            android:label="Bill "
+            android:theme="@android:style/Theme.Dialog" />
+        <activity
+            android:name=".Invoice.ViewInvoice"
+            android:label="View Invoice" />
+        <activity android:name=".fragment.assessment.ViewDetailBill" />
+        <activity
+            android:name="viewreport.SensoryReport"
+            android:label="Sensory Report" />
+        <activity
+            android:name=".fragment.ViewCaseReport"
+            android:label="Report" />
+        <activity
+            android:name=".fragment.ViewIncomeReport"
+            android:label="Income Report" />
+        <activity
+            android:name="viewreport.ViewIncomeStatemntReport"
+            android:label="View Income Report" />
+        <activity
+            android:name=".fragment.ViewIncomeTReatmentwiseReport"
+            android:label="Treatment Report" />
+        <activity
+            android:name=".fragment.ViewExpenseReport"
+            android:label="Expense Report" />
+        <activity
+            android:name=".fragment.ViewBalanceReport"
+            android:label="Balance Report" />
+        <activity
+            android:name=".fragment.ViewStaff_Pro_InvoReport"
+            android:label="Productivity" />
+        <activity
+            android:name="viewreport.ViewIncomeTreatmentwiseReport"
+            android:label="Treatment wise Report" />
+        <activity
+            android:name="viewreport.ViewIncomeExpensetReport"
+            android:label="Expense Report" />
+        <activity
+            android:name="viewreport.ViewBalanceSheetReport"
+            android:label="Balance Report" />
+        <activity
+            android:name="viewreport.ViewsStaffProFromInvoiceReport"
+            android:label="Staff Pro Invoice Report" />
+        <activity
+            android:name=".fragment.ViewIncomeSessionwiseReport"
+            android:label="Session wise Report" />
+        <activity
+            android:name=".fragment.ViewTreatmentWiseReport"
+            android:label="Treatment Report" />
+        <activity
+            android:name="viewreport.ViewsStaffSeessionReport"
+            android:label="Session Wise Report" />
+        <activity android:name=".fragment.assessment.ViewPrint" />
+        <activity
+            android:name=".patientappo.PatientCaseReport"
+            android:label="Case Report" />
+        <activity
+            android:name=".patientappo.ViewInvoice_Patient"
+            android:label="Invoice" />
+        >
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyD4sbbc5oqCtTYFicibEDsb02BJ5uGoypw" />
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
+
+        <activity
+            android:name=".activity.FeedBackShowActivity"
+            android:label="Add Feedback" />
+        <activity
+            android:name=".fragment.ViewClinic"
+            android:label="View Clinic"
+            android:theme="@style/AppTheme" />
+        <activity
+            android:name=".fragment.assessment.ViewEnquiryList"
+            android:label="View Enquiry List" />
+        <activity
+            android:name=".fragment.assessment.AddComplaintFragment"
+            android:label="Chief Complaints" />
+        <activity
+            android:name=".fragment.ChangePatientClinic"
+            android:label="Change Patient Clinic List" />
+        <activity
+            android:name=".fragment.assessment.SacrolicMotorActivity"
+            android:label="Sacrolic Report"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".activity.StaffActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".activity.MoterExamViewActivity"
+            android:label="View Motorexam Report"
+            android:theme="@style/AppTheme" />
+        <activity
+            android:name="multipleimageselect.activities.ImageSelectActivity"
+            android:configChanges="orientation|screenSize"
+            android:label="@string/app_name"
+            android:theme="@style/MultipleImageSelectTheme">
+            <intent-filter>
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="multipleimageselect.activities.AlbumSelectActivity"
+            android:configChanges="orientation|screenSize"
+            android:label="@string/app_name"
+            android:theme="@style/MultipleImageSelectTheme">
+            <intent-filter>
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
+        <service android:name=".fragment.assessment.MyFirebaseMessagingService">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+        <service android:name=".fragment.assessment.MyFirebaseInstanceIDService">
+            <intent-filter>
+                <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
+            </intent-filter>
+        </service>
+        <service
+            android:name=".fragment.assessment.FilterService"
+            android:enabled="true"
+            android:exported="true"
+            android:permission="android.permission.SYSTEM_ALERT_WINDOW" />
+        <service
+            android:name="alarm.AlarmManageService"
+            android:enabled="true"
+            android:exported="true"
+            android:permission="android.permission.SYSTEM_ALERT_WINDOW" />
+
+        <activity
+            android:name="alarm.AlarmCallReceiver"
+            android:launchMode="singleTask" />
+        <activity
+            android:name=".activity.StudentMapActivity"
+            android:theme="@style/AppTheme1" />
+        <activity
+            android:name=".activity.ChatUserActivity"
+            android:theme="@style/AppTheme1" />
+        <activity
+            android:name=".activity.SearchUserActivity"
+            android:theme="@style/AppTheme1" />
+        <activity
+            android:name=".activity.ChatActivity"
+            android:theme="@style/AppTheme1" />
+        <activity
+            android:name=".activity.ScheduleActivity"
+            android:theme="@style/AppTheme1" />
+        <activity
+            android:name=".activity.ViewAllAppointmentsActivity"
+            android:theme="@style/AppTheme1" />
+        <activity android:name=".activity.AddAppointmentActivity"
+            android:theme="@style/AppTheme1" ></activity>
+
+        <provider
+            android:name="android.support.v4.content.FileProvider"
+            android:authorities="com.capri4physio.fileProvider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
+    </application>
+
+</manifest>

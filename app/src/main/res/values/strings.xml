@@ -1,0 +1,423 @@
+<resources>
+    <string name="app_name">Capri4Physio</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="image_view">Tap to select images</string>
+    <string name="error_retrieving_access_token">Error retrieving token</string>
+    <string name="room_status">status</string>
+    <string name="add">ADD</string>
+    <string name="permissions_needed">Camera and Microphone permissions needed. Please allow in App Settings for additional functionality.</string>
+    <string name="selected">selected</string>
+    <string name="limit_exceeded">Can select a maximum of %d images</string>
+
+    <string name="error_null_cursor">Oops, something went wrong!</string>
+
+    <!--Request Permission-->
+    <string name="permission_info">App requires permission to Storage to view images.</string>
+    <string name="permission_force">App requires permission to Storage to view images. Tap Settings and go to Permissions to grant permission.</string>
+    <string name="permission_ok">OK</string>
+    <string name="permission_settings">Settings</string>
+    <string name="permission_package">package</string>
+    <string name="action_settings">Settings</string>
+    <string name="action_alert">Alert</string>
+    <string name="action_new">New</string>
+    <string name="welcome">Welcome to Capri4Physio</string>
+    <string name="login_desc">Login To Get An Appontment</string>
+    <string name="sign_in">Sign IN</string>
+    <string name="sign_up">Sign UP</string>
+    <string name="hint_reason">Reason to book appointment</string>
+
+
+    <string name="menu_help">Help</string>
+    <string name="menu_support">Request support</string>
+    <string name="menu_logout">Logout</string>
+    <string name="support">Support</string>
+    <string name="support_desc">Capri4physio description</string>
+
+    <string name="tab_support">Support</string>
+    <string name="tab_report_bug">Report bug</string>
+    <string name="but_title">Bug title</string>
+    <string name="bug_desc">Bug description</string>
+
+
+    <!--  Profiles-->
+    <string name="personal_details">Personal information</string>
+    <string name="practice_hour">Practice hour</string>
+    <string name="name">Name</string>
+    <string name="email">Email</string>
+    <string name="phone">Phone</string>
+    <string name="profile_details">Profile Details</string>
+    <string name="user_name">User name</string>
+
+    <!--  register -->
+    <string name="h_fname">Enter first name</string>
+    <string name="h_lname">Enter last name</string>
+    <string name="location">Select location</string>
+    <string name="h_name"> Enter Clinic name</string>
+    <string name="b_name"> Enter Branch name</string>
+    <string name="h_email">Enter email</string>
+    <string name="h_mobile">Enter mobile number *</string>
+    <string name="h_password">Enter password</string>
+    <string name="h_otp">Enter OTP password</string>
+    <string name="login">Login</string>
+    <string name="submit">Submit</string>
+    <string name="forget_password">Forgot password</string>
+    <string name="change_password">Change password</string>
+    <string name="h_new_password">New password</string>
+    <string name="h_old_password">Old password</string>
+    <string name="btn_verify">Verify</string>
+    <string name="forgot_passord_underline"><u>Forgot password</u></string>
+    <string name="register_here"><u>New user register here</u></string>
+    <string name="txt_edit"><u>EDIT</u></string>
+    <string name="save">Save</string>
+    <string name="btn_save">Save</string>
+    <string name="btn_update">Update</string>
+    <string name="btn_ok">OK</string>
+    <string name="btn_cancel">Cancel</string>
+    <string name="title_personal_info">Personal Information</string>
+    <string name="title_change_password">Change Password</string>
+    <string name="title_select_time">Select Time</string>
+    <string name="title_select_payment_type">Select payment type</string>
+
+
+    <string name="book_appointment">Book Appointment</string>
+    <string name="appointments">Appointments</string>
+    <string name="health_summary">Health Summary</string>
+    <string name="chat">Chat</string>
+    <string name="d_billing">Billing</string>
+    <string name="message">Message</string>
+    <string name="d_patients">My Patients</string>
+    <string name="d_schedule">Schedule</string>
+    <string name="d_staff">Staff</string>
+    <string name="d_report">Report</string>
+    <string name="d_message">Message</string>
+    <string name="d_expense">Expense</string>
+    <string name="d_invoice">Invoice</string>
+    <string name="create_clinic">Create a new clinic here</string>
+    <string name="add_clinic">Create your clinic</string>
+
+
+    <!-- Error-->
+    <string name="err_network">No network connection available!</string>
+    <string name="error">Error</string>
+    <string name="err_fname">Enter your first name</string>
+    <string name="err_lname">Enter your last name</string>
+    <string name="err_email">Enter a valid email</string>
+    <string name="err_clinic">Please contact to your branch</string>
+    <string name="err_bc">Enter branch code</string>
+    <string name="err_mobile">Enter a mobile no</string>
+    <string name="err_password">Enter password</string>
+    <string name="err_old_password">Enter old password</string>
+    <string name="err_new_password">Enter new password</string>
+    <string name="err_otp">Enter received OTP passcode</string>
+    <string name="err_otp_msg">Oops! your entered OTP is not valid</string>
+
+    <string name="err_clinic_name">Enter your clinic name</string>
+    <string name="err_location">Enter your clinic location</string>
+    <string name="err_lat">Enter clinic latittude</string>
+    <string name="err_bill_name">Enter bill number</string>
+    <string name="err_vendor_name">Enter your vendor name</string>
+    <string name="err_totl">Enter total amount</string>
+    <string name="err_lng">Enter clinic longitude</string>
+    <string name="err_short_desc">Enter clinic short description</string>
+    <string name="err_select_slot">Select an available slot</string>
+    <string name="err_reason_booking">Enter reason to book appointment</string>
+    <string name="err_visit_type">Select your visit type</string>
+    <string name="err_payment_type">Select a payment option</string>
+
+    <string name="err_cheif_complaint">Enter what are your chief complaints?</string>
+    <string name="err_cheif_complaint_how_long">Enter how long you had this problem?</string>
+    <string name="err_medical_history">Enter medical history</string>
+    <string name="err_surgical_history">Enter surgical history</string>
+    <string name="err_other_history">Enter other history</string>
+    <string name="err_medicine_used">Enter medicine used</string>
+    <string name="err_goal">Enter goal</string>
+    <string name="err_therapy">Enter therapy</string>
+    <string name="err_doses">Enter doses</string>
+    <string name="err_therapist">Enter therapist(staff)</string>
+    <string name="err_comment">Enter comment</string>
+    <string name="err_time_in">Enter Time IN</string>
+    <string name="err_time_out">Enter Time OUT</string>
+
+
+    <string name="err_bug_title">Enter a bug title</string>
+    <string name="err_bug_desc">Enter a bug description</string>
+
+
+    <string name="start_time">Start time</string>
+    <string name="end_time">End time</string>
+    <string name="btn_add">Add</string>
+    <string name="h_cheif_complaint">What are your chief complaints?</string>
+    <string name="h_cheif_complaint_how_long">How long you had this problem?</string>
+    <string name="cheif_complaint_before">Had this problem before?</string>
+
+    <string name="h_medical_history">Medical history</string>
+    <string name="h_surgical_history">Surgical history</string>
+    <string name="h_medicine_used">Medicine used</string>
+    <string name="h_other_history">Other history</string>
+
+    <string name="h_goal">Goal</string>
+    <string name="h_therapy">Therapy</string>
+    <string name="h_doses">Doses</string>
+    <string name="h_therapist">Therapist</string>
+    <string name="h_comment">Comment</string>
+    <string name="h_time_in">Time IN</string>
+    <string name="h_time_out">Time OUT</string>
+    <string name="gender">Gender</string>
+    <string name="marital">Marital status</string>
+    <string name="h_age">Age</string>
+    <string name="h_height">Height</string>
+    <string name="h_weight">Weight</string>
+    <string name="dob">DOB*</string>
+    <string name="err_age">Enter age</string>
+    <string name="err_marital">Enter Marital status</string>
+    <string name="err_gender">Enter Gender and marital status</string>
+    <string name="err_height">Enter height in lb</string>
+    <string name="print">Print</string>
+
+    <string-array name="array_priority">
+        <item>Patient</item>
+        <item>Therapist(Tranee)</item>
+        <item>Staff</item>
+        <item>Super admin</item>
+    </string-array>
+    <string-array name="array_priority_value">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+    </string-array>
+
+    <declare-styleable name="CircleImageView">
+        <attr name="civ_border_width" format="dimension" />
+        <attr name="civ_border_color" format="color" />
+        <attr name="civ_border_overlay" format="boolean" />
+        <attr name="civ_fill_color" format="color" />
+    </declare-styleable>
+
+
+    <string-array name="menu_staff_profile">
+        <item>Personal information</item>
+        <item>Practice hours</item>
+        <item>Change password</item>
+    </string-array>
+
+    <string-array name="menu_myclinic_patient">
+        <!--<item>Examination</item>-->
+        <item>Chief Complaint</item>
+        <item>History</item>
+        <item>Pain</item>
+        <item>Physical Examination</item>
+        <item>Motor Examination</item>
+        <item>Sensory Examination</item>
+        <item>Investigation</item>
+        <item>Neuro Examination</item>
+        <item>Physiotheraputic diagnosis</item>
+        <item>Medical diagnosis</item>
+        <item>Treatment advice</item>
+        <item>Treatment Given</item>
+        <item>Case Notes</item>
+        <item>Progress Notes</item>
+        <item>Remarks</item>
+
+    </string-array>
+
+    <string-array name="menu_item_pro">
+        <!--<item>Examination</item>-->
+        <item>Ultrasonic therapy-Rs.150/-per visit x 2(200 Rs)</item>
+        <item>Longwave therapy:Rs.150/-per visit x 2(200 Rs)</item>
+        <item>Interferential therapy:Rs.150/-per visit x 2(200 Rs)</item>
+        <item>TENS:Rs.100/-per visit x 2(100 Rs)</item>
+        <item>LASER:Rs.200/-per visit x 2(300 Rs)</item>
+        <item>MF surge/Stimulation:Rs.300/-per visit x 2(400 Rs)</item>
+        <item>Hot/Ice Pack:Rs100/-per visit x 2(150 Rs)</item>
+        <item>EMG BIofeedback:Rs.500/-per visit x 2(600 Rs)</item>
+        <item>TAPPING:Rs:300/-per visit x 2(400 Rs)</item>
+        <item>VIbrator Therapy:Rs.100/-per visit x 2(150 Rs)</item>
+        <item>Dry needling:Rs.400/-per visit x 2(600 Rs)</item>
+        <item>Manual Therapy:Rs.400/-per visit x 2(600 Rs)</item>
+        <item>Bioval exercises:Rs.300/-per visit x 2(400 Rs)</item>
+        <item>Osteopathic treatment:Rs:400/-per visit x 2(500 Rs)</item>
+        <item>Pneumatic Compression:600/-per visit x 2(1000 Rs)</item>
+        <item>Cryo compression:Rs.400/-per visit x 2(600 Rs)</item>
+    </string-array>
+
+    <string-array name="menu_item_product">
+        <item>Select Treatment</item>
+        <item>Ultrasonic therapy</item>
+        <item>Longwave therapy</item>
+        <item>Interferential therapy</item>
+        <item>TENS </item>
+        <item>LASER </item>
+        <item>MF surge/Stimulation </item>
+        <item>Hot/Ice Pack</item>
+        <item>EMG BIofeedback</item>
+        <item>TAPPING </item>
+        <item>VIbrator Therapy</item>
+        <item>Dry needling</item>
+        <item>Manual Therapy</item>
+        <item>Bioval exercises</item>
+        <item>Osteopathic treatment</item>
+        <item>Pneumatic Compression</item>
+        <item>Cryo compression</item>
+    </string-array>
+
+    <string-array name="reporttype">
+        <item> Case Report</item>
+        <item> Income Statement</item>
+        <item> Income (Treatmentwise)</item>
+        <item>Expense Report</item>
+        <item>Balance Sheet</item>
+        <item>Advance</item>
+        <item>Staff Productivity(From Invoice)</item>
+        <item>Staff Productivity(Session Wise)</item>
+
+    </string-array>
+
+    <string-array name="quantity_of_item">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+    </string-array>
+
+    <string-array name="pay_status">
+        <item>Unpaid</item>
+        <item>Paid</item>
+
+    </string-array>
+    <string-array name="pay_mode">
+        <item>cash</item>
+        <item>online</item>
+        <item>cheque</item>
+
+    </string-array>
+
+    <string-array name="severity_of_pain">
+        <item>Severity of pain</item>
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+        <item>8</item>
+        <item>9</item>
+        <item>10</item>
+    </string-array>
+    <string-array name="pressure_pain_threshold">
+        <item>Pressure pain Threshold(Algometry)Site</item>
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+        <item>8</item>
+        <item>9</item>
+        <item>10</item>
+    </string-array>
+    <string-array name="diurnal_variations">
+        <item>Morning</item>
+        <item>Afternoon</item>
+        <item>Evening</item>
+        <item>Night</item>
+        <item>No Specific pattern</item>
+    </string-array>
+    <string-array name="built_of_the_patient">
+        <item>Ectomorph</item>
+        <item>Mesomorph</item>
+        <item>Endomorph</item>
+    </string-array>
+    <string-array name="head_tone_of_the_motor">
+        <item>Select</item>
+        <item>Normal</item>
+        <item>Flaccid</item>
+        <item>Spastic</item>
+        <item>Regid</item>
+    </string-array>
+    <string-array name="head_power_of_the_motor">
+        <item>--</item>
+        <item>5</item>
+        <item>5-</item>
+        <item>4+</item>
+        <item>4</item>
+        <item>4-</item>
+        <item>3+</item>
+        <item>3</item>
+        <item>3-</item>
+        <item>2+</item>
+        <item>2</item>
+        <item>2-</item>
+        <item>1</item>
+        <item>0</item>
+    </string-array>
+    <string-array name="neuro_of_pain">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+    </string-array>
+    <string name="country_prompt">Choose a country</string>
+    <string name="album_view">Multiple Select photos</string>
+    <string-array name="Time_Pickersheet">
+        <item>8:00</item>
+        <item>8:15</item>
+        <item>8:30</item>
+        <item>8:45</item>
+        <item>9:00</item>
+        <item>9:15</item>
+        <item>9:30</item>
+        <item>9:45</item>
+        <item>10:00</item>
+        <item>10:15</item>
+        <item>10:30</item>
+        <item>10:45</item>
+        <item>11:00</item>
+        <item>11:15</item>
+        <item>11:30</item>
+        <item>11:45</item>
+        <item>12:00</item>
+        <item>12:15</item>
+        <item>12:30</item>
+        <item>12:45</item>
+        <item>13:00</item>
+        <item>13:15</item>
+        <item>13:30</item>
+        <item>13:45</item>
+        <item>14:00 </item>
+        <item>14:15</item>
+        <item>14:30</item>
+        <item>14:45</item>
+        <item>15:00</item>
+        <item>15:15</item>
+        <item>15:30</item>
+        <item>15:45</item>
+        <item>16:00</item>
+        <item>16:15</item>
+        <item>16:30</item>
+        <item>16:45</item>
+        <item>17:00 </item>
+        <item>17:15</item>
+        <item>17:30</item>
+        <item>17:45 </item>
+        <item>18:00</item>
+        <item>18:15</item>
+        <item>18:30</item>
+        <item>18:45</item>
+        <item>19:00</item>
+        <item>19:15</item>
+        <item>19:30</item>
+        <item>19:45</item>
+        <item>20:00</item>
+    </string-array>
+</resources>

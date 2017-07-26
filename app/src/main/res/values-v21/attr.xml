@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="HorizontalListView">
+        <attr name="dividerWidths" format="dimension" />
+        <attr name="android:divider" />
+        <attr name="android:requiresFadingEdge" />
+        <attr name="android:fadingEdgeLength" />
+    </declare-styleable>
+    <declare-styleable name="FixedAspectRatioFrameLayout">
+        <attr name="aspectRatioWidth" format="integer" />
+        <attr name="aspectRatioHeight" format="integer" />
+
+    </declare-styleable>
+    <declare-styleable name="Ranger">
+
+        <!-- Behaviour attributes -->
+        <attr name="displayDayOfWeek" format="boolean"/>
+        <attr name="alwaysDisplayMonth" format="boolean"/>
+
+        <!-- Days Container styling -->
+        <attr name="daysContainerBackgroundColor" format="color"/>
+
+        <attr name="dayTextColor" format="color"/>
+        <attr name="selectedDayTextColor" format="color"/>
+        <attr name="selectedDayBackgroundColor" format="color"/>
+
+        <!-- Day View styling -->
+        <attr name="dayOfWeekTextColor" format="color" />
+        <attr name="dayNumberTextColor" format="color" />
+        <attr name="monthNameTextColor" format="color" />
+
+    </declare-styleable>
+
+</resources>

@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "253948600044",
+    "firebase_url": "https://physio-a2d54.firebaseio.com",
+    "project_id": "physio-a2d54",
+    "storage_bucket": "physio-a2d54.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:253948600044:android:040ba1f11b79f0a2",
+        "android_client_info": {
+          "package_name": "com.capri4physio"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "253948600044-jbjqt7ccpo6tljhlhvrihge0274odc5f.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCY-1VUnKKeOaxwQcJ91TUoT7toP4J2Zsw"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
