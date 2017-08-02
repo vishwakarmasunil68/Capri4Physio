@@ -8,4 +8,5 @@ public class StringUtils {
 
 
     public final static String CHAT_CLASS="chat_class";
+    public final static String SMS_CLASS="sms_class";
 }

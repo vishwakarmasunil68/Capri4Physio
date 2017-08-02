@@ -252,7 +252,7 @@ public class ApiConfig {
     public static final String ASSESSMENT_CHEIF_PHYSICAL_EXAMINATION = "PhysicalExamination";
     public static final String ASSESSMENT_INVESTIGATION = "Investigation";
     public static final String search_user_api="http://oldmaker.com/fijiyo/chat/searchuser.php";
-    public static final String chat_api="http://oldmaker.com/fijiyo/chat/chat.php";
+    public static final String chat_api="http://oldmaker.com/fijiyo/chat/chatcapri.php";
     public static final String get_all_users="http://oldmaker.com/fijiyo/chat/getChatUsers.php";
     public static final String logout_users="http://oldmaker.com/fijiyo/chat/logoutuser.php";
     public static final String getallchat="http://oldmaker.com/fijiyo/chat/getallchat.php";
@@ -261,6 +261,21 @@ public class ApiConfig {
     public static final String get_timings_api="http://oldmaker.com/fijiyo/index.php/users/appoimentlistdatewise";
     public static final String add_appointment_api="http://oldmaker.com/fijiyo/index.php/users/addappointment";
     public static final String delete_appointment_api="http://oldmaker.com/fijiyo/chat/deleteappointment.php";
+    public static final String otp_verify_api="http://oldmaker.com/fijiyo/index.php/users/otpverify";
+    public static final String resend_otp="http://oldmaker.com/fijiyo/index.php/users/resendotp";
+    public static final String chat_base="http://oldmaker.com/fijiyo/chat/";
+    public static final String add_new_course_api="http://oldmaker.com/fijiyo/index.php/users/addcourse";
+    public static final String update_course_api="http://oldmaker.com/fijiyo/index.php/users/updatecourse";
+    public static final String list_couces="http://oldmaker.com/fijiyo/index.php/users/courselist";
+    public static final String add_student_course="http://oldmaker.com/fijiyo/index.php/users/addstudentcourse";
+    public static final String update_student_course="http://oldmaker.com/fijiyo/index.php/users/updatestudentcourse";
+    public static final String student_course_list_by_id_api="http://oldmaker.com/fijiyo/index.php/users/studentcourselistbyid";
+    public static final String add_application_form_api="http://oldmaker.com/fijiyo/index.php/users/addapplication_form";
+    public static final String update_application_form_api="http://oldmaker.com/fijiyo/index.php/users/updateapplicationform";
+    public static final String add_attachment_api="http://oldmaker.com/fijiyo/index.php/users/addstudent_attachment";
+    public static final String get_application_form_api="http://oldmaker.com/fijiyo/index.php/users/studentapplicationform3Byid";
+    public static final String get_student_by_course_id="http://oldmaker.com/fijiyo/index.php/users/studentcourse1id";
+    public static final String get_branch_doctor="http://oldmaker.com/fijiyo/index.php/users/bracchcodewisetherpist";
 
 
 //     public static final String BASE_URL = "http://caprispine.in/";

@@ -19,14 +19,26 @@ public class ChatPOJO {
     String chat_time;
     @SerializedName("chat_msg")
     String chat_msg;
+    @SerializedName("chat_type")
+    String chat_type;
+    @SerializedName("chat_thumb")
+    String chat_thumb;
+    @SerializedName("chat_file")
+    String chat_file;
+    @SerializedName("admin")
+    String admin;
 
-    public ChatPOJO(String chat_id, String chat_user_id, String chat_fri_id, String chat_date, String chat_time, String chat_msg) {
+    public ChatPOJO(String chat_id, String chat_user_id, String chat_fri_id, String chat_date, String chat_time, String chat_msg, String chat_type, String chat_file,String chat_thumb, String admin) {
         this.chat_id = chat_id;
         this.chat_user_id = chat_user_id;
         this.chat_fri_id = chat_fri_id;
         this.chat_date = chat_date;
         this.chat_time = chat_time;
         this.chat_msg = chat_msg;
+        this.chat_type = chat_type;
+        this.chat_thumb = chat_thumb;
+        this.chat_file = chat_file;
+        this.admin = admin;
     }
 
     public ChatPOJO() {
@@ -80,15 +92,51 @@ public class ChatPOJO {
         this.chat_msg = chat_msg;
     }
 
+    public String getChat_type() {
+        return chat_type;
+    }
+
+    public void setChat_type(String chat_type) {
+        this.chat_type = chat_type;
+    }
+
+    public String getChat_file() {
+        return chat_file;
+    }
+
+    public void setChat_file(String chat_file) {
+        this.chat_file = chat_file;
+    }
+
+    public String getChat_thumb() {
+        return chat_thumb;
+    }
+
+    public void setChat_thumb(String chat_thumb) {
+        this.chat_thumb = chat_thumb;
+    }
+
+    public String getAdmin() {
+        return admin;
+    }
+
+    public void setAdmin(String admin) {
+        this.admin = admin;
+    }
+
     @Override
     public String toString() {
         return "ChatPOJO{" +
                 "chat_id='" + chat_id + '\'' +
                 ", chat_user_id='" + chat_user_id + '\'' +
                 ", chat_fri_id='" + chat_fri_id + '\'' +
-//                ", chat_date='" + chat_date + '\'' +
-//                ", chat_time='" + chat_time + '\'' +
-//                ", chat_msg='" + chat_msg + '\'' +
+                ", chat_date='" + chat_date + '\'' +
+                ", chat_time='" + chat_time + '\'' +
+                ", chat_msg='" + chat_msg + '\'' +
+                ", chat_type='" + chat_type + '\'' +
+                ", chat_thumb='" + chat_thumb + '\'' +
+                ", chat_file='" + chat_file + '\'' +
+                ", admin='" + admin + '\'' +
                 '}';
     }
 }

@@ -18,6 +18,9 @@
     <uses-permission android:name="android.permission.READ_CONTACTS" />
     <uses-permission android:name="android.permission.CALL_PHONE" />
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+    <uses-permission android:name="android.permission.RECEIVE_SMS" />
+    <uses-permission android:name="android.permission.READ_SMS" />
+    <uses-permission android:name="android.permission.SEND_SMS" />
 
     <uses-feature android:name="android.hardware.camera" />
 
@@ -43,8 +46,8 @@
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustResize"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -428,8 +431,9 @@
         <activity
             android:name=".activity.ViewAllAppointmentsActivity"
             android:theme="@style/AppTheme1" />
-        <activity android:name=".activity.AddAppointmentActivity"
-            android:theme="@style/AppTheme1" ></activity>
+        <activity
+            android:name=".activity.AddAppointmentActivity"
+            android:theme="@style/AppTheme1" />
 
         <provider
             android:name="android.support.v4.content.FileProvider"
@@ -440,6 +444,46 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_paths" />
         </provider>
+
+        <receiver android:name=".receiver.IncomingSms">
+            <intent-filter>
+                <action android:name="android.provider.Telephony.SMS_RECEIVED" />
+            </intent-filter>
+        </receiver>
+
+        <activity
+            android:name=".activity.ChatImageViewActivity"
+            android:theme="@style/AppTheme1" />
+        <activity
+            android:name=".activity.CourseActivity"
+            android:theme="@style/AppTheme1" />
+        <activity
+            android:name=".activity.AddNewCourseActivity"
+            android:theme="@style/AppTheme1" />
+        <activity
+            android:name=".activity.UpdateCourceActivity"
+            android:theme="@style/AppTheme1" />
+        <activity
+            android:name=".activity.SelectCourseActivity"
+            android:theme="@style/AppTheme1" />
+        <activity
+            android:name=".activity.StudentCourseStatusActivity"
+            android:theme="@style/AppTheme1" />
+        <activity
+            android:name=".activity.AddApplicationFormActivity"
+            android:theme="@style/AppTheme1" />
+        <activity
+            android:name=".activity.ListCourseStudentsActivity"
+            android:theme="@style/AppTheme1" />
+        <activity
+            android:name=".activity.StudentCourseViewActivity"
+            android:theme="@style/AppTheme1" />
+        <activity
+            android:name=".activity.AddPatientAppointment"
+            android:theme="@style/AppTheme1" />
+        <activity android:name=".activity.TherapistActivity" />
+        <activity android:name=".activity.AddTherapistActivity" />
+        <activity android:name=".activity.ManageTherapistActivity"></activity>
     </application>
 
 </manifest>

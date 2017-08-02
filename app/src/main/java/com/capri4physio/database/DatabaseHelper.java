@@ -36,6 +36,10 @@ public class DatabaseHelper {
         contentValues.put(DataBaseDef.chat_date, chatPOJO.getChat_date() + "");
         contentValues.put(DataBaseDef.chat_time, chatPOJO.getChat_time() + "");
         contentValues.put(DataBaseDef.chat_msg, chatPOJO.getChat_msg() + "");
+        contentValues.put(DataBaseDef.chat_thumb, chatPOJO.getChat_thumb() + "");
+        contentValues.put(DataBaseDef.chat_type, chatPOJO.getChat_type() + "");
+        contentValues.put(DataBaseDef.chat_file, chatPOJO.getChat_file() + "");
+        contentValues.put(DataBaseDef.chat_admin, chatPOJO.getAdmin() + "");
 
         long id = db.insert(DataBaseDef.TABLE_CHAT, null, contentValues);
         db.close();
@@ -51,6 +55,10 @@ public class DatabaseHelper {
             contentValues.put(DataBaseDef.chat_date, chatPOJO.getChat_date() + "");
             contentValues.put(DataBaseDef.chat_time, chatPOJO.getChat_time() + "");
             contentValues.put(DataBaseDef.chat_msg, chatPOJO.getChat_msg() + "");
+            contentValues.put(DataBaseDef.chat_type, chatPOJO.getChat_type() + "");
+            contentValues.put(DataBaseDef.chat_thumb, chatPOJO.getChat_thumb() + "");
+            contentValues.put(DataBaseDef.chat_file, chatPOJO.getChat_file() + "");
+            contentValues.put(DataBaseDef.chat_admin, chatPOJO.getAdmin() + "");
 
             long id = db.insert(DataBaseDef.TABLE_CHAT, null, contentValues);
             Log.d(TagUtils.getTag(),"insert id:-"+id);
@@ -67,7 +75,11 @@ public class DatabaseHelper {
                 DataBaseDef.chat_fri_id,
                 DataBaseDef.chat_date,
                 DataBaseDef.chat_time,
-                DataBaseDef.chat_msg
+                DataBaseDef.chat_msg,
+                DataBaseDef.chat_type,
+                DataBaseDef.chat_thumb,
+                DataBaseDef.chat_file,
+                DataBaseDef.chat_admin
         };
         Cursor cursor = db.query(DataBaseDef.TABLE_CHAT, columns, null, null, null, null, null);
 
@@ -78,7 +90,12 @@ public class DatabaseHelper {
                             cursor.getString(3),
                             cursor.getString(4),
                             cursor.getString(5),
-                            cursor.getString(6));
+                            cursor.getString(6),
+                            cursor.getString(7),
+                            cursor.getString(9),
+                            cursor.getString(8),
+                            cursor.getString(10)
+                    );
 
 
             lst.add(cartResultPOJO);
@@ -104,7 +121,12 @@ public class DatabaseHelper {
                             cursor.getString(3),
                             cursor.getString(4),
                             cursor.getString(5),
-                            cursor.getString(6));
+                            cursor.getString(6),
+                            cursor.getString(7),
+                            cursor.getString(9),
+                            cursor.getString(8),
+                            cursor.getString(10)
+                    );
 //            lst.add(newUrgentChatResultPOJO);
             chatPOJOList.add(cartResultPOJO);
         }
@@ -123,7 +145,11 @@ public class DatabaseHelper {
                 DataBaseDef.chat_fri_id,
                 DataBaseDef.chat_date,
                 DataBaseDef.chat_time,
-                DataBaseDef.chat_msg
+                DataBaseDef.chat_msg,
+                DataBaseDef.chat_type,
+                DataBaseDef.chat_thumb,
+                DataBaseDef.chat_file,
+                DataBaseDef.chat_admin
         };
 //        Cursor cursor=db.query(DataBaseHelper.OBSTACLE_TABLE, columns, null, null, null, null, null);
         Cursor cursor = db.query(DataBaseDef.TABLE_CHAT,
@@ -138,7 +164,12 @@ public class DatabaseHelper {
                             cursor.getString(3),
                             cursor.getString(4),
                             cursor.getString(5),
-                            cursor.getString(6));
+                            cursor.getString(6),
+                            cursor.getString(7),
+                            cursor.getString(9),
+                            cursor.getString(8),
+                            cursor.getString(10)
+                    );
 //            lst.add(newUrgentChatResultPOJO);
             lst.add(cartResultPOJO);
         }
@@ -147,7 +178,7 @@ public class DatabaseHelper {
         return lst;
     }
 
-    public ChatPOJO getCartData(String chat_id) {
+    public ChatPOJO getchatdata(String chat_id) {
         SQLiteDatabase db = helper.getWritableDatabase();
 //        List<WishListResultPOJO> lst=new ArrayList<>();
         String[] columns = {DataBaseDef.ID,
@@ -156,7 +187,11 @@ public class DatabaseHelper {
                 DataBaseDef.chat_fri_id,
                 DataBaseDef.chat_date,
                 DataBaseDef.chat_time,
-                DataBaseDef.chat_msg
+                DataBaseDef.chat_msg,
+                DataBaseDef.chat_type,
+                DataBaseDef.chat_thumb,
+                DataBaseDef.chat_file,
+                DataBaseDef.chat_admin
         };
 //        Cursor cursor=db.query(DataBaseHelper.OBSTACLE_TABLE, columns, null, null, null, null, null);
         Cursor cursor = db.query(DataBaseDef.TABLE_CHAT, columns, DataBaseDef.chat_id + " = " + chat_id, null, null, null, null);
@@ -168,7 +203,12 @@ public class DatabaseHelper {
                             cursor.getString(3),
                             cursor.getString(4),
                             cursor.getString(5),
-                            cursor.getString(6));
+                            cursor.getString(6),
+                            cursor.getString(7),
+                            cursor.getString(9),
+                            cursor.getString(8),
+                            cursor.getString(10)
+                    );
 //            lst.add(newUrgentChatResultPOJO);
             return cartResultPOJO;
         }
@@ -216,7 +256,7 @@ public class DatabaseHelper {
         //table names
         private static final String TABLE_CHAT = "chat_table";
 
-        private static final int DATABASE_VERSION = 1;
+        private static final int DATABASE_VERSION = 2;
 
         //        //columns for the ItemData
         private static final String ID = "_id";
@@ -228,6 +268,10 @@ public class DatabaseHelper {
         private static final String chat_date = "chat_date";
         private static final String chat_time = "chat_time";
         private static final String chat_msg = "chat_msg";
+        private static final String chat_type = "chat_type";
+        private static final String chat_thumb = "chat_thumb";
+        private static final String chat_file = "chat_file";
+        private static final String chat_admin = "admin";
 
 
         private static final String CREATE_CHAT_TABLE = "CREATE TABLE " + TABLE_CHAT + " (" + ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
@@ -236,7 +280,11 @@ public class DatabaseHelper {
                 + chat_fri_id + " varchar(255), "
                 + chat_date + " TEXT, "
                 + chat_time + " VARCHAR(255), "
-                + chat_msg + " VARCHAR(255) "
+                + chat_msg + " VARCHAR(255), "
+                + chat_type + " VARCHAR(255), "
+                + chat_thumb + " VARCHAR(255), "
+                + chat_file + " VARCHAR(255), "
+                + chat_admin + " VARCHAR(255) "
                 + ");";
 
         private static final String DROP_TABLE_CHAT = "DROP TABLE IF EXISTS " + TABLE_CHAT;

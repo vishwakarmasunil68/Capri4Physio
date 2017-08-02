@@ -131,4 +131,6 @@ public class ChatUserActivity extends AppCompatActivity implements WebServicesCa
         rv_users.setItemAnimator(new DefaultItemAnimator());
         rv_users.setAdapter(adapter);
     }
+
+
 }

@@ -420,4 +420,8 @@
         <item>19:45</item>
         <item>20:00</item>
     </string-array>
+
+    <string name="title_activity_select_course">SelectCourseActivity</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
 </resources>

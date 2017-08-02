@@ -9,13 +9,16 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.v4.content.FileProvider;
 import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.MimeTypeMap;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -318,10 +321,31 @@ public class SignUpDetailFragment extends BaseFragment {
                 ex.printStackTrace();
             }
             if (photoFile != null) {
-                SplashActivity.mImageCaptureUri = Uri.fromFile(photoFile);
-                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, SplashActivity.mImageCaptureUri);
-                //takePictureIntent.putExtra("android.intent.extras.CAMERA_FACING", 1);
-                takePictureIntent.putExtra("return-data", true);
+
+                MimeTypeMap mime = MimeTypeMap.getSingleton();
+                String ext = photoFile.getName().substring(photoFile.getName().lastIndexOf(".") + 1);
+                String type = mime.getMimeTypeFromExtension(ext);
+
+//                SplashActivity.mImageCaptureUri = Uri.fromFile(photoFile);
+
+
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                    takePictureIntent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                    SplashActivity.mImageCaptureUri = FileProvider.getUriForFile(getActivity().getApplicationContext(), "com.capri4physio.fileProvider", photoFile);
+                    takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, SplashActivity.mImageCaptureUri);
+                    //takePictureIntent.putExtra("android.intent.extras.CAMERA_FACING", 1);
+                    takePictureIntent.putExtra("return-data", true);
+//                    grantAllUriPermissions(intent,contentUri);
+                } else {
+                    takePictureIntent.setDataAndType(Uri.fromFile(photoFile), type);
+                    SplashActivity.mImageCaptureUri=Uri.fromFile(photoFile);
+                    takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, SplashActivity.mImageCaptureUri);
+                    //takePictureIntent.putExtra("android.intent.extras.CAMERA_FACING", 1);
+                    takePictureIntent.putExtra("return-data", true);
+//                    grantAllUriPermissions(intent,Uri.fromFile(f));
+                }
+
                 startActivityForResult(takePictureIntent, PICK_FROM_CAMERA);
             }
         }

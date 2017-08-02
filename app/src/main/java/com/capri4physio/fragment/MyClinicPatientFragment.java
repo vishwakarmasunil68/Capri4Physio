@@ -225,6 +225,7 @@ public class MyClinicPatientFragment extends BaseFragment implements HttpUrlList
                     aadhar_id = mUser.getAadharId();
 
 //                    Log.e("stat",mUser.getProfilePic());
+                    Log.d(TagUtils.getTag(),"profile pic:-"+mUser.getProfilePic());
                     ImageLoader.getInstance().displayImage(mUser.getProfilePic(), mImgProfile, options);
 
                     if (null != mUser.getAge()) {

@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.capri4physio.R;
+import com.capri4physio.activity.AddPatientAppointment;
 import com.capri4physio.activity.ChatUserActivity;
 import com.capri4physio.fragment.assessment.MapActivity;
 import com.capri4physio.listener.FragmentListener;
@@ -86,13 +87,14 @@ public class PatientDashboardFragment extends BaseFragment {
             @Override
             public void onClick(View view) {
 
-                PatientAppointmetFragment reportfragment = PatientAppointmetFragment.newInstance();
-//                ViewAppoinmentsPatientFragment reportfragment = ViewAppoinmentsPatientFragment.newInstance();
-                FragmentTransaction ft = getFragmentManager().beginTransaction();
-                ft.replace(R.id.fragment_container, reportfragment);
-//                getSupportActionBar().setTitle(title);
-                ft.addToBackStack(null);
-                ft.commit();
+//                PatientAppointmetFragment reportfragment = PatientAppointmetFragment.newInstance();
+////                ViewAppoinmentsPatientFragment reportfragment = ViewAppoinmentsPatientFragment.newInstance();
+//                FragmentTransaction ft = getFragmentManager().beginTransaction();
+//                ft.replace(R.id.fragment_container, reportfragment);
+////                getSupportActionBar().setTitle(title);
+//                ft.addToBackStack(null);
+//                ft.commit();
+                startActivity(new Intent(getActivity(), AddPatientAppointment.class));
             }
         });
 

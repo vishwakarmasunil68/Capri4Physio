@@ -1,8 +1,11 @@
 package com.capri4physio.activity;
 
 import android.app.FragmentTransaction;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
@@ -27,6 +30,7 @@ import com.capri4physio.util.AppLog;
 import com.capri4physio.util.AppPreferences;
 import com.capri4physio.util.BundleConst;
 import com.capri4physio.util.Constants;
+import com.capri4physio.util.StringUtils;
 import com.capri4physio.util.TagUtils;
 import com.capri4physio.util.Utils;
 
@@ -77,6 +81,7 @@ public class SplashActivity extends BaseActivity implements HttpUrlListener {
         int write_storage = ContextCompat.checkSelfPermission(this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE);
         int ACCESS_FINE_LOCATION = ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION);
         int CAMERA = ContextCompat.checkSelfPermission(this, android.Manifest.permission.CAMERA);
+        int RECEIVE_SMS = ContextCompat.checkSelfPermission(this, android.Manifest.permission.RECEIVE_SMS);
         List<String> listPermissionsNeeded = new ArrayList<>();
 
 
@@ -92,6 +97,9 @@ public class SplashActivity extends BaseActivity implements HttpUrlListener {
         }
         if (CAMERA != PackageManager.PERMISSION_GRANTED) {
             listPermissionsNeeded.add(android.Manifest.permission.CAMERA);
+        }
+        if (RECEIVE_SMS != PackageManager.PERMISSION_GRANTED) {
+            listPermissionsNeeded.add(android.Manifest.permission.RECEIVE_SMS);
         }
 
         if (!listPermissionsNeeded.isEmpty()) {
@@ -114,6 +122,7 @@ public class SplashActivity extends BaseActivity implements HttpUrlListener {
                 perms.put(android.Manifest.permission.WRITE_EXTERNAL_STORAGE, PackageManager.PERMISSION_GRANTED);
                 perms.put(android.Manifest.permission.ACCESS_FINE_LOCATION, PackageManager.PERMISSION_GRANTED);
                 perms.put(android.Manifest.permission.CAMERA, PackageManager.PERMISSION_GRANTED);
+                perms.put(android.Manifest.permission.RECEIVE_SMS, PackageManager.PERMISSION_GRANTED);
 
                 // Fill with actual results from user
                 if (grantResults.length > 0) {
@@ -124,6 +133,7 @@ public class SplashActivity extends BaseActivity implements HttpUrlListener {
                             && perms.get(android.Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED
                             && perms.get(android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
                             && perms.get(android.Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED
+                            && perms.get(android.Manifest.permission.RECEIVE_SMS) == PackageManager.PERMISSION_GRANTED
                             ) {
                         Log.d("msg", "All Permissions granted");
                         // process the normal flow
@@ -141,6 +151,7 @@ public class SplashActivity extends BaseActivity implements HttpUrlListener {
                                 || ActivityCompat.shouldShowRequestPermissionRationale(this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
                                 || ActivityCompat.shouldShowRequestPermissionRationale(this, android.Manifest.permission.ACCESS_FINE_LOCATION)
                                 || ActivityCompat.shouldShowRequestPermissionRationale(this, android.Manifest.permission.CAMERA)
+                                || ActivityCompat.shouldShowRequestPermissionRationale(this, android.Manifest.permission.RECEIVE_SMS)
                                 ) {
                             showDialogOK("Permisions required for this app",
                                     new DialogInterface.OnClickListener() {
@@ -207,50 +218,56 @@ public class SplashActivity extends BaseActivity implements HttpUrlListener {
     }
 
     private void loadScreen() {
-
+        Log.d(TagUtils.getTag(),"device token:-"+AppPreferences.GetDeviceToken(getApplicationContext()));
         if (AppPreferences.getInstance(this).isUserLogin()) {
+            if (AppPreferences.getInstance(this).getOtpVerifiedStatus()) {
+                String userType = AppPreferences.getInstance(SplashActivity.this).getUserType();
+                Log.d(TagUtils.getTag(), "device token:-" + AppPreferences.GetDeviceToken(getApplicationContext()));
+                Log.d(TagUtils.getTag(), "user login type:-" + userType);
+                if (userType != null && userType.equals(Constants.GlobalConst.USER_PATIENT)) {
+                    Log.d("sunil", "userpatient");
+                    AppPreferences.getInstance(SplashActivity.this).setUserLogin(true);
+                    Intent intent = new Intent(SplashActivity.this, PatientDashboardActivity.class);
+                    startActivity(intent);
+                    SplashActivity.this.finish();
 
-            String userType = AppPreferences.getInstance(SplashActivity.this).getUserType();
-            Log.d(TagUtils.getTag(),"device token:-"+AppPreferences.GetDeviceToken(getApplicationContext()));
-            Log.d(TagUtils.getTag(),"user login type:-"+userType);
-            if (userType != null && userType.equals(Constants.GlobalConst.USER_PATIENT)) {
-                Log.d("sunil", "userpatient");
-                AppPreferences.getInstance(SplashActivity.this).setUserLogin(true);
-                Intent intent = new Intent(SplashActivity.this, PatientDashboardActivity.class);
-                startActivity(intent);
-                SplashActivity.this.finish();
+                } else if (userType != null && userType.equals(Constants.GlobalConst.USER_BRANCH_MANAGER)) {
+                    Log.d("sunil", "userbranchmanager");
+                    AppPreferences.getInstance(SplashActivity.this).setUserLogin(true);
+                    Intent intent = new Intent(SplashActivity.this, BranchAdminActivity.class);
+                    startActivity(intent);
+                    SplashActivity.this.finish();
 
-            } else if (userType != null && userType.equals(Constants.GlobalConst.USER_BRANCH_MANAGER)) {
-                Log.d("sunil", "userbranchmanager");
-                AppPreferences.getInstance(SplashActivity.this).setUserLogin(true);
-                Intent intent = new Intent(SplashActivity.this, BranchAdminActivity.class);
-                startActivity(intent);
-                SplashActivity.this.finish();
-
-            } else if (userType != null && userType.equals(Constants.GlobalConst.USER_AMIN)) {
-                Log.d("sunil", "useradmin");
-                AppPreferences.getInstance(SplashActivity.this).setUserLogin(true);
-                Intent intent = new Intent(SplashActivity.this, BranchAdminActivity.class);
-                startActivity(intent);
-                SplashActivity.this.finish();
-
-            } else {
-                if (userType != null && (userType.equals(Constants.GlobalConst.USER_STAFF)||userType.equals(Constants.GlobalConst.USER_THERAPIST))) {
-                    Log.d("sunil", "userstaff");
+                } else if (userType != null && userType.equals(Constants.GlobalConst.USER_AMIN)) {
+                    Log.d("sunil", "useradmin");
                     AppPreferences.getInstance(SplashActivity.this).setUserLogin(true);
                     Intent intent = new Intent(SplashActivity.this, BranchAdminActivity.class);
                     startActivity(intent);
                     SplashActivity.this.finish();
 
                 } else {
-                    AppPreferences.getInstance(SplashActivity.this).setUserLogin(true);
-                    Intent intent = new Intent(SplashActivity.this, StudentDashboardActivity.class);
-                    startActivity(intent);
-                    SplashActivity.this.finish();
+                    if (userType != null && (userType.equals(Constants.GlobalConst.USER_STAFF) || userType.equals(Constants.GlobalConst.USER_THERAPIST))) {
+                        Log.d("sunil", "userstaff");
+                        AppPreferences.getInstance(SplashActivity.this).setUserLogin(true);
+                        Intent intent = new Intent(SplashActivity.this, BranchAdminActivity.class);
+                        startActivity(intent);
+                        SplashActivity.this.finish();
+
+                    } else {
+                        AppPreferences.getInstance(SplashActivity.this).setUserLogin(true);
+                        Intent intent = new Intent(SplashActivity.this, StudentDashboardActivity.class);
+                        startActivity(intent);
+                        SplashActivity.this.finish();
+                    }
+
                 }
-
+            } else {
+                fragment = OtpFragment.newInstance(AppPreferences.getInstance(getApplicationContext()).getUserType());
+                FragmentTransaction ft = getFragmentManager().beginTransaction();
+                ft.add(R.id.fragment_container, fragment);
+                ft.addToBackStack(null);
+                ft.commit();
             }
-
         } else {
 
             LoginFragment fragment = LoginFragment.newInstance();
@@ -295,7 +312,9 @@ public class SplashActivity extends BaseActivity implements HttpUrlListener {
             case ApiConfig.ID1:
                 UserDetailModel loginModel = (UserDetailModel) response;
                 Log.d("sunil", "loginmodel:-" + loginModel.toString());
+
                 if (loginModel.getStatus() == 1) {
+
 //                    Log.e("responsestat",response.toString());
                     AppLog.i("Capri4Physio", "Login Response : " + loginModel.getMessage());
                     // Save login status
@@ -318,59 +337,71 @@ public class SplashActivity extends BaseActivity implements HttpUrlListener {
                     AppPreferences.getInstance(SplashActivity.this).setPassword(loginModel.getResult().getUser().getShowPassword());
                     AppPreferences.getInstance(SplashActivity.this).setFirstName(loginModel.getResult().getUser().getFirstName());
                     AppPreferences.getInstance(SplashActivity.this).setaddress(loginModel.getResult().getUser().getAddress2());
+                    Log.d(TagUtils.getTag(),"otp statu  s:-"+loginModel.getResult().getUser().getOtp_status());
+                    AppPreferences.getInstance(SplashActivity.this).setOTPVerified(loginModel.getResult().getUser().getOtp_status());
 // AppPreferences.getInstance(SplashActivity.this).setPassword(loginModel.getResult().getUser().getAdd());
-
-                    try {
+                    if (loginModel.getResult().getUser().getOtp_status()) {
+                        try {
 //                        //Save profile data
 //                        Gson gson = new Gson();
 //                        String userDetails = gson.toJson(loginModel);
 //                        AppPreferences.getInstance(SplashActivity.this).setUserDetails(userDetails);
-                        //Navigate to dashboard
-                        String userType = loginModel.getResult().getUser().getUserType();
-                        AppPreferences.getInstance(SplashActivity.this).setUserType(userType);
-                        if (userType != null && userType.equals(Constants.GlobalConst.USER_PATIENT)) {
-                            Log.d("sunil", "userpatient");
-                            AppPreferences.getInstance(SplashActivity.this).setUserLogin(true);
-                            Intent intent = new Intent(SplashActivity.this, PatientDashboardActivity.class);
-                            startActivity(intent);
-                            SplashActivity.this.finish();
+                            //Navigate to dashboard
+                            String userType = loginModel.getResult().getUser().getUserType();
+                            AppPreferences.getInstance(SplashActivity.this).setUserType(userType);
+                            if (userType != null && userType.equals(Constants.GlobalConst.USER_PATIENT)) {
+                                Log.d("sunil", "userpatient");
+                                AppPreferences.getInstance(SplashActivity.this).setUserLogin(true);
+                                Intent intent = new Intent(SplashActivity.this, PatientDashboardActivity.class);
+                                startActivity(intent);
+                                SplashActivity.this.finish();
 
-                        } else if (userType != null && userType.equals(Constants.GlobalConst.USER_BRANCH_MANAGER)) {
-                            Log.d("sunil", "userbranchmanager");
-                            AppPreferences.getInstance(SplashActivity.this).setUserLogin(true);
-                            Intent intent = new Intent(SplashActivity.this, BranchAdminActivity.class);
-                            startActivity(intent);
-                            SplashActivity.this.finish();
-
-                        } else if (userType != null && userType.equals(Constants.GlobalConst.USER_AMIN)) {
-                            Log.d("sunil", "useradmin");
-                            AppPreferences.getInstance(SplashActivity.this).setUserLogin(true);
-                            Intent intent = new Intent(SplashActivity.this, BranchAdminActivity.class);
-                            startActivity(intent);
-                            SplashActivity.this.finish();
-
-                        } else if (userType != null && userType.equals(Constants.GlobalConst.USER_STUDENT)) {
-                            AppPreferences.getInstance(SplashActivity.this).setUserLogin(true);
-                            Intent intent = new Intent(SplashActivity.this, StudentDashboardActivity.class);
-                            startActivity(intent);
-                            SplashActivity.this.finish();
-                        } else {
-                            if (userType != null && (userType.equals(Constants.GlobalConst.USER_STAFF)||userType.equals(Constants.GlobalConst.USER_THERAPIST))) {
-                                Log.d("sunil", "userstaff");
+                            } else if (userType != null && userType.equals(Constants.GlobalConst.USER_BRANCH_MANAGER)) {
+                                Log.d("sunil", "userbranchmanager");
                                 AppPreferences.getInstance(SplashActivity.this).setUserLogin(true);
                                 Intent intent = new Intent(SplashActivity.this, BranchAdminActivity.class);
                                 startActivity(intent);
                                 SplashActivity.this.finish();
 
+                            } else if (userType != null && userType.equals(Constants.GlobalConst.USER_AMIN)) {
+                                Log.d("sunil", "useradmin");
+                                AppPreferences.getInstance(SplashActivity.this).setUserLogin(true);
+                                Intent intent = new Intent(SplashActivity.this, BranchAdminActivity.class);
+                                startActivity(intent);
+                                SplashActivity.this.finish();
+
+                            } else if (userType != null && userType.equals(Constants.GlobalConst.USER_STUDENT)) {
+                                AppPreferences.getInstance(SplashActivity.this).setUserLogin(true);
+                                Intent intent = new Intent(SplashActivity.this, StudentDashboardActivity.class);
+                                startActivity(intent);
+                                SplashActivity.this.finish();
+                            } else {
+                                if (userType != null && (userType.equals(Constants.GlobalConst.USER_STAFF) || userType.equals(Constants.GlobalConst.USER_THERAPIST))) {
+                                    Log.d("sunil", "userstaff");
+                                    AppPreferences.getInstance(SplashActivity.this).setUserLogin(true);
+                                    Intent intent = new Intent(SplashActivity.this, BranchAdminActivity.class);
+                                    startActivity(intent);
+                                    SplashActivity.this.finish();
+
+                                }
                             }
+                        } catch (Exception e) {
+                            e.printStackTrace();
                         }
-                    } catch (Exception e) {
-                        e.printStackTrace();
+                    } else {
+                        try {
+                            fragment = OtpFragment.newInstance(loginModel.getResult().getUser().getUserType());
+                            FragmentTransaction ft = getFragmentManager().beginTransaction();
+                            ft.add(R.id.fragment_container, fragment);
+                            ft.addToBackStack(null);
+                            ft.commit();
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
                     }
                 } else {
                     Utils.showMessage(this, loginModel.getMessage());
                 }
-
                 break;
 
             case ApiConfig.ID2:
@@ -396,13 +427,15 @@ public class SplashActivity extends BaseActivity implements HttpUrlListener {
                     AppPreferences.getInstance(SplashActivity.this).setUserType(userType);
                     AppPreferences.getInstance(SplashActivity.this).setFirstName(registerModel.getResult().getUser().getFirstName());
                     AppPreferences.getInstance(SplashActivity.this).setaddress(registerModel.getResult().getUser().getAddress2());
+                    Log.d(TagUtils.getTag(),"otp statu  s:-"+registerModel.getResult().getUser().getOtp_status());
+                    AppPreferences.getInstance(SplashActivity.this).setOTPVerified(registerModel.getResult().getUser().getOtp_status());
                     try {
 //                        //Save profile data
 //                        Gson gson = new Gson();
 //                        String userDetails = gson.toJson(registerModel);
 //                        AppPreferences.getInstance(SplashActivity.this).setUserDetails(userDetails);
 
-                        OtpFragment fragment = OtpFragment.newInstance(registerModel.getOtp(), registerModel.getResult().getUser().getUserType());
+                        fragment = OtpFragment.newInstance(registerModel.getResult().getUser().getUserType());
                         FragmentTransaction ft = getFragmentManager().beginTransaction();
                         ft.add(R.id.fragment_container, fragment);
                         ft.addToBackStack(null);
@@ -428,9 +461,41 @@ public class SplashActivity extends BaseActivity implements HttpUrlListener {
                 AppLog.e("Capri4Physio", "UNKNOW RESPONSE - " + id);
 
         }
-
-
     }
+    OtpFragment fragment=null;
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Log.d(TagUtils.getTag(),"on resume");
+        getApplicationContext().registerReceiver(mMessageReceiver, new IntentFilter(StringUtils.SMS_CLASS));
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        Log.d(TagUtils.getTag(),"on pause");
+        getApplicationContext().unregisterReceiver(mMessageReceiver);
+    }
+
+    private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+
+            String result = intent.getStringExtra("message");
+            Log.d(TagUtils.getTag(),"result:-"+result);
+            if(result!=null&&result.length()>0&&result.contains("Capri verification")){
+                try {
+                    Log.d(TagUtils.getTag(), "message received:-" + result);
+                    String[] msgsplit = result.split("c-");
+                    Log.d(TagUtils.getTag(),"otp:-"+msgsplit[1].trim());
+                    fragment.checkSmsOTP(msgsplit[1].trim());
+                }
+                catch (Exception e){
+                    e.printStackTrace();
+                }
+            }
+        }
+    };
 
     @Override
     public void onPostError(String errMsg, int id) {

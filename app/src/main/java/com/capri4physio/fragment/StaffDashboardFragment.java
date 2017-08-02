@@ -21,6 +21,7 @@ import android.widget.RelativeLayout;
 
 import com.capri4physio.R;
 import com.capri4physio.activity.ChatUserActivity;
+import com.capri4physio.activity.CourseActivity;
 import com.capri4physio.activity.ScheduleActivity;
 import com.capri4physio.addbranch.AddBranchHeadGFragment;
 import com.capri4physio.listener.FragmentListener;
@@ -40,8 +41,9 @@ public class StaffDashboardFragment extends BaseFragment {
     private View schedule;
     private View Report;
     private View Billing;
+    private View rl_course;
     ProgressDialog pDialog;
-    private View Expense;
+    private View Expense,rl_therapist;
     ImageView img_chat;
 
     /**
@@ -116,7 +118,9 @@ public class StaffDashboardFragment extends BaseFragment {
         Report = (View) view.findViewById(R.id.layout_report);
         Billing = (View) view.findViewById(R.id.img_billing);
         Expense = (View) view.findViewById(R.id.layout_expense);
+        rl_therapist = (View) view.findViewById(R.id.rl_therapist);
         addbranch = (RelativeLayout) view.findViewById(R.id.addbranch);
+        rl_course = (RelativeLayout) view.findViewById(R.id.rl_course);
 
 
         if (AppPreferences.getInstance(getActivity()).getUserType().equals("4")) {
@@ -143,6 +147,20 @@ public class StaffDashboardFragment extends BaseFragment {
                 }
             });
         }
+
+        rl_course.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(getActivity(), CourseActivity.class));
+            }
+        });
+
+        rl_therapist.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
     }
 
     private void addNewClinic() {

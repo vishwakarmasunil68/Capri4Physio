@@ -49,6 +49,7 @@ public class AppPreferences {
     private final String USER_CLINIC_COUNT = "clincCount";
     private final String USER_CLINIC_ID = "clincId";
     private final String USER_DETAILS = "userDetails";
+    private final String OTP_VERIFIED = "otpverified";
 
     private AppPreferences(Context ctx) {
         sPreferences = ctx.getSharedPreferences(JOBSWOLF_PREFERENCES, MODE_PRIVATE);
@@ -306,6 +307,17 @@ public String getaddress() {
 
     public void setUserDetails(String userDetails) {
         sEditor.putString(USER_DETAILS, userDetails);
+        sEditor.commit();
+    }
+
+
+    public boolean getOtpVerifiedStatus(){
+        return sPreferences.getBoolean(OTP_VERIFIED, false);
+    }
+
+
+    public void setOTPVerified(boolean isverified){
+        sEditor.putBoolean(OTP_VERIFIED, isverified);
         sEditor.commit();
     }
 

@@ -162,18 +162,36 @@ public class SearchUserActivity extends AppCompatActivity implements WebServices
                 LinkedHashMap<String,List<UserPOJO>> user_map=new LinkedHashMap<>();
 
                 user_types=new ArrayList<>();
-                user_types.add("0");
-                user_types.add("1");
-                user_types.add("2");
-                user_types.add("3");
-                user_types.add("4");
-                user_types.add("5");
+
 
 //                List<String> userStringTypes=new ArrayList<>();
 //                userStringTypes.add("")
 
 //                int index=user_types.indexOf(user_id);
-                user_types.remove(user_id);
+                switch (AppPreferences.getInstance(getApplicationContext()).getUserType()){
+                    case "0":
+                        user_types.add("1");
+                        user_types.add("2");
+                        user_types.add("3");
+                        user_types.add("4");
+                        break;
+                    case "4":
+                        user_types.add("0");
+                        user_types.add("1");
+                        user_types.add("2");
+                        user_types.add("3");
+                        user_types.add("5");
+                        break;
+                    case "2":
+                        user_types.add("0");
+                        break;
+                    case "1":
+                        user_types.add("0");
+                        break;
+                    case "3":
+                        user_types.add("0");
+                        break;
+                }
 
                 Log.d(TagUtils.getTag(),"user types:-"+user_types.toString());
                 for(String s:user_types){

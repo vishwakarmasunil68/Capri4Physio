@@ -7,7 +7,7 @@ import java.io.Serializable;
 /**
  * Created by prabhunathyadav on 28/04/16.
  */
-public class UserDetails implements Serializable{
+public class UserDetails implements Serializable {
 
     @SerializedName("id")
     public String id;
@@ -78,7 +78,8 @@ public class UserDetails implements Serializable{
     public String address2;
     @SerializedName("city")
     public String city;
-
+    @SerializedName("otp_status")
+    public boolean otp_status;
 
 
     @SerializedName("bracch_code")
@@ -91,6 +92,13 @@ public class UserDetails implements Serializable{
     public Integer cliniccount;
     @SerializedName("clinic_id")
     public String clinicId;
+
+    public void setOtp_status(boolean status) {
+        this.otp_status = otp_status;
+    }
+    public boolean getOtp_status(){
+        return this.otp_status;
+    }
 
     public String getContact_person() {
         return contact_person;

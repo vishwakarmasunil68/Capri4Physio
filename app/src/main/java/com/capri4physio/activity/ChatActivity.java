@@ -1,36 +1,68 @@
 package com.capri4physio.activity;
 
+import android.annotation.TargetApi;
+import android.app.Activity;
+import android.app.Dialog;
 import android.content.BroadcastReceiver;
+import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.media.ThumbnailUtils;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.DocumentsContract;
+import android.provider.MediaStore;
+import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import com.capri4physio.R;
 import com.capri4physio.Services.WebServiceBase;
 import com.capri4physio.Services.WebServicesCallBack;
+import com.capri4physio.Services.WebUploadService;
 import com.capri4physio.adapter.ChatUserAdapter;
 import com.capri4physio.database.DatabaseHelper;
 import com.capri4physio.model.chat.ChatPOJO;
 import com.capri4physio.net.ApiConfig;
 import com.capri4physio.util.AppPreferences;
+import com.capri4physio.util.FileUtil;
 import com.capri4physio.util.StringUtils;
 import com.capri4physio.util.TagUtils;
+import com.capri4physio.util.ToastClass;
+import com.google.common.io.Files;
 import com.google.gson.Gson;
 
 import org.apache.http.NameValuePair;
+import org.apache.http.entity.mime.HttpMultipartMode;
+import org.apache.http.entity.mime.MultipartEntity;
+import org.apache.http.entity.mime.content.FileBody;
+import org.apache.http.entity.mime.content.StringBody;
 import org.apache.http.message.BasicNameValuePair;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.channels.FileChannel;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -39,7 +71,12 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class ChatActivity extends AppCompatActivity implements WebServicesCallBack{
+public class ChatActivity extends AppCompatActivity implements WebServicesCallBack {
+
+    private static final int CAMERA_REQUEST = 1888;
+    private static final int VIDEO_CAPTURE = 101;
+    private int PICK_IMAGE_REQUEST = 1;
+    private int PICK_VIDEO_REQUEST = 102;
     String friend_user_id;
     String user_id;
 
@@ -55,9 +92,10 @@ public class ChatActivity extends AppCompatActivity implements WebServicesCallBa
 
     DatabaseHelper databaseHelper;
 
-    private final static String CHAT_API="chat_api";
-    List<ChatPOJO> chatPOJOList=new ArrayList<>();
+    private final static String CHAT_API = "chat_api";
+    List<ChatPOJO> chatPOJOList = new ArrayList<>();
     ChatUserAdapter chatUserAdapter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -67,43 +105,34 @@ public class ChatActivity extends AppCompatActivity implements WebServicesCallBa
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
 
-        databaseHelper=new DatabaseHelper(this);
+        databaseHelper = new DatabaseHelper(this);
 
-        Bundle bundle=getIntent().getExtras();
-        if(bundle!=null){
-            friend_user_id=bundle.getString("friend_user_id");
-            user_id= AppPreferences.getInstance(getApplicationContext()).getUserID();
+        Bundle bundle = getIntent().getExtras();
+        if (bundle != null) {
+            friend_user_id = bundle.getString("friend_user_id");
+            user_id = AppPreferences.getInstance(getApplicationContext()).getUserID();
         }
 
         btn_send.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(et_chat.getText().toString().length()>0){
+                if (et_chat.getText().toString().length() > 0) {
                     sendMessage(et_chat.getText().toString());
                     et_chat.setText("");
-                }else{
+                } else {
                 }
             }
         });
         inflateChats();
     }
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()){
-            case android.R.id.home:
-                finish();
-                break;
-        }
-        return super.onOptionsItemSelected(item);
-    }
-    public void inflateChats(){
 
+    public void inflateChats() {
         LinearLayoutManager horizontalLayoutManagaer
                 = new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.VERTICAL, false);
         horizontalLayoutManagaer.setStackFromEnd(true);
-        chatPOJOList=databaseHelper.getUserChatList(user_id,friend_user_id);
-        Log.d(TagUtils.getTag(),"user chats:-"+chatPOJOList.size());
-        chatUserAdapter=new ChatUserAdapter(this,chatPOJOList,user_id);
+        chatPOJOList = databaseHelper.getUserChatList(user_id, friend_user_id);
+        Log.d(TagUtils.getTag(), "user chats:-" + chatPOJOList.size());
+        chatUserAdapter = new ChatUserAdapter(this, chatPOJOList, user_id,friend_user_id);
         rv_chat.setLayoutManager(horizontalLayoutManagaer);
         rv_chat.setHasFixedSize(true);
         rv_chat.setItemAnimator(new DefaultItemAnimator());
@@ -111,24 +140,70 @@ public class ChatActivity extends AppCompatActivity implements WebServicesCallBa
     }
 
 
-    public void sendMessage(String message){
+    public void sendMessage(String message) {
         ArrayList<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
         nameValuePairs.add(new BasicNameValuePair("chat_user_id", user_id));
         nameValuePairs.add(new BasicNameValuePair("chat_fri_id", friend_user_id));
-        SimpleDateFormat sdf=new SimpleDateFormat("dd-MM-yyy hh:mm a");
-        Date d=new Date();
-        String[] dates=sdf.format(d).split(" ");
-        String date=dates[0];
-        String time=dates[1]+" "+dates[2];
+        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyy hh:mm a");
+        Date d = new Date();
+        String[] dates = sdf.format(d).split(" ");
+        String date = dates[0];
+        String time = dates[1] + " " + dates[2];
         nameValuePairs.add(new BasicNameValuePair("chat_date", date));
         nameValuePairs.add(new BasicNameValuePair("chat_time", time));
         nameValuePairs.add(new BasicNameValuePair("chat_msg", message));
-        ChatPOJO chatPOJO=new ChatPOJO("",user_id,friend_user_id,date,time,message);
+        nameValuePairs.add(new BasicNameValuePair("chat_type", "text"));
+        nameValuePairs.add(new BasicNameValuePair("chat_thumb", ""));
+        nameValuePairs.add(new BasicNameValuePair("chat_file", ""));
+        nameValuePairs.add(new BasicNameValuePair("admin", ""));
+        ChatPOJO chatPOJO = new ChatPOJO("", user_id, friend_user_id, date, time, message,"text","","","false");
         databaseHelper.insertchatdata(chatPOJO);
         chatPOJOList.add(chatPOJO);
         chatUserAdapter.notifyDataSetChanged();
         rv_chat.scrollToPosition(chatPOJOList.size() - 1);
-        new WebServiceBase(nameValuePairs, this, CHAT_API,false).execute(ApiConfig.chat_api);
+        new WebServiceBase(nameValuePairs, this, CHAT_API, false).execute(ApiConfig.chat_api);
+    }
+
+    public void sendFileMessage(String file_type, String thumb, String image_path) {
+        if (image_path.length() > 0) {
+            try {
+                Date d = new Date();
+                SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy hh:mm a");
+                String date = sdf.format(d).split(" ")[0];
+                String time = sdf.format(d).split(" ")[1]+" "+sdf.format(d).split(" ")[2];
+                MultipartEntity reqEntity = new MultipartEntity(HttpMultipartMode.BROWSER_COMPATIBLE);
+                FileBody bin1 = new FileBody(new File(image_path));
+
+
+                reqEntity.addPart("chat_user_id", new StringBody(user_id));
+                reqEntity.addPart("chat_fri_id", new StringBody(friend_user_id));
+                reqEntity.addPart("chat_date", new StringBody(date));
+                reqEntity.addPart("chat_time", new StringBody(time));
+                reqEntity.addPart("chat_msg", new StringBody(""));
+                reqEntity.addPart("chat_type", new StringBody(file_type));
+                if (thumb.length() > 0) {
+                    FileBody bin = new FileBody(new File(thumb));
+                    reqEntity.addPart("chat_thumb", bin);
+                } else {
+                    reqEntity.addPart("chat_thumb", new StringBody(""));
+                }
+                reqEntity.addPart("chat_file", bin1);
+
+                reqEntity.addPart("admin", new StringBody("false"));
+                new WebUploadService(reqEntity, this, CHAT_API).execute(ApiConfig.chat_api);
+
+                ChatPOJO chatPOJO = new ChatPOJO("", user_id, friend_user_id, date, time, "",file_type,image_path,thumb,"false");
+                databaseHelper.insertchatdata(chatPOJO);
+                chatPOJOList.add(chatPOJO);
+                chatUserAdapter.notifyDataSetChanged();
+                rv_chat.scrollToPosition(chatPOJOList.size() - 1);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } else {
+            ToastClass.showShortToast(getApplicationContext(), "Please Enter message");
+        }
+        image_path_string = "";
     }
 
     @Override
@@ -142,6 +217,7 @@ public class ChatActivity extends AppCompatActivity implements WebServicesCallBa
         super.onPause();
         getApplicationContext().unregisterReceiver(mMessageReceiver);
     }
+
     private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -151,7 +227,7 @@ public class ChatActivity extends AppCompatActivity implements WebServicesCallBa
             try {
                 Gson gson = new Gson();
                 ChatPOJO chatResultPOJO = gson.fromJson(result, ChatPOJO.class);
-                if(chatResultPOJO.getChat_fri_id().equals(friend_user_id)||chatResultPOJO.getChat_user_id().equals(friend_user_id)) {
+                if (chatResultPOJO.getChat_fri_id().equals(friend_user_id) || chatResultPOJO.getChat_user_id().equals(friend_user_id)) {
                     chatPOJOList.add(chatResultPOJO);
                     chatUserAdapter.notifyDataSetChanged();
                     rv_chat.scrollToPosition(chatPOJOList.size() - 1);
@@ -165,12 +241,429 @@ public class ChatActivity extends AppCompatActivity implements WebServicesCallBa
 
     @Override
     public void onGetMsg(String[] msg) {
-        String apicall=msg[0];
-        String response=msg[1];
-        switch (apicall){
+        String apicall = msg[0];
+        String response = msg[1];
+        switch (apicall) {
             case CHAT_API:
 
                 break;
         }
     }
+
+
+    public void showAttachDialog() {
+        final Dialog dialog1 = new Dialog(ChatActivity.this, android.R.style.Theme_DeviceDefault_Light_Dialog);
+        dialog1.setCancelable(true);
+        dialog1.setContentView(R.layout.dialog_show_attachments);
+        dialog1.setTitle("Select");
+        dialog1.show();
+        dialog1.setCancelable(true);
+        Window window = dialog1.getWindow();
+        window.setLayout(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        LinearLayout ll_camera = (LinearLayout) dialog1.findViewById(R.id.ll_camera);
+        LinearLayout ll_gallery = (LinearLayout) dialog1.findViewById(R.id.ll_gallery);
+        LinearLayout ll_video_camera = (LinearLayout) dialog1.findViewById(R.id.ll_video_camera);
+        LinearLayout ll_video_gallery = (LinearLayout) dialog1.findViewById(R.id.ll_video_gallery);
+        Button btn_cancel = (Button) dialog1.findViewById(R.id.btn_cancel);
+
+        ll_camera.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startCamera();
+                dialog1.dismiss();
+            }
+        });
+
+        ll_gallery.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                sendImageMessageClick();
+                dialog1.dismiss();
+            }
+        });
+
+        ll_video_camera.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openvideoCamera();
+                dialog1.dismiss();
+            }
+        });
+
+        ll_video_gallery.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openVideoGallery();
+                dialog1.dismiss();
+            }
+        });
+
+
+        btn_cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialog1.dismiss();
+            }
+        });
+    }
+
+    public void openVideoGallery() {
+        Intent intent = new Intent();
+        intent.setType("video/*");
+        intent.setAction(Intent.ACTION_PICK);
+        startActivityForResult(Intent.createChooser(intent, "Select Video"), PICK_VIDEO_REQUEST);
+    }
+
+    public void sendImageMessageClick() {
+        Intent intent = new Intent();
+        intent.setType("image/*");
+        intent.setAction(Intent.ACTION_PICK);
+        startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_REQUEST);
+    }
+
+    String video_file = "";
+
+    public void openvideoCamera() {
+        File mediaFile = new File(FileUtil.getVideoChatDir() + File.separator + System.currentTimeMillis() + ".mp4");
+        video_file = mediaFile.toString();
+        Intent intent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
+
+        Uri videoUri = Uri.fromFile(mediaFile);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            Uri contentUri = FileProvider.getUriForFile(getApplicationContext(), "com.capri4physio.fileProvider", mediaFile);
+            intent.putExtra(MediaStore.EXTRA_OUTPUT, contentUri);
+
+        } else {
+            intent.putExtra(MediaStore.EXTRA_OUTPUT, videoUri);
+        }
+//        intent.putExtra(MediaStore.EXTRA_OUTPUT, videoUri);
+        startActivityForResult(intent, VIDEO_CAPTURE);
+    }
+
+
+    String pictureImagePath = "";
+
+    public void startCamera() {
+        String strMyImagePath = FileUtil.getBaseFilePath() + File.separator + "temp.png";
+
+        pictureImagePath = strMyImagePath;
+        File file = new File(pictureImagePath);
+        Uri outputFileUri = Uri.fromFile(file);
+        Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            cameraIntent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            Uri contentUri = FileProvider.getUriForFile(getApplicationContext(), "com.capri4physio.fileProvider", file);
+            cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, contentUri);
+
+        } else {
+            cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, outputFileUri);
+
+        }
+        startActivityForResult(cameraIntent, CAMERA_REQUEST);
+    }
+
+    public void sendVideoMessage(String file_path) {
+//        String file_name=FileUtil.getvideoChatDir()+ File.separator+"1490787148660.mp4";
+        File f = new File(file_path);
+        if (f.exists()) {
+            Bitmap thumb = ThumbnailUtils.createVideoThumbnail(f.toString(), MediaStore.Video.Thumbnails.MINI_KIND);
+//            iv_image.setImageBitmap(thumb);
+
+            String storage_file = FileUtil.getVideoChatDir() + File.separator + System.currentTimeMillis() + ".png";
+            FileOutputStream fos = null;
+
+            try {
+                fos = new FileOutputStream(new File(storage_file));
+                Log.d(TagUtils.getTag(), "taking photos");
+                thumb.compress(Bitmap.CompressFormat.PNG, 100, fos);
+                fos.flush();
+                fos.close();
+
+                try {
+                    File srcFile = new File(file_path);
+                    String ext = Files.getFileExtension(file_path);
+                    File destFile = new File(FileUtil.getVideoChatDir() + File.separator + System.currentTimeMillis() + "." + ext);
+                    if (copyFile(srcFile, destFile)) {
+                        sendFileMessage("video", storage_file, destFile.toString());
+                    } else {
+                        ToastClass.showShortToast(getApplicationContext(), "File Sending Failed");
+                    }
+                } catch (Exception e) {
+                    ToastClass.showShortToast(getApplicationContext(), "File Sending Failed");
+                }
+
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } else {
+            Log.d(TagUtils.getTag(), "file not exist");
+        }
+    }
+
+    public boolean copyFile(File sourceFile, File destFile) throws IOException {
+        if (!destFile.getParentFile().exists())
+            destFile.getParentFile().mkdirs();
+
+        if (!destFile.exists()) {
+            destFile.createNewFile();
+        }
+
+        FileChannel source = null;
+        FileChannel destination = null;
+
+        try {
+            source = new FileInputStream(sourceFile).getChannel();
+            destination = new FileOutputStream(destFile).getChannel();
+            destination.transferFrom(source, 0, source.size());
+
+            if (source != null) {
+                source.close();
+            }
+            if (destination != null) {
+                destination.close();
+            }
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public String image_path_string = "";
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == PICK_IMAGE_REQUEST) {
+            if (resultCode == Activity.RESULT_OK) {
+                if (null == data)
+                    return;
+                Uri selectedImageUri = data.getData();
+                System.out.println(selectedImageUri.toString());
+                // MEDIA GALLERY
+                String selectedImagePath = getPath(
+                        ChatActivity.this, selectedImageUri);
+                Log.d("sun", "" + selectedImagePath);
+                if (selectedImagePath != null && selectedImagePath != "") {
+                    image_path_string = selectedImagePath;
+                    Log.d(TagUtils.getTag(), "selected path:-" + selectedImagePath);
+//                    sendImageMessage(selectedImagePath);
+                    sendFileMessage("image", "", selectedImagePath);
+//                    Bitmap bmImg = BitmapFactory.decodeFile(image_path_string);
+//                    iv_profile.setImageBitmap(bmImg);
+//                    Preferences.setCardImagePath(getApplicationContext(),selectedImagePath);
+
+//                    startActivity(new Intent(SelectImageActivity.this,CardActivity.class));
+                } else {
+                    Toast.makeText(ChatActivity.this, "File Selected is corrupted", Toast.LENGTH_LONG).show();
+                }
+                System.out.println("Image Path =" + selectedImagePath);
+            }
+        }
+        if (requestCode == VIDEO_CAPTURE) {
+            if (resultCode == RESULT_OK) {
+//                Toast.makeText(this, "Video saved to:\n" +
+//                        data.getData(), Toast.LENGTH_LONG).show();
+                Log.d(TagUtils.getTag(), "video file path:-" + video_file);
+
+                sendVideoMessage(video_file);
+                video_file = "";
+            } else if (resultCode == RESULT_CANCELED) {
+                Toast.makeText(this, "Video recording cancelled.",
+                        Toast.LENGTH_LONG).show();
+            } else {
+                Toast.makeText(this, "Failed to record video",
+                        Toast.LENGTH_LONG).show();
+            }
+        }
+        if (requestCode == CAMERA_REQUEST && resultCode == Activity.RESULT_OK) {
+//            Bitmap photo = (Bitmap) data.getExtras().get("data");
+//            Log.d(TAG, photo.toString());
+
+            File imgFile = new File(pictureImagePath);
+            if (imgFile.exists()) {
+                Bitmap bmp = BitmapFactory.decodeFile(pictureImagePath);
+                bmp = Bitmap.createScaledBitmap(bmp, bmp.getWidth() / 4, bmp.getHeight() / 4, false);
+                String strMyImagePath = FileUtil.getChatDirPath();
+                File file_name = new File(strMyImagePath + File.separator + System.currentTimeMillis() + ".png");
+                FileOutputStream fos = null;
+
+                try {
+                    fos = new FileOutputStream(file_name);
+                    Log.d(TagUtils.getTag(), "taking photos");
+                    bmp.compress(Bitmap.CompressFormat.PNG, 100, fos);
+                    fos.flush();
+                    fos.close();
+                    sendFileMessage("image", "", file_name.toString());
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        if (requestCode == PICK_VIDEO_REQUEST) {
+            if (resultCode == Activity.RESULT_OK) {
+                if (null == data)
+                    return;
+                Uri selectedImageUri = data.getData();
+                System.out.println(selectedImageUri.toString());
+                // MEDIA GALLERY
+                String selectedImagePath = getPath(
+                        ChatActivity.this, selectedImageUri);
+                Log.d("sun", "" + selectedImagePath);
+                if (selectedImagePath != null && selectedImagePath != "") {
+                    image_path_string = selectedImagePath;
+                    Log.d(TagUtils.getTag(), "selected path:-" + selectedImagePath);
+//                    sendFileMessage("video", selectedImagePath);
+
+                    sendVideoMessage(selectedImagePath);
+//                    Bitmap bmImg = BitmapFactory.decodeFile(image_path_string);
+//                    iv_profile.setImageBitmap(bmImg);
+//                    Preferences.setCardImagePath(getApplicationContext(),selectedImagePath);
+
+//                    startActivity(new Intent(SelectImageActivity.this,CardActivity.class));
+                } else {
+                    Toast.makeText(ChatActivity.this, "File Selected is corrupted", Toast.LENGTH_LONG).show();
+                }
+                System.out.println("Image Path =" + selectedImagePath);
+            }
+        }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_chat, menu);//Menu Resource, Menu
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                finish();
+                return true;
+            case R.id.menu_file_attach:
+                showAttachDialog();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    @TargetApi(Build.VERSION_CODES.KITKAT)
+    public static String getPath(final Context context, final Uri uri) {
+
+        // check here to KITKAT or new version
+        final boolean isKitKat = Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT;
+
+        // DocumentProvider
+        if (isKitKat && DocumentsContract.isDocumentUri(context, uri)) {
+
+            // ExternalStorageProvider
+            if (isExternalStorageDocument(uri)) {
+                final String docId = DocumentsContract.getDocumentId(uri);
+                final String[] split = docId.split(":");
+                final String type = split[0];
+
+                if ("primary".equalsIgnoreCase(type)) {
+                    return Environment.getExternalStorageDirectory() + "/"
+                            + split[1];
+                }
+            }
+            // DownloadsProvider
+            else if (isDownloadsDocument(uri)) {
+
+                final String id = DocumentsContract.getDocumentId(uri);
+                final Uri contentUri = ContentUris.withAppendedId(
+                        Uri.parse("content://downloads/public_downloads"),
+                        Long.valueOf(id));
+
+                return getDataColumn(context, contentUri, null, null);
+            }
+            // MediaProvider
+            else if (isMediaDocument(uri)) {
+                final String docId = DocumentsContract.getDocumentId(uri);
+                final String[] split = docId.split(":");
+                final String type = split[0];
+
+                Uri contentUri = null;
+                if ("image".equals(type)) {
+                    contentUri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
+                } else if ("video".equals(type)) {
+                    contentUri = MediaStore.Video.Media.EXTERNAL_CONTENT_URI;
+                } else if ("audio".equals(type)) {
+                    contentUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
+                }
+
+                final String selection = "_id=?";
+                final String[] selectionArgs = new String[]{split[1]};
+
+                return getDataColumn(context, contentUri, selection,
+                        selectionArgs);
+            }
+        }
+        // MediaStore (and general)
+        else if ("content".equalsIgnoreCase(uri.getScheme())) {
+
+            // Return the remote address
+            if (isGooglePhotosUri(uri))
+                return uri.getLastPathSegment();
+
+            return getDataColumn(context, uri, null, null);
+        }
+        // File
+        else if ("file".equalsIgnoreCase(uri.getScheme())) {
+            return uri.getPath();
+        }
+
+        return null;
+    }
+
+    public static String getDataColumn(Context context, Uri uri,
+                                       String selection, String[] selectionArgs) {
+
+        Cursor cursor = null;
+        final String column = "_data";
+        final String[] projection = {column};
+
+        try {
+            cursor = context.getContentResolver().query(uri, projection,
+                    selection, selectionArgs, null);
+            if (cursor != null && cursor.moveToFirst()) {
+                final int index = cursor.getColumnIndexOrThrow(column);
+                return cursor.getString(index);
+            }
+        } finally {
+            if (cursor != null)
+                cursor.close();
+        }
+        return null;
+    }
+
+    public static boolean isExternalStorageDocument(Uri uri) {
+        return "com.android.externalstorage.documents".equals(uri
+                .getAuthority());
+    }
+
+    public static boolean isDownloadsDocument(Uri uri) {
+        return "com.android.providers.downloads.documents".equals(uri
+                .getAuthority());
+    }
+
+    public static boolean isMediaDocument(Uri uri) {
+        return "com.android.providers.media.documents".equals(uri
+                .getAuthority());
+    }
+
+    public static boolean isGooglePhotosUri(Uri uri) {
+        return "com.google.android.apps.photos.content".equals(uri
+                .getAuthority());
+    }
+
 }

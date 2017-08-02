@@ -30,6 +30,7 @@ import com.capri4physio.model.BaseModel;
 import com.capri4physio.net.ApiConfig;
 import com.capri4physio.util.AppLog;
 import com.capri4physio.util.ImageUtil;
+import com.capri4physio.util.TagUtils;
 import com.capri4physio.util.Utils;
 
 import java.util.HashMap;
@@ -322,59 +323,7 @@ public class AddNeuroFragment extends BaseFragment implements HttpUrlListener {
                             pDialog.dismiss();
                             Toast.makeText(getActivity(),"Record added successfully", Toast.LENGTH_LONG).show();
                             getActivity().getFragmentManager().popBackStack();
-                            /*Intent intent=new Intent(StmtActivity.this,HomeActivity.class);
-                                startActivity(intent);*/
 
-                            /*JSONObject objresponse = new JSONObject(response);
-                            //					Toast.makeText(getApplicationContext(), "Could not retreive Data2!", Toast.LENGTH_LONG).show();
-
-                            String success = objresponse.getString("isSuccess");
-                            String success_msg = objresponse.getString("success_msg");
-
-                            if (success.equalsIgnoreCase("true") || success_msg.equalsIgnoreCase("true")) {
-
-                                Log.e("Postdat", "" + response);
-                                jsonArray = objresponse.getJSONArray("result");
-
-
-                                //Log.i("News Data", jsonArray.toString());
-
-//                    JSONArray cast = jsonArray.getJSONArray("result");
-                                for (int i = 0; i < jsonArray.length(); i++) {
-
-                                    JSONObject jsonObject = jsonArray.getJSONObject(i);
-                                    blnc_id = jsonObject.getString("receiver_name");
-                                    trnsdtime = jsonObject.getString("transaction_datetime");
-                                    trnsamount= jsonObject.getString("balance_amount");
-                                    trnsamounttype= jsonObject.getString("transaction_transfer_type");
-//                                     balance_id=new ArrayList<String>();
-//                                    balance_id.add(blnc_id);
-                                    Detailapp = new InfoApps();
-                                    Detailapp.setName(blnc_id);
-                                    Detailapp.setNumber(trnsdtime);
-                                    Detailapp.setAppname(trnsamount);
-                                    Detailapp.setDataAdd(trnsamounttype);
-                                    Log.e("account_blnc_id", blnc_id);
-                                    Log.e("account_balance_id", contactDetails.toString());
-//                                    if (BalanceDetail.password.equals(pinpassword)) {
-                                    pass.setVisibility(View.GONE);
-                                    linear.setVisibility(View.VISIBLE);
-                                    contactAdapter = new LocationAdapter(getApplicationContext(), R.layout.contactlistadap);
-                                    contactList.setAdapter(contactAdapter);
-//                                    Double user_long = jsonObject.getDouble("user_long");
-//                                    Double user_lat = jsonObject.getDouble("user_lat");
-//                                    UserType = "UserType: " + jsonObject.getString("usertype");
-                                    *//*Intent intent1 = new Intent(LoginActivity.this, HomeActivity.class);
-                                    startActivity(intent1);*//*
-                                    *//*}
-                                    else {
-                                        Toast.makeText(getApplicationContext(),"Pin number is incorrect",Toast.LENGTH_LONG).show();
-                                    }*//*
-                                }*/
-//                            }
-                           /* else {
-                                Toast.makeText(getApplicationContext(),"Phone_no. or password is incorrect",Toast.LENGTH_LONG).show();
-                            }*/
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
@@ -395,75 +344,7 @@ public class AddNeuroFragment extends BaseFragment implements HttpUrlListener {
                 Map<String,String> params = new HashMap<String, String>();
                 params.put("moter_examneuro_date", Utils.getCurrentDate());
                 params.put("patient_id", patientId);
-                /*params.put("moter_examneuro_glas_eye", "d");
-                params.put("moter_examneuro_glas_verbal", "d");
-                params.put("moter_examneuro_glas_motor", "d");
-                params.put("moter_examneuro_gait_surface","d");
-                params.put("moter_examneuro_modifie_bathing","d");
-                params.put("moter_examneuro_gait_speed","d");
-                params.put("moter_examneuro_gait_hori_head","d");
-                params.put("moter_examneuro_gait_veri_head ","d");
-                params.put("moter_examneuro_gait_piovt ","d");
-                params.put("moter_examneuro_gait_overobstacle","d");
-                params.put("moter_examneuro_gait_aroundobstacles", "d");
-                params.put("moter_examneuro_gait_steps", "d");
-                params.put("moter_examneuro_modifie_bowels", "d");
-                params.put("moter_examneuro_modifie_bladder", "d");
-                params.put("moter_examneuro_modifie_grooming", "d");
-                params.put("moter_examneuro_modifie_toilet", "d");
-                params.put("moter_examneuro_modifie_feeding", "d");
-                params.put("moter_examneuro_modifie_transfer", "d");
-                params.put("moter_examneuro_modifie_mobility","d");
-                params.put("moter_examneuro_modifie_dressing","d");
-                params.put("moter_examneuro_modifie_stairs", "d");
-                params.put("moter_examneuro_left_Ulnar","d");
-                params.put("moter_examneuro_right_Ulnar", "d");
-                params.put("moter_examneuro_left_Radial","d");
-                params.put("moter_examneuro_right_Radial", "d");
-                params.put("moter_examneuro_left_musculocutaneous", "d");
-                params.put("moter_examneuro_right_Musculocutaneous", "d");
-                params.put("moter_examneuro_left_sciatic","d");
-                params.put("moter_examneuro_right_Sciatic", "d");
-                params.put("moter_examneuro_left_Tibial", "d");
-                params.put("moter_examneuro_right_Tibial", "d");
-                params.put("moter_examneuro_left_Commanperonial","d");
-                params.put("moter_examneuro_right_Comman", "d");
-                params.put("moter_examneuro_left_Femoral","d");
-                params.put("moter_examneuro_right_Femoral","d");
-                params.put("moter_examneuro_left_Lateralcutaneous","d");
-                params.put("moter_examneuro_right_Lateralcutaneous", "d");
-                params.put("moter_examneuro_left_Obturator", "d");
-                params.put("moter_examneuro_right_Obturator", "d");
-                params.put("moter_examneuro_left_Sural", "d");
-                params.put("moter_examneuro_right_Sural", "d");
-                params.put("moter_examneuro_special_test", "d");
-                params.put("moter_examneuro_special_desc", "d");
-                params.put("moter_examneuro_ntp_left_Ulnar", "d");
-                params.put("moter_examneuro_ntp_right_Ulnar", "d");
-                params.put("moter_examneuro_ntp_left_Radial", "d");
-                params.put("moter_examneuro_ntp_right_Radial", "d");
-                params.put("moter_examneuro_ntp_left_Median", "d");
-                params.put("moter_examneuro_ntp_right_Median", "d");
-                params.put("moter_examneuro_gait_balance_desc", "d");
-//                params.put("moter_examhip_right_rom6", Neuro50);
-                params.put("moter_examneuro_ntp_left_Sciatic", "d");
-                params.put("moter_examneuro_ntp_right_Sciatic", "d");
-                params.put("moter_examneuro_ntp_left_tibial", "d");
-                params.put("moter_examneuro_ntp_right_Tibial", "d");
-                params.put("moter_examneuro_ntp_left_peronial", "d");
-                params.put("moter_examneuro_ntp_right_peronial", "d");
-                params.put("moter_examneuro_ntp_left_Femoral", "d");
-                params.put("moter_examneuro_ntp_right_Femoral", "d");
-                params.put("moter_examneuro_ntp_left_sural", "d");
-                params.put("moter_examneuro_ntp_right_Sural", "d");
-                params.put("moter_examneuro_ntp_left_Saphenous", "d");
-                params.put("moter_examneuro_ntp_right_Saphenous", "d");
-                params.put("moter_examneuro_timetaken", "d");
-                params.put("moter_examneuro_noerror", "d");
-                params.put("moter_examneuro_modifie_bathing", "d");
-                params.put("moter_examneuro_left_Median", "d");
-                params.put("moter_examneuro_right_Median", ed6.getText().toString());
-                params.put("moter_examneuro_left_Ulnar", "d");*/
+
                 params.put("moter_examneuro_glas_eye", spinner1.getSelectedItem().toString());
                 params.put("moter_examneuro_glas_verbal", spinner2.getSelectedItem().toString());
                 params.put("moter_examneuro_glas_motor", spinner3.getSelectedItem().toString());
@@ -547,24 +428,7 @@ public class AddNeuroFragment extends BaseFragment implements HttpUrlListener {
                 params.put("moterexamsneuro_images",base_string);
 
 
-                /*params.put("sfirst_name",name);
-                params.put("slast_name",lastName);
-                params.put("sdob",dob);
-                params.put("sage", "23");
-                params.put("sdatejoing",doj);
-                params.put("senddate", endingdateofcontract);
-                params.put("sgender", rate);
-                params.put("smarital_status", rate1);
-                params.put("sdesignation",designation);
-                params.put("saddress", address);
-                params.put("scity", city);
-                params.put("spincode", pin_code);
-                params.put("smobile", phone);
-                params.put("semail", email_id);
-                params.put("squalifation", degree);
-                params.put("sexprience", experienceduration);*/
-
-//                Toast.makeText(UserStatement.this, ema +"success", Toast.LENGTH_LONG).show();
+                Log.d(TagUtils.getTag(),"params:-"+params.toString());
                 return params;
             }
 
@@ -589,132 +453,5 @@ public class AddNeuroFragment extends BaseFragment implements HttpUrlListener {
         scrollView.draw(canvas);
         return bitmap;
     }
-        /*listView1 = (ListView)view.findViewById(R.id.listView1);
-        mSave=(Button)view.findViewById(R.id.btn);
 
-
-        listView1.setAdapter(adapter);
-        listView1.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                switch (position) {
-                    case 0:
-                        startActivity(new Intent(getActivity(), FragementActi.class));
-                        break;
-                    case 1:
-                        startActivity(new Intent(getActivity(), MotorActivity1.class));
-                        break;
-                    case 2:
-                        startActivity(new Intent(getActivity(), MotorActivity2.class));
-                        break;
-                    case 3:
-                        startActivity(new Intent(getActivity(), MotorActivity3.class));
-                        break;
-                    case 4:
-                        startActivity(new Intent(getActivity(), MotorActivity4.class));
-                        break;
-                    case 5:
-                        startActivity(new Intent(getActivity(), FragementActi1.class));
-                        break;
-                    case 6:
-                        startActivity(new Intent(getActivity(), FragementActi2.class));
-                        break;
-                    case 7:
-                        startActivity(new Intent(getActivity(), FragementActi3.class));
-                        break;
-                    case 8:
-                        startActivity(new Intent(getActivity(), FragementActi4.class));
-                        break;
-                    case 9:
-                        startActivity(new Intent(getActivity(), FragementActi5.class));
-                        break;
-                    case 10:
-                        startActivity(new Intent(getActivity(), FragementActi6.class));
-                        break;
-                    case 11:
-                        startActivity(new Intent(getActivity(), FragementActi7.class));
-                        break;
-                    case 12:
-                        startActivity(new Intent(getActivity(), FragementActi8.class));
-                        break;
-                    case 13:
-                        startActivity(new Intent(getActivity(), FragementActi9.class));
-                        break;
-                    case 14:
-                        startActivity(new Intent(getActivity(), FragementActi10.class));
-                        break;
-                    case 15:
-                        startActivity(new Intent(getActivity(), FragementActi11.class));
-                        break;
-                    case 16:
-                        startActivity(new Intent(getActivity(), FragementActi12.class));
-                        break;
-                    case 17:
-                        startActivity(new Intent(getActivity(), FragementActi13.class));
-                        break;
-                    case 18:
-                        startActivity(new Intent(getActivity(), MeasureActivi.class));
-                        break;
-
-
-                }
-            }
-        });
-        mSave.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-//                startActivity(new Intent(getActivity(),ApiActivity.class));
-                Toast.makeText(getActivity(), "button is clickable now", Toast.LENGTH_LONG).show();
-//                loadJSONFromAsset();
-            }
-        });*/
-        /*mBloodPresure = (EditText) view.findViewById(R.id.edtxt_blood_presure);
-        mTemp = (EditText) view.findViewById(R.id.edtxt_temp);
-        mHrate = (EditText) view.findViewById(R.id.edtxt_hrate);
-        mRespiratoryRate = (EditText) view.findViewById(R.id.edtxt_rrate);
-        mBuiltOfThePatient = (Spinner) view.findViewById(R.id.spinnerbpataitent);
-        mPosture = (EditText) view.findViewById(R.id.edtxt_posture);
-        mGait = (EditText) view.findViewById(R.id.edtxt_gate);
-        mScarType = (EditText) view.findViewById(R.id.edtxt_scartype);
-        mDescription = (EditText) view.findViewById(R.id.edtxt_desc);
-        mSave = (Button) view.findViewById(R.id.btn_save);*/
-
-    /*StringBuffer sb = new StringBuffer();
-    BufferedReader br = null;
-    try {
-        br = new BufferedReader(new InputStreamReader(getAssets().open(
-                "Questions.json")));
-        String temp;
-        while ((temp = br.readLine()) != null)
-            sb.append(temp);
-    } catch (IOException e) {
-        e.printStackTrace();
-    } finally {
-        try {
-            br.close(); // stop reading
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-    String myjsonstring = sb.toString();*/
-        /*mSave.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                addApiCall();
-            }
-        });*/
-
-        /*mBuiltOfThePatient.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                if (i > 0) {
-                    mbuiltpataient = adapterView.getItemAtPosition(i).toString();
-                }
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-
-            }
-        });*/
     }
