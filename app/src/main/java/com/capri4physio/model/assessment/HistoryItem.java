@@ -9,16 +9,13 @@ public class HistoryItem {
 
     @SerializedName("id")
     public String id;
-
     @SerializedName("diabetes")
     public String diabetes;
     @SerializedName("blood_pressure")
     public String blood_pressure;
-
     public String getBp() {
         return bp;
     }
-
     @SerializedName("bp")
     public String bp;
     @SerializedName("smoking")
@@ -31,7 +28,6 @@ public class HistoryItem {
     public String bleeding_disorder;
     @SerializedName("recent_infection")
     public String recent_infection;
-
     @SerializedName("pregnancy")
     public String pregnancy;
     @SerializedName("htn")
@@ -46,7 +42,6 @@ public class HistoryItem {
     public String past_surgery;
     @SerializedName("allergies")
     public String allergies;
-
     @SerializedName("osteoporotic")
     public String osteoporotic;
     @SerializedName("depression")
@@ -55,6 +50,11 @@ public class HistoryItem {
     public String hepatitis;
     @SerializedName("any_implants")
     public String any_implants;
+    @SerializedName("present_illness")
+    public String present_illness;
+    @SerializedName("past_illness")
+    public String past_illness;
+
 
     public String getDiabetes() {
         return diabetes;
@@ -176,4 +176,23 @@ public class HistoryItem {
         return date;
     }
 
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getPresent_illness() {
+        return present_illness;
+    }
+
+    public void setPresent_illness(String present_illness) {
+        this.present_illness = present_illness;
+    }
+
+    public String getPast_illness() {
+        return past_illness;
+    }
+
+    public void setPast_illness(String past_illness) {
+        this.past_illness = past_illness;
+    }
 }

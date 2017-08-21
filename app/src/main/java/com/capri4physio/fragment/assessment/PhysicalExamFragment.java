@@ -5,6 +5,8 @@ import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
@@ -37,6 +39,8 @@ import com.capri4physio.model.assessment.PhysicalItem;
 import com.capri4physio.net.ApiConfig;
 import com.capri4physio.task.UrlConnectionTask;
 import com.capri4physio.util.AppLog;
+import com.capri4physio.util.HandlerConstant;
+import com.capri4physio.util.TagUtils;
 import com.capri4physio.util.Utils;
 
 import org.json.JSONObject;
@@ -69,7 +73,7 @@ public class PhysicalExamFragment extends BaseFragment implements HttpUrlListene
     private static final String KEY_TYPE = "type";
     private String patientId = "";
     private String assessmentType = "";
-    private Button mAdd;
+    private Button mAdd, btn_skip;
 
 
     /**
@@ -139,7 +143,8 @@ public class PhysicalExamFragment extends BaseFragment implements HttpUrlListene
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         mRecyclerView.setLayoutManager(layoutManager);
         mRecyclerView.setAdapter(mAdapter);
-        mAdd= (Button) view.findViewById(R.id.btn_add);
+        mAdd = (Button) view.findViewById(R.id.btn_add);
+        btn_skip = (Button) view.findViewById(R.id.btn_skip);
     }
 
     @Override
@@ -149,6 +154,23 @@ public class PhysicalExamFragment extends BaseFragment implements HttpUrlListene
             @Override
             public void onClick(View view) {
                 addFragment();
+            }
+        });
+        btn_skip.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getFragmentManager().popBackStack();
+                HandlerConstant.POP_BACK_HANDLER.sendMessage(HandlerConstant.POP_BACK_HANDLER.obtainMessage(0, "4"));
+            }
+        });
+
+        HandlerConstant.POP_INNER_BACK_HANDLER = new Handler(new Handler.Callback() {
+            @Override
+            public boolean handleMessage(Message msg) {
+                String message = (String) msg.obj;
+                Log.d(TagUtils.getTag(), "pop back handler:-" + message);
+                btn_skip.callOnClick();
+                return false;
             }
         });
     }
@@ -224,10 +246,9 @@ public class PhysicalExamFragment extends BaseFragment implements HttpUrlListene
     @Override
     public void onViewItemClick(PhysicalItem physicalItem, int position, int actionId) {
 
-        if (position ==-2){
+        if (position == -2) {
             getFragmentManager().popBackStack();
-        }
-        else {
+        } else {
         }
 
     }
@@ -239,23 +260,22 @@ public class PhysicalExamFragment extends BaseFragment implements HttpUrlListene
         ft.addToBackStack(null);
         ft.commit();
     }
-    private void delepnotes(final String  textView){
+
+    private void delepnotes(final String textView) {
 
 
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, ApiConfig.DELETE_PHYSICAL_  ,
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, ApiConfig.DELETE_PHYSICAL_,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
                         try {
-                            Log.e("result",response);
+                            Log.e("result", response);
                             mList.remove(itemPosition);
                             mAdapter.notifyDataSetChanged();
 //                            Toast.makeText(ctx,"Record successfully deleted",Toast.LENGTH_SHORT).show();
                             showSnackMessage("Record successfully removed");
 
-                        }
-
-                        catch (Exception e) {
+                        } catch (Exception e) {
                             e.printStackTrace();
                         }
                         Log.e("Postdat", "" + response.toString());
@@ -267,11 +287,11 @@ public class PhysicalExamFragment extends BaseFragment implements HttpUrlListene
 //                        Toast.makeText(StmtActivity.this,error.toString(),Toast.LENGTH_LONG).show();
                         Log.w("Postdat", "" + error);
                     }
-                }){
+                }) {
 
 
-            protected Map<String,String> getParams(){
-                Map<String,String> objresponse = new HashMap<String, String>();
+            protected Map<String, String> getParams() {
+                Map<String, String> objresponse = new HashMap<String, String>();
                 objresponse.put("physical_id", textView);
                 return objresponse;
             }
@@ -281,14 +301,16 @@ public class PhysicalExamFragment extends BaseFragment implements HttpUrlListene
         RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
         requestQueue.add(stringRequest);
     }
+
     @Override
     public void onPause() {
-        super.onStart();
-        Log.e("start","onStart");
+        super.onPause();
+        Log.e("start", "onStart");
         AppCompatActivity activity = (AppCompatActivity) getActivity();
         ActionBar actionBar = activity.getSupportActionBar();
         actionBar.setTitle("Physical Exam");
     }
+
     @Override
     public void onStart() {
         super.onStart();
@@ -296,10 +318,11 @@ public class PhysicalExamFragment extends BaseFragment implements HttpUrlListene
         ActionBar actionBar = activity.getSupportActionBar();
         actionBar.setTitle("Physical Exam");
     }
+
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
-        getActivity().getMenuInflater().inflate(R.menu.main,menu);
+        getActivity().getMenuInflater().inflate(R.menu.main, menu);
     }
 
     /**

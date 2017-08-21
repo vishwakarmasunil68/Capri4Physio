@@ -2,13 +2,14 @@ package com.capri4physio.model.doctor;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
  * Created by sunil on 02-08-2017.
  */
 
-public class DoctorPOJO {
+public class DoctorPOJO implements Serializable{
     @SerializedName("Success")
     String Success;
     @SerializedName("Result")

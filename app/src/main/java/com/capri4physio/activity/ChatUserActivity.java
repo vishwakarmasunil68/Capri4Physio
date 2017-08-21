@@ -72,6 +72,12 @@ public class ChatUserActivity extends AppCompatActivity implements WebServicesCa
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_user_list, menu);//Menu Resource, Menu
+        MenuItem menuItem=menu.findItem(R.id.menu_all_users);
+        if(AppPreferences.getInstance(getApplicationContext()).getUserType().equals("4")){
+            menuItem.setVisible(true);
+        }else{
+            menuItem.setVisible(false);
+        }
         return true;
     }
 
@@ -85,6 +91,9 @@ public class ChatUserActivity extends AppCompatActivity implements WebServicesCa
                 Intent intent=new Intent(this,SearchUserActivity.class);
                 intent.putExtra("user_type",user_type);
                 startActivity(intent);
+                return true;
+            case R.id.menu_all_users:
+                startActivity(new Intent(ChatUserActivity.this,ShowAllUsersChatActivity.class));
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -109,7 +118,7 @@ public class ChatUserActivity extends AppCompatActivity implements WebServicesCa
             Gson gson=new Gson();
             ChatUsersListPOJO chatUsersListPOJO=gson.fromJson(response,ChatUsersListPOJO.class);
             if(chatUsersListPOJO.getSuccess().equals("true")){
-                UserListAdapter adapter = new UserListAdapter(this, chatUsersListPOJO.getUserPOJOList());
+//                UserListAdapter adapter = new UserListAdapter(this, chatUsersListPOJO.getUserPOJOList());
 //                Log.d(TagUtils.getTag(),"users:-"+chatUsersListPOJO.getUserPOJOList().toString());
                 inflateUsers(chatUsersListPOJO.getUserPOJOList());
 

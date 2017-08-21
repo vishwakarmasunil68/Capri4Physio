@@ -13,6 +13,7 @@ import com.bumptech.glide.Glide;
 import com.capri4physio.R;
 import com.capri4physio.activity.ChatActivity;
 import com.capri4physio.model.user.UserPOJO;
+import com.capri4physio.util.AppPreferences;
 import com.capri4physio.util.ToastClass;
 
 import java.util.List;
@@ -79,6 +80,7 @@ public class UserListAdapter extends RecyclerView.Adapter<UserListAdapter.MyView
 
                 Intent intent=new Intent(activity, ChatActivity.class);
                 intent.putExtra("friend_user_id",horizontalList.get(position).getId());
+                intent.putExtra("user_id", AppPreferences.getInstance(activity.getApplicationContext()).getUserID());
                 activity.startActivity(intent);
                 ToastClass.showShortToast(activity.getApplicationContext(),"user id:-"+horizontalList.get(position).getId());
             }

@@ -68,6 +68,12 @@ public class LogoutService extends AsyncTask<String,Void,String>{
                 AppPreferences.getInstance(activity).setUserLogin(false);
                 Intent intent = new Intent(activity, SplashActivity.class);
                 intent.putExtra(BundleConst.IS_LOGOUT, true);
+                try {
+                    activity.stopService(new Intent(activity,LocationService.class));
+                }
+                catch (Exception e){
+                    e.printStackTrace();
+                }
                 activity.startActivity(intent);
                 activity.finish();
             }else{

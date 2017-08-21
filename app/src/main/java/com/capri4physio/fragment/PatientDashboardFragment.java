@@ -11,7 +11,7 @@ import android.view.ViewGroup;
 import com.capri4physio.R;
 import com.capri4physio.activity.AddPatientAppointment;
 import com.capri4physio.activity.ChatUserActivity;
-import com.capri4physio.fragment.assessment.MapActivity;
+import com.capri4physio.activity.ManagePatientAppointmentsActivity;
 import com.capri4physio.listener.FragmentListener;
 import com.capri4physio.util.AppPreferences;
 
@@ -78,7 +78,8 @@ public class PatientDashboardFragment extends BaseFragment {
         mViewBokAppointment.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(getActivity(), MapActivity.class));
+//                startActivity(new Intent(getActivity(), MapActivity.class));
+                startActivity(new Intent(getActivity(),AddPatientAppointment.class));
 //                mListener.onFragmentResult(new Bundle(), PatientDashboardActivity.BOOK_APPOINTMENT);
             }
         });
@@ -94,7 +95,7 @@ public class PatientDashboardFragment extends BaseFragment {
 ////                getSupportActionBar().setTitle(title);
 //                ft.addToBackStack(null);
 //                ft.commit();
-                startActivity(new Intent(getActivity(), AddPatientAppointment.class));
+                startActivity(new Intent(getActivity(), ManagePatientAppointmentsActivity.class));
             }
         });
 

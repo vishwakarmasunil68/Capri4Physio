@@ -7,6 +7,8 @@ import android.app.FragmentTransaction;
 import android.content.DialogInterface;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
@@ -34,6 +36,8 @@ import com.capri4physio.model.assessment.TreatmentGivenModel;
 import com.capri4physio.net.ApiConfig;
 import com.capri4physio.task.UrlConnectionTask;
 import com.capri4physio.util.AppLog;
+import com.capri4physio.util.HandlerConstant;
+import com.capri4physio.util.TagUtils;
 import com.capri4physio.util.Utils;
 
 import org.json.JSONObject;
@@ -64,7 +68,7 @@ public class TreatmentGivenFragment extends BaseFragment implements HttpUrlListe
     private static final String KEY_TYPE = "type";
     private String patientId = "";
     private String assessmentType = "";
-    private Button mBtnAdd;
+    private Button mBtnAdd,btn_skip;
 
 
     /**
@@ -135,6 +139,7 @@ public class TreatmentGivenFragment extends BaseFragment implements HttpUrlListe
         mRecyclerView.setLayoutManager(layoutManager);
         mRecyclerView.setAdapter(mAdapter);
         mBtnAdd = (Button) view.findViewById(R.id.btn_add);
+        btn_skip = (Button) view.findViewById(R.id.btn_skip);
 
     }
 
@@ -145,6 +150,23 @@ public class TreatmentGivenFragment extends BaseFragment implements HttpUrlListe
             @Override
             public void onClick(View view) {
                 addFragment();
+            }
+        });
+        btn_skip.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getFragmentManager().popBackStack();
+                HandlerConstant.POP_BACK_HANDLER.sendMessage(HandlerConstant.POP_BACK_HANDLER.obtainMessage(0,"12"));
+            }
+        });
+
+        HandlerConstant.POP_INNER_BACK_HANDLER= new Handler(new Handler.Callback() {
+            @Override
+            public boolean handleMessage(Message msg) {
+                String message = (String) msg.obj;
+                Log.d(TagUtils.getTag(),"pop back handler:-"+message);
+                btn_skip.callOnClick();
+                return false;
             }
         });
     }
@@ -183,7 +205,7 @@ public class TreatmentGivenFragment extends BaseFragment implements HttpUrlListe
     }
     @Override
     public void onPause() {
-        super.onStart();
+        super.onPause();
         Log.e("start","onStart");
         AppCompatActivity activity = (AppCompatActivity) getActivity();
         ActionBar actionBar = activity.getSupportActionBar();

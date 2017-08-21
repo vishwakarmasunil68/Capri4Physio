@@ -27,6 +27,8 @@ public class StudentCourseResultPOJO implements Serializable {
     private String scIdcardUpload;
     @SerializedName("sc_reg_fees")
     private String scRegFees;
+    @SerializedName("sc_rem_fees")
+    private String scRemFees;
     @SerializedName("sc_fullfees")
     private String scFullfees;
     @SerializedName("sc_cid")
@@ -45,10 +47,13 @@ public class StudentCourseResultPOJO implements Serializable {
     private String adminIcard;
     @SerializedName("admin_reg_fees")
     private String adminRegFees;
+    @SerializedName("sc_admin_rem_fees")
+    private String sc_admin_rem_fees;
     @SerializedName("admin_full_fees")
     private String adminFullFees;
     @SerializedName("admin_status")
     private String adminStatus;
+
 
     public String getScId() {
         return scId;
@@ -120,6 +125,14 @@ public class StudentCourseResultPOJO implements Serializable {
 
     public void setScRegFees(String scRegFees) {
         this.scRegFees = scRegFees;
+    }
+
+    public String getScRemFees() {
+        return scRemFees;
+    }
+
+    public void setScRemFees(String scRemFees) {
+        this.scRemFees = scRemFees;
     }
 
     public String getScFullfees() {
@@ -194,6 +207,14 @@ public class StudentCourseResultPOJO implements Serializable {
         this.adminRegFees = adminRegFees;
     }
 
+    public String getSc_admin_rem_fees() {
+        return sc_admin_rem_fees;
+    }
+
+    public void setSc_admin_rem_fees(String sc_admin_rem_fees) {
+        this.sc_admin_rem_fees = sc_admin_rem_fees;
+    }
+
     public String getAdminFullFees() {
         return adminFullFees;
     }
@@ -222,6 +243,7 @@ public class StudentCourseResultPOJO implements Serializable {
                 ", scCerifiatoUpload='" + scCerifiatoUpload + '\'' +
                 ", scIdcardUpload='" + scIdcardUpload + '\'' +
                 ", scRegFees='" + scRegFees + '\'' +
+                ", scRemFees='" + scRemFees + '\'' +
                 ", scFullfees='" + scFullfees + '\'' +
                 ", scCid='" + scCid + '\'' +
                 ", sc_date='" + sc_date + '\'' +
@@ -231,6 +253,7 @@ public class StudentCourseResultPOJO implements Serializable {
                 ", adminCertificateUpload='" + adminCertificateUpload + '\'' +
                 ", adminIcard='" + adminIcard + '\'' +
                 ", adminRegFees='" + adminRegFees + '\'' +
+                ", sc_admin_rem_fees='" + sc_admin_rem_fees + '\'' +
                 ", adminFullFees='" + adminFullFees + '\'' +
                 ", adminStatus='" + adminStatus + '\'' +
                 '}';

@@ -127,7 +127,6 @@ public class ViewPatientFragment extends BaseFragment implements HttpUrlListener
         contactDetails1 = new ArrayList<UserItem>();
         mAdapter = new UsersAdapter(getActivity(), mList, this);
         mAdapter1 = new Patient_listAdapter(contactDetails1, getActivity(), this, mSnackBarLayout);
-
     }
 
     @Override

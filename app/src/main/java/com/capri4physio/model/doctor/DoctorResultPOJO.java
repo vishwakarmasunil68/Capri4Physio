@@ -2,11 +2,13 @@ package com.capri4physio.model.doctor;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.io.Serializable;
+
 /**
  * Created by sunil on 02-08-2017.
  */
 
-public class DoctorResultPOJO {
+public class DoctorResultPOJO implements Serializable {
     @SerializedName("id")
     private String id;
     @SerializedName("added_by")
@@ -26,25 +28,25 @@ public class DoctorResultPOJO {
     @SerializedName("user_type")
     private String userType;
     @SerializedName("profile_pic")
-    private Object profilePic;
+    private String profilePic;
     @SerializedName("lat")
     private String lat;
     @SerializedName("lng")
     private String lng;
     @SerializedName("device_type")
-    private Object deviceType;
+    private String deviceType;
     @SerializedName("device_token")
-    private Object deviceToken;
+    private String deviceToken;
     @SerializedName("access_token")
-    private Object accessToken;
+    private String accessToken;
     @SerializedName("status")
     private String status;
     @SerializedName("show_password")
     private String showPassword;
     @SerializedName("created")
-    private Object created;
+    private String created;
     @SerializedName("modified")
-    private Object modified;
+    private String modified;
     @SerializedName("dob")
     private String dob;
     @SerializedName("gender")
@@ -52,21 +54,21 @@ public class DoctorResultPOJO {
     @SerializedName("age")
     private String age;
     @SerializedName("marital_status")
-    private Object maritalStatus;
+    private String maritalStatus;
     @SerializedName("height")
-    private Object height;
+    private String height;
     @SerializedName("weight")
-    private Object weight;
+    private String weight;
     @SerializedName("bmi")
-    private Object bmi;
+    private String bmi;
     @SerializedName("food_habit")
-    private Object foodHabit;
+    private String foodHabit;
     @SerializedName("occupation")
-    private Object occupation;
+    private String occupation;
     @SerializedName("aadhar_id")
-    private Object aadharId;
+    private String aadharId;
     @SerializedName("address2")
-    private Object address2;
+    private String address2;
     @SerializedName("city")
     private String city;
     @SerializedName("pincode")
@@ -196,11 +198,11 @@ public class DoctorResultPOJO {
         this.userType = userType;
     }
 
-    public Object getProfilePic() {
+    public String getProfilePic() {
         return profilePic;
     }
 
-    public void setProfilePic(Object profilePic) {
+    public void setProfilePic(String profilePic) {
         this.profilePic = profilePic;
     }
 
@@ -220,27 +222,27 @@ public class DoctorResultPOJO {
         this.lng = lng;
     }
 
-    public Object getDeviceType() {
+    public String getDeviceType() {
         return deviceType;
     }
 
-    public void setDeviceType(Object deviceType) {
+    public void setDeviceType(String deviceType) {
         this.deviceType = deviceType;
     }
 
-    public Object getDeviceToken() {
+    public String getDeviceToken() {
         return deviceToken;
     }
 
-    public void setDeviceToken(Object deviceToken) {
+    public void setDeviceToken(String deviceToken) {
         this.deviceToken = deviceToken;
     }
 
-    public Object getAccessToken() {
+    public String getAccessToken() {
         return accessToken;
     }
 
-    public void setAccessToken(Object accessToken) {
+    public void setAccessToken(String accessToken) {
         this.accessToken = accessToken;
     }
 
@@ -260,19 +262,19 @@ public class DoctorResultPOJO {
         this.showPassword = showPassword;
     }
 
-    public Object getCreated() {
+    public String getCreated() {
         return created;
     }
 
-    public void setCreated(Object created) {
+    public void setCreated(String created) {
         this.created = created;
     }
 
-    public Object getModified() {
+    public String getModified() {
         return modified;
     }
 
-    public void setModified(Object modified) {
+    public void setModified(String modified) {
         this.modified = modified;
     }
 
@@ -300,67 +302,67 @@ public class DoctorResultPOJO {
         this.age = age;
     }
 
-    public Object getMaritalStatus() {
+    public String getMaritalStatus() {
         return maritalStatus;
     }
 
-    public void setMaritalStatus(Object maritalStatus) {
+    public void setMaritalStatus(String maritalStatus) {
         this.maritalStatus = maritalStatus;
     }
 
-    public Object getHeight() {
+    public String getHeight() {
         return height;
     }
 
-    public void setHeight(Object height) {
+    public void setHeight(String height) {
         this.height = height;
     }
 
-    public Object getWeight() {
+    public String getWeight() {
         return weight;
     }
 
-    public void setWeight(Object weight) {
+    public void setWeight(String weight) {
         this.weight = weight;
     }
 
-    public Object getBmi() {
+    public String getBmi() {
         return bmi;
     }
 
-    public void setBmi(Object bmi) {
+    public void setBmi(String bmi) {
         this.bmi = bmi;
     }
 
-    public Object getFoodHabit() {
+    public String getFoodHabit() {
         return foodHabit;
     }
 
-    public void setFoodHabit(Object foodHabit) {
+    public void setFoodHabit(String foodHabit) {
         this.foodHabit = foodHabit;
     }
 
-    public Object getOccupation() {
+    public String getOccupation() {
         return occupation;
     }
 
-    public void setOccupation(Object occupation) {
+    public void setOccupation(String occupation) {
         this.occupation = occupation;
     }
 
-    public Object getAadharId() {
+    public String getAadharId() {
         return aadharId;
     }
 
-    public void setAadharId(Object aadharId) {
+    public void setAadharId(String aadharId) {
         this.aadharId = aadharId;
     }
 
-    public Object getAddress2() {
+    public String getAddress2() {
         return address2;
     }
 
-    public void setAddress2(Object address2) {
+    public void setAddress2(String address2) {
         this.address2 = address2;
     }
 
@@ -600,27 +602,27 @@ public class DoctorResultPOJO {
                 ", password='" + password + '\'' +
                 ", address='" + address + '\'' +
                 ", userType='" + userType + '\'' +
-                ", profilePic=" + profilePic +
+                ", profilePic='" + profilePic + '\'' +
                 ", lat='" + lat + '\'' +
                 ", lng='" + lng + '\'' +
-                ", deviceType=" + deviceType +
-                ", deviceToken=" + deviceToken +
-                ", accessToken=" + accessToken +
+                ", deviceType='" + deviceType + '\'' +
+                ", deviceToken='" + deviceToken + '\'' +
+                ", accessToken='" + accessToken + '\'' +
                 ", status='" + status + '\'' +
                 ", showPassword='" + showPassword + '\'' +
-                ", created=" + created +
-                ", modified=" + modified +
+                ", created='" + created + '\'' +
+                ", modified='" + modified + '\'' +
                 ", dob='" + dob + '\'' +
                 ", gender='" + gender + '\'' +
                 ", age='" + age + '\'' +
-                ", maritalStatus=" + maritalStatus +
-                ", height=" + height +
-                ", weight=" + weight +
-                ", bmi=" + bmi +
-                ", foodHabit=" + foodHabit +
-                ", occupation=" + occupation +
-                ", aadharId=" + aadharId +
-                ", address2=" + address2 +
+                ", maritalStatus='" + maritalStatus + '\'' +
+                ", height='" + height + '\'' +
+                ", weight='" + weight + '\'' +
+                ", bmi='" + bmi + '\'' +
+                ", foodHabit='" + foodHabit + '\'' +
+                ", occupation='" + occupation + '\'' +
+                ", aadharId='" + aadharId + '\'' +
+                ", address2='" + address2 + '\'' +
                 ", city='" + city + '\'' +
                 ", pincode='" + pincode + '\'' +
                 ", phone='" + phone + '\'' +

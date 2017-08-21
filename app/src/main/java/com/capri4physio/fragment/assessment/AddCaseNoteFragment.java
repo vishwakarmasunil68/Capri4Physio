@@ -23,6 +23,7 @@ import com.capri4physio.listener.HttpUrlListener;
 import com.capri4physio.model.BaseModel;
 import com.capri4physio.net.ApiConfig;
 import com.capri4physio.util.AppLog;
+import com.capri4physio.util.HandlerConstant;
 import com.capri4physio.util.Utils;
 
 import java.util.HashMap;
@@ -133,6 +134,7 @@ public class AddCaseNoteFragment extends BaseFragment implements HttpUrlListener
                             Toast.makeText(getActivity(),"Record Added Successfully",Toast.LENGTH_SHORT).show();
                             getFragmentManager().popBackStack();
                             mBloodPresure.setText("");
+                            HandlerConstant.POP_INNER_BACK_HANDLER.sendMessage(HandlerConstant.POP_INNER_BACK_HANDLER.obtainMessage(0, ""));
 
                         } catch (Exception e) {
                             e.printStackTrace();

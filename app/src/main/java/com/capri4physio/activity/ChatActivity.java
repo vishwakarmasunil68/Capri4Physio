@@ -40,9 +40,9 @@ import com.capri4physio.Services.WebServicesCallBack;
 import com.capri4physio.Services.WebUploadService;
 import com.capri4physio.adapter.ChatUserAdapter;
 import com.capri4physio.database.DatabaseHelper;
+import com.capri4physio.model.allchatusers.AllChatPOJO;
 import com.capri4physio.model.chat.ChatPOJO;
 import com.capri4physio.net.ApiConfig;
-import com.capri4physio.util.AppPreferences;
 import com.capri4physio.util.FileUtil;
 import com.capri4physio.util.StringUtils;
 import com.capri4physio.util.TagUtils;
@@ -95,7 +95,7 @@ public class ChatActivity extends AppCompatActivity implements WebServicesCallBa
     private final static String CHAT_API = "chat_api";
     List<ChatPOJO> chatPOJOList = new ArrayList<>();
     ChatUserAdapter chatUserAdapter;
-
+    AllChatPOJO allChatPOJO;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -110,8 +110,9 @@ public class ChatActivity extends AppCompatActivity implements WebServicesCallBa
         Bundle bundle = getIntent().getExtras();
         if (bundle != null) {
             friend_user_id = bundle.getString("friend_user_id");
-            user_id = AppPreferences.getInstance(getApplicationContext()).getUserID();
+            user_id = bundle.getString("user_id");
         }
+
 
         btn_send.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -123,6 +124,13 @@ public class ChatActivity extends AppCompatActivity implements WebServicesCallBa
                 }
             }
         });
+
+        allChatPOJO= (AllChatPOJO) getIntent().getSerializableExtra("allchatpojo");
+        if(allChatPOJO!=null){
+            chatPOJOList=allChatPOJO.getChatPOJOList();
+        }else {
+            chatPOJOList = databaseHelper.getUserChatList(user_id, friend_user_id);
+        }
         inflateChats();
     }
 
@@ -130,12 +138,12 @@ public class ChatActivity extends AppCompatActivity implements WebServicesCallBa
         LinearLayoutManager horizontalLayoutManagaer
                 = new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.VERTICAL, false);
         horizontalLayoutManagaer.setStackFromEnd(true);
-        chatPOJOList = databaseHelper.getUserChatList(user_id, friend_user_id);
         Log.d(TagUtils.getTag(), "user chats:-" + chatPOJOList.size());
         chatUserAdapter = new ChatUserAdapter(this, chatPOJOList, user_id,friend_user_id);
         rv_chat.setLayoutManager(horizontalLayoutManagaer);
         rv_chat.setHasFixedSize(true);
         rv_chat.setItemAnimator(new DefaultItemAnimator());
+        rv_chat.setNestedScrollingEnabled(false);
         rv_chat.setAdapter(chatUserAdapter);
     }
 
@@ -155,9 +163,19 @@ public class ChatActivity extends AppCompatActivity implements WebServicesCallBa
         nameValuePairs.add(new BasicNameValuePair("chat_type", "text"));
         nameValuePairs.add(new BasicNameValuePair("chat_thumb", ""));
         nameValuePairs.add(new BasicNameValuePair("chat_file", ""));
-        nameValuePairs.add(new BasicNameValuePair("admin", ""));
-        ChatPOJO chatPOJO = new ChatPOJO("", user_id, friend_user_id, date, time, message,"text","","","false");
-        databaseHelper.insertchatdata(chatPOJO);
+        if(allChatPOJO!=null) {
+            nameValuePairs.add(new BasicNameValuePair("admin", "true"));
+        }else{
+            nameValuePairs.add(new BasicNameValuePair("admin", ""));
+        }
+        ChatPOJO chatPOJO;
+        if(allChatPOJO!=null) {
+            chatPOJO = new ChatPOJO("", user_id, friend_user_id, date, time, message, "text", "", "", "true");
+        }else{
+            chatPOJO = new ChatPOJO("", user_id, friend_user_id, date, time, message,"text","","","false");
+            databaseHelper.insertchatdata(chatPOJO);
+        }
+
         chatPOJOList.add(chatPOJO);
         chatUserAdapter.notifyDataSetChanged();
         rv_chat.scrollToPosition(chatPOJOList.size() - 1);
@@ -188,12 +206,20 @@ public class ChatActivity extends AppCompatActivity implements WebServicesCallBa
                     reqEntity.addPart("chat_thumb", new StringBody(""));
                 }
                 reqEntity.addPart("chat_file", bin1);
-
-                reqEntity.addPart("admin", new StringBody("false"));
+                if(allChatPOJO!=null) {
+                    reqEntity.addPart("admin", new StringBody("true"));
+                }else{
+                    reqEntity.addPart("admin", new StringBody("false"));
+                }
                 new WebUploadService(reqEntity, this, CHAT_API).execute(ApiConfig.chat_api);
 
-                ChatPOJO chatPOJO = new ChatPOJO("", user_id, friend_user_id, date, time, "",file_type,image_path,thumb,"false");
-                databaseHelper.insertchatdata(chatPOJO);
+                ChatPOJO chatPOJO;
+                if(allChatPOJO!=null){
+                    chatPOJO = new ChatPOJO("", user_id, friend_user_id, date, time, "",file_type,image_path,thumb,"true");
+                }else{
+                    chatPOJO = new ChatPOJO("", user_id, friend_user_id, date, time, "",file_type,image_path,thumb,"false");
+                    databaseHelper.insertchatdata(chatPOJO);
+                }
                 chatPOJOList.add(chatPOJO);
                 chatUserAdapter.notifyDataSetChanged();
                 rv_chat.scrollToPosition(chatPOJOList.size() - 1);

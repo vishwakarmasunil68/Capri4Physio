@@ -35,6 +35,7 @@ import com.capri4physio.model.BaseModel;
 import com.capri4physio.net.ApiConfig;
 import com.capri4physio.task.UrlConnectionTask;
 import com.capri4physio.util.AppLog;
+import com.capri4physio.util.HandlerConstant;
 import com.capri4physio.util.Utils;
 
 import org.apache.http.HttpEntity;
@@ -570,6 +571,7 @@ public class AddInvestigationFragment extends BaseFragment implements HttpUrlLis
                         }
                         try {
                             System.out.println("<><><>res" + response_str);
+                            HandlerConstant.POP_INNER_BACK_HANDLER.sendMessage(HandlerConstant.POP_INNER_BACK_HANDLER.obtainMessage(0, ""));
                         } catch (Exception e) {
                             e.printStackTrace();
                         }

@@ -2,11 +2,13 @@ package com.capri4physio.model.chat;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.io.Serializable;
+
 /**
  * Created by sunil on 24-07-2017.
  */
 
-public class ChatPOJO {
+public class ChatPOJO implements Serializable{
     @SerializedName("chat_id")
     String chat_id;
     @SerializedName("chat_user_id")

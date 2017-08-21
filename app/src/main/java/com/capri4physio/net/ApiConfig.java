@@ -252,12 +252,14 @@ public class ApiConfig {
     public static final String ASSESSMENT_CHEIF_PHYSICAL_EXAMINATION = "PhysicalExamination";
     public static final String ASSESSMENT_INVESTIGATION = "Investigation";
     public static final String search_user_api="http://oldmaker.com/fijiyo/chat/searchuser.php";
+    public static final String get_all_users_chats="http://oldmaker.com/fijiyo/chat/getalluserschats.php";
     public static final String chat_api="http://oldmaker.com/fijiyo/chat/chatcapri.php";
+    public static final String all_chat_users="http://oldmaker.com/fijiyo/chat/allchat.php";
     public static final String get_all_users="http://oldmaker.com/fijiyo/chat/getChatUsers.php";
     public static final String logout_users="http://oldmaker.com/fijiyo/chat/logoutuser.php";
     public static final String getallchat="http://oldmaker.com/fijiyo/chat/getallchat.php";
     public static final String view_all_appointments="http://oldmaker.com/fijiyo/chat/getallappointments.php";
-    public static final String get_all_patients="http://oldmaker.com/fijiyo/chat/getallpatients.php";
+    public static final String get_all_patients ="http://oldmaker.com/fijiyo/chat/getallpatients.php";
     public static final String get_timings_api="http://oldmaker.com/fijiyo/index.php/users/appoimentlistdatewise";
     public static final String add_appointment_api="http://oldmaker.com/fijiyo/index.php/users/addappointment";
     public static final String delete_appointment_api="http://oldmaker.com/fijiyo/chat/deleteappointment.php";
@@ -276,7 +278,19 @@ public class ApiConfig {
     public static final String get_application_form_api="http://oldmaker.com/fijiyo/index.php/users/studentapplicationform3Byid";
     public static final String get_student_by_course_id="http://oldmaker.com/fijiyo/index.php/users/studentcourse1id";
     public static final String get_branch_doctor="http://oldmaker.com/fijiyo/index.php/users/bracchcodewisetherpist";
-
+    public static final String add_therapist_api="http://oldmaker.com/fijiyo/index.php/users/addtherapist";
+    public static final String update_therapist_api="http://oldmaker.com/fijiyo/index.php/users/updatetheripst";
+    public static final String get_doctor_booked_appointment="http://oldmaker.com/fijiyo/index.php/users/appointmentlistdatewise";
+    public static final String get_appointments_by_patients="http://oldmaker.com/fijiyo/index.php/users/getappoimentbypatientid";
+    public static final String get_appointments_by_doctor_id="http://oldmaker.com/fijiyo/index.php/users/getappoimentbydoctorid";
+    public static final String update_appointment="http://oldmaker.com/fijiyo/index.php/users/updateappointmentstatus";
+    public static final String get_application_form_api2="http://oldmaker.com/fijiyo/index.php/users/getapplicationformbyid";
+    public static final String get_doses="http://oldmaker.com/fijiyo/index.php/users/treatmentsBydose";
+    public static final String add_treatment_api="http://oldmaker.com/fijiyo/index.php/users/addtreatmentgivens";
+    public static final String add_admin_treatment="http://oldmaker.com/fijiyo/index.php/users/addadmintreatment";
+    public static final String delete_admin_treatment="http://oldmaker.com/fijiyo/chat/deletetreatment.php";
+    public static final String get_all_admin_treatment="http://oldmaker.com/fijiyo/chat/getalladmintreatment.php";
+    public static final String update_admin_treatment="http://oldmaker.com/fijiyo/index.php/users/updateadmintreatment";
 
 //     public static final String BASE_URL = "http://caprispine.in/";
 

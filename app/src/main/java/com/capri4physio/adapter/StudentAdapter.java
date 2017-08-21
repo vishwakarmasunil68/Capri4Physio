@@ -26,13 +26,14 @@ public class StudentAdapter extends RecyclerView.Adapter<StudentAdapter.MyViewHo
 
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
-        public TextView tv_applied_date;
+        public TextView tv_applied_date,tv_id;
         public TextView tv_student_name;
         public LinearLayout ll_students;
 
         public MyViewHolder(View view) {
             super(view);
             tv_applied_date = (TextView) view.findViewById(R.id.tv_applied_date);
+            tv_id = (TextView) view.findViewById(R.id.tv_id);
             tv_student_name = (TextView) view.findViewById(R.id.tv_student_name);
             ll_students = (LinearLayout) view.findViewById(R.id.ll_students);
 
@@ -57,6 +58,7 @@ public class StudentAdapter extends RecyclerView.Adapter<StudentAdapter.MyViewHo
     public void onBindViewHolder(final MyViewHolder holder, final int position) {
         holder.tv_applied_date.setText(horizontalList.get(position).getSc_date()+" "+horizontalList.get(position).getSc_time());
         holder.tv_student_name.setText(horizontalList.get(position).getScSname());
+        holder.tv_id.setText(horizontalList.get(position).getScId()+" : ");
         holder.ll_students.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

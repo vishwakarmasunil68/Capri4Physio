@@ -64,12 +64,15 @@ public class AddMotorExamFragment extends Activity implements HttpUrlListener, W
     ListView list;
     Spinner listView1;
     InfoAppsElbow DetailApp;
-    String[] items = {"Select Joint", "Head,Neck and trunk", "Combined Movement Assesment of spine", "Cervical spine", "Thoraccic spine", "Lumbar spine", "Hip", "Knee", "Ankle", "Toes"
+//    String[] items = {"Select Joint", "Head,Neck and trunk", "Combined Movement Assesment of spine", "Cervical spine", "Thoraccic spine", "Lumbar spine", "Hip", "Knee", "Ankle", "Toes"
+//            , "Shoulder", "Elbow", "Fore Arm", "Wrist", "Fingers", "Sacroilic Joint"};
+    String[] items = {"Select Joint",  "Combined Movement Assesment of spine", "Cervical spine", "Thoraccic spine", "Lumbar spine", "Hip", "Knee", "Ankle", "Toes"
             , "Shoulder", "Elbow", "Fore Arm", "Wrist", "Fingers", "Sacroilic Joint"};
     ArrayAdapter<String> adapter;
     Intent intent;
     ImageView iv_exam;
     RecyclerView rv_images;
+    Button btn_skip;
     private final static String BASE_IMAGE_URL = ApiConfig.IMAGE_BASE_URL + "app/webroot/upload/";
     int motor_case=-1;
     @Override
@@ -89,6 +92,12 @@ public class AddMotorExamFragment extends Activity implements HttpUrlListener, W
 
     }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        finish();
+    }
+
     public AddMotorExamFragment() {
         // Required empty public constructor
     }
@@ -100,6 +109,7 @@ public class AddMotorExamFragment extends Activity implements HttpUrlListener, W
 
         arrylist = new ArrayList<InfoAppsElbow>();
         mSave = (Button) findViewById(R.id.btn);
+        btn_skip = (Button) findViewById(R.id.btn_skip);
         iv_exam = (ImageView) findViewById(R.id.iv_exam);
         list = (ListView) findViewById(R.id.list);
         listView1 = (Spinner) findViewById(R.id.listView1);
@@ -126,6 +136,16 @@ public class AddMotorExamFragment extends Activity implements HttpUrlListener, W
             }
         });
 
+        btn_skip.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent returnIntent = new Intent();
+                returnIntent.putExtra("result","5");
+                setResult(Activity.RESULT_OK,returnIntent);
+                finish();
+//                HandlerConstant.POP_BACK_HANDLER.sendMessage(HandlerConstant.POP_BACK_HANDLER.obtainMessage(0,"5"));
+            }
+        });
 
 
         listView1.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -136,14 +156,14 @@ public class AddMotorExamFragment extends Activity implements HttpUrlListener, W
                 } catch (Exception e) {
                     Log.d("nullpointer", e.toString());
                 }
-                switch (i) {
-                    case 1:
-                        intent = new Intent(getApplicationContext(), FragementActi.class);
-                        intent.putExtra("patient_id", patientId);
-                        rv_images.setVisibility(View.INVISIBLE);
-                        showImage(1);
-                        motor_case=1;
-                        break;
+                switch (i+1) {
+//                    case 1:
+//                        intent = new Intent(getApplicationContext(), FragementActi.class);
+//                        intent.putExtra("patient_id", patientId);
+//                        rv_images.setVisibility(View.INVISIBLE);
+//                        showImage(1);
+//                        motor_case=1;
+//                        break;
                     case 2:
                         intent = new Intent(getApplicationContext(), MotorActivity1.class);
                         intent.putExtra("patient_id", patientId);

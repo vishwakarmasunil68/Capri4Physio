@@ -2,6 +2,7 @@ package com.capri4physio.fragment.assessment;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +18,8 @@ import com.capri4physio.model.BaseModel;
 import com.capri4physio.net.ApiConfig;
 import com.capri4physio.task.UrlConnectionTask;
 import com.capri4physio.util.AppLog;
+import com.capri4physio.util.HandlerConstant;
+import com.capri4physio.util.TagUtils;
 import com.capri4physio.util.Utils;
 
 import org.json.JSONObject;
@@ -39,31 +42,55 @@ public class AddHistoryFragment extends BaseFragment implements HttpUrlListener 
     private EditText mEdtxtSurgicalHistory;
     private EditText mEdtxtOtherHistory;
     private EditText mEdtxtMedicineUsed;
+    private EditText et_present_illness_history;
+    private EditText et_past_illness_history;
 
     private static final String KEY_PATIENT_ID = "patient_id";
     private static final String KEY_TYPE = "type";
     private String patientId = "";
     private String assessmentType = "";
-    private String rate1 = "NO";
-    private String rate2 = "NO";
-    private String rate3 = "NO";
-    private String rate4 = "NO";
-    private String rate5 = "NO";
-    private String rate6 = "NO";
-    private String rate7 = "NO";
-    private String rate8 = "NO";
-    private String rate9 = "NO";
-    private String rate10 = "NO";
-    private String rate11 = "NO";
-    private String rate12 = "NO";
-    private String rate13 = "NO";
-    private String rate14 = "NO";
-    private String rate15 = "NO";
-    private String rate16 = "NO";
-    private String rate17 = "NO";
-    private String rate18 = "NO";
-    private String rate19 = "NO";
-    private String rate20 = "Normal";
+//    private String rate1 = "NO";
+//    private String rate2 = "NO";
+//    private String rate3 = "NO";
+//    private String rate4 = "NO";
+//    private String rate5 = "NO";
+//    private String rate6 = "NO";
+//    private String rate7 = "NO";
+//    private String rate8 = "NO";
+//    private String rate9 = "NO";
+//    private String rate10 = "NO";
+//    private String rate11 = "NO";
+//    private String rate12 = "NO";
+//    private String rate13 = "NO";
+//    private String rate14 = "NO";
+//    private String rate15 = "NO";
+//    private String rate16 = "NO";
+//    private String rate17 = "NO";
+//    private String rate18 = "NO";
+//    private String rate19 = "NO";
+//    private String rate20 = "Normal";
+
+
+    private String rate1 = "";
+    private String rate2 = "";
+    private String rate3 = "";
+    private String rate4 = "";
+    private String rate5 = "";
+    private String rate6 = "";
+    private String rate7 = "";
+    private String rate8 = "";
+    private String rate9 = "";
+    private String rate10 = "";
+    private String rate11 = "";
+    private String rate12 = "";
+    private String rate13 = "";
+    private String rate14 = "";
+    private String rate15 = "";
+    private String rate16 = "";
+    private String rate17 = "";
+    private String rate18 = "";
+    private String rate19 = "";
+    private String rate20 = "";
 
 
 
@@ -122,6 +149,8 @@ public class AddHistoryFragment extends BaseFragment implements HttpUrlListener 
         mEdtxtSurgicalHistory = (EditText) view.findViewById(R.id.edtxt_surgical_history);
         mEdtxtOtherHistory = (EditText) view.findViewById(R.id.edtxt_other_history);
         mEdtxtMedicineUsed = (EditText) view.findViewById(R.id.edtxt_medicine_used);
+        et_past_illness_history = (EditText) view.findViewById(R.id.et_past_illness_history);
+        et_present_illness_history = (EditText) view.findViewById(R.id.et_present_illness_history);
         rg1=(RadioGroup)view.findViewById(R.id.radio_group1);
         rg2_bloodpressure=(RadioGroup)view.findViewById(R.id.radio_groupblood_pressure);
         rg2=(RadioGroup)view.findViewById(R.id.radio_group2);
@@ -491,8 +520,8 @@ public class AddHistoryFragment extends BaseFragment implements HttpUrlListener 
 
 
     private void addApiCall() {
-        if (!isValid())
-            return;
+//        if (!isValid())
+//            return;
 
         if (Utils.isNetworkAvailable(getActivity())) {
 
@@ -504,6 +533,8 @@ public class AddHistoryFragment extends BaseFragment implements HttpUrlListener 
                 params.put(ApiConfig.SURGICAL_HISTORY, mEdtxtSurgicalHistory.getText().toString().trim());
                 params.put(ApiConfig.OTHER_HISTORY, mEdtxtOtherHistory.getText().toString().trim());
                 params.put(ApiConfig.MEDICINE_USED, mEdtxtMedicineUsed.getText().toString().trim());
+                params.put("present_illness", et_present_illness_history.getText().toString().trim());
+                params.put("past_illness", et_past_illness_history.getText().toString().trim());
                 params.put(ApiConfig.DATE, Utils.getCurrentDate());
                 params.put("diabetes", rate1);
                 params.put("blood_pressure", "normal");
@@ -548,8 +579,9 @@ public class AddHistoryFragment extends BaseFragment implements HttpUrlListener 
 
             case ApiConfig.ID1:
                 BaseModel baseModel = (BaseModel) response;
+                Log.d(TagUtils.getTag(),"response:-"+baseModel.getMessage());
                 AppLog.i("Capri4Physio", "Patient Response : " + baseModel.getStatus());
-                getFragmentManager().popBackStack();
+                HandlerConstant.POP_INNER_BACK_HANDLER.sendMessage(HandlerConstant.POP_INNER_BACK_HANDLER.obtainMessage(0, ""));
                 break;
         }
 
@@ -572,12 +604,25 @@ public class AddHistoryFragment extends BaseFragment implements HttpUrlListener 
         String surgicalHistory = mEdtxtSurgicalHistory.getText().toString().trim();
         String otherHistory = mEdtxtOtherHistory.getText().toString().trim();
         String medicineUsed = mEdtxtMedicineUsed.getText().toString().trim();
+        String presentillness = et_present_illness_history.getText().toString().trim();
+        String pastillness = et_past_illness_history.getText().toString().trim();
 
         if (medicalHistory.isEmpty()) {
             mEdtxtMedicalHistory.requestFocus();
             Utils.showError(getActivity(), getResources().getString(R.string.error), getResources().getString(R.string.err_medical_history));
             return false;
         }
+        if (presentillness.isEmpty()) {
+            et_present_illness_history.requestFocus();
+            Utils.showError(getActivity(), getResources().getString(R.string.error), getResources().getString(R.string.err_medical_history));
+            return false;
+        }
+        if (pastillness.isEmpty()) {
+            et_past_illness_history.requestFocus();
+            Utils.showError(getActivity(), getResources().getString(R.string.error), getResources().getString(R.string.err_medical_history));
+            return false;
+        }
+
 
         if (surgicalHistory.isEmpty()) {
             mEdtxtSurgicalHistory.requestFocus();

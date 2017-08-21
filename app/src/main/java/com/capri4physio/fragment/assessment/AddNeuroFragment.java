@@ -29,6 +29,7 @@ import com.capri4physio.listener.HttpUrlListener;
 import com.capri4physio.model.BaseModel;
 import com.capri4physio.net.ApiConfig;
 import com.capri4physio.util.AppLog;
+import com.capri4physio.util.HandlerConstant;
 import com.capri4physio.util.ImageUtil;
 import com.capri4physio.util.TagUtils;
 import com.capri4physio.util.Utils;
@@ -322,8 +323,8 @@ public class AddNeuroFragment extends BaseFragment implements HttpUrlListener {
                             Log.e("result",response);
                             pDialog.dismiss();
                             Toast.makeText(getActivity(),"Record added successfully", Toast.LENGTH_LONG).show();
-                            getActivity().getFragmentManager().popBackStack();
-
+                            getFragmentManager().popBackStack();
+                            HandlerConstant.POP_INNER_BACK_HANDLER.sendMessage(HandlerConstant.POP_INNER_BACK_HANDLER.obtainMessage(0, ""));
                         } catch (Exception e) {
                             e.printStackTrace();
                         }

@@ -7,6 +7,8 @@ import android.app.FragmentTransaction;
 import android.content.DialogInterface;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
@@ -35,6 +37,8 @@ import com.capri4physio.net.ApiConfig;
 import com.capri4physio.task.UrlConnectionTask;
 import com.capri4physio.util.AppLog;
 import com.capri4physio.util.Constants;
+import com.capri4physio.util.HandlerConstant;
+import com.capri4physio.util.TagUtils;
 import com.capri4physio.util.Utils;
 
 import org.json.JSONObject;
@@ -60,7 +64,7 @@ public class InvestigationFragment extends BaseFragment implements HttpUrlListen
     private InvestigationAdapter mAdapter;
     private List<InvestigationItem> mList;
     private int itemPosition;
-    private Button mAddBtn;
+    private Button mAddBtn,btn_skip;
     private static final String KEY_PATIENT_ID = "patient_id";
     private static final String KEY_TYPE = "type";
     private String patientId = "";
@@ -130,6 +134,7 @@ public class InvestigationFragment extends BaseFragment implements HttpUrlListen
         mSnackBarLayout = (CoordinatorLayout) view.findViewById(R.id.coordinator_layout);
         mRecyclerView = (RecyclerView) view.findViewById(R.id.recycler);
         mAddBtn= (Button) view.findViewById(R.id.btn_add);
+        btn_skip= (Button) view.findViewById(R.id.btn_skip);
         mRecyclerView.setHasFixedSize(true);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
@@ -144,6 +149,23 @@ public class InvestigationFragment extends BaseFragment implements HttpUrlListen
             @Override
             public void onClick(View view) {
                 addFragment();
+            }
+        });
+        btn_skip.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getFragmentManager().popBackStack();
+                HandlerConstant.POP_BACK_HANDLER.sendMessage(HandlerConstant.POP_BACK_HANDLER.obtainMessage(0,"7"));
+            }
+        });
+
+        HandlerConstant.POP_INNER_BACK_HANDLER= new Handler(new Handler.Callback() {
+            @Override
+            public boolean handleMessage(Message msg) {
+                String message = (String) msg.obj;
+                Log.d(TagUtils.getTag(),"pop back handler:-"+message);
+                btn_skip.callOnClick();
+                return false;
             }
         });
     }

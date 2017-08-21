@@ -4,6 +4,8 @@ import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -45,6 +47,8 @@ import com.capri4physio.model.UserDetails;
 import com.capri4physio.net.ApiConfig;
 import com.capri4physio.task.UrlConnectionTask;
 import com.capri4physio.util.AppLog;
+import com.capri4physio.util.Constants;
+import com.capri4physio.util.HandlerConstant;
 import com.capri4physio.util.TagUtils;
 import com.capri4physio.util.Utils;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
@@ -170,6 +174,30 @@ public class MyClinicPatientFragment extends BaseFragment implements HttpUrlList
 
             }
         });
+
+        HandlerConstant.POP_BACK_HANDLER = new Handler(new Handler.Callback() {
+            @Override
+            public boolean handleMessage(Message msg) {
+                String message = (String) msg.obj;
+                Log.d(TagUtils.getTag(),"pop back handler:-"+message);
+                startFragment(message);
+                return false;
+            }
+        });
+
+    }
+
+    public void startFragment(String message){
+        try{
+            int position=Integer.parseInt(message);
+//            if(position==4){
+//                startActivity(new Intent(getActivity(), AddMotorExamFragment.class));
+//            }else{
+                onViewItemClick(Arrays.asList(mList).get(position), position, Constants.ClickIDConst.ID_VIEW_CLICK);
+//            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
     UserDetailModel userDetailModel;
 
@@ -306,14 +334,14 @@ public class MyClinicPatientFragment extends BaseFragment implements HttpUrlList
                 ft.commit();
                 break;
             case 4:
-                startActivity(new Intent(getActivity(), AddMotorExamFragment.class));
+                startActivityForResult(new Intent(getActivity(), AddMotorExamFragment.class),101);
                /* MotorExamFragment motorExamFragment = MotorExamFragment.newInstance(patientId,s);
                 ft.replace(R.id.fragment_container, motorExamFragment);
                 ft.addToBackStack(null);
                 ft.commit();*/
                 break;
             case 5:
-                SensoryFragment sensoryFragment = SensoryFragment.newInstance(patientId, "sensory");
+                SensoryFragment sensoryFragment = SensoryFragment.newInstance(patientId, s);
                 ft.add(R.id.fragment_container, sensoryFragment);
                 ft.addToBackStack(null);
                 ft.commit();
@@ -378,7 +406,13 @@ public class MyClinicPatientFragment extends BaseFragment implements HttpUrlList
             default:
         }
     }
-
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == 101) {
+            Log.d(TagUtils.getTag(), "on activity result");
+            startFragment("5");
+        }
+    }
     @Override
     public void onDialogResult(Bundle bundle, int Id) {
 

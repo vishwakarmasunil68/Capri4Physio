@@ -9,7 +9,6 @@ import android.widget.Toast;
 
 public class ToastClass {
 
-
     public static void showLongToast(Context context,String message){
         Toast.makeText(context,message,Toast.LENGTH_LONG).show();
     }

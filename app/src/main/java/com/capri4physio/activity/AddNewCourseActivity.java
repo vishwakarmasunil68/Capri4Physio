@@ -51,6 +51,11 @@ public class AddNewCourseActivity extends AppCompatActivity implements WebServic
     EditText et_showing_seat;
     @BindView(R.id.et_fees)
     EditText et_fees;
+    @BindView(R.id.et_reg_fees)
+    EditText et_reg_fees;
+    @BindView(R.id.et_rem_fees)
+    EditText et_rem_fees;
+
     @BindView(R.id.et_phone)
     EditText et_phone;
     @BindView(R.id.btn_add_course)
@@ -70,7 +75,7 @@ public class AddNewCourseActivity extends AppCompatActivity implements WebServic
             @Override
             public void onClick(View v) {
                 if (ValidateEdittexts(et_course_name, et_comt, et_from_date, et_to_date, et_seat_available,
-                        et_showing_seat, et_fees, et_phone)) {
+                        et_showing_seat, et_fees, et_phone,et_rem_fees,et_reg_fees)) {
                     ArrayList<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
                     nameValuePairs.add(new BasicNameValuePair("c_name", et_course_name.getText().toString()));
                     nameValuePairs.add(new BasicNameValuePair("c_comt", et_comt.getText().toString()));
@@ -78,7 +83,10 @@ public class AddNewCourseActivity extends AppCompatActivity implements WebServic
                     nameValuePairs.add(new BasicNameValuePair("c_to_date", et_to_date.getText().toString()));
                     nameValuePairs.add(new BasicNameValuePair("c_place", et_place.getText().toString()));
                     nameValuePairs.add(new BasicNameValuePair("c_sheet_available", et_seat_available.getText().toString()));
+                    nameValuePairs.add(new BasicNameValuePair("c_rem_seat", et_seat_available.getText().toString()));
                     nameValuePairs.add(new BasicNameValuePair("c_showing_sheet", et_showing_seat.getText().toString()));
+                    nameValuePairs.add(new BasicNameValuePair("c_reg_fees", et_reg_fees.getText().toString()));
+                    nameValuePairs.add(new BasicNameValuePair("c_rem_fees", et_rem_fees.getText().toString()));
                     nameValuePairs.add(new BasicNameValuePair("c_fees", et_fees.getText().toString()));
                     nameValuePairs.add(new BasicNameValuePair("c_pno", et_phone.getText().toString()));
                     new WebServiceBase(nameValuePairs, AddNewCourseActivity.this, ADD_NEW_COURSE).execute(ApiConfig.add_new_course_api);

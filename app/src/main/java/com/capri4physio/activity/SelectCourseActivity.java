@@ -128,6 +128,7 @@ public class SelectCourseActivity extends AppCompatActivity implements WebServic
         nameValuePairs.add(new BasicNameValuePair("sc_cerifiato_upload", ""));
         nameValuePairs.add(new BasicNameValuePair("sc_idcard_upload", ""));
         nameValuePairs.add(new BasicNameValuePair("sc_reg_fees", ""));
+        nameValuePairs.add(new BasicNameValuePair("sc_rem_fees", ""));
         nameValuePairs.add(new BasicNameValuePair("sc_fullfees", ""));
         Date date=new Date();
         SimpleDateFormat sdf=new SimpleDateFormat("dd-MM-yyyy hh:mm a");
@@ -142,6 +143,7 @@ public class SelectCourseActivity extends AppCompatActivity implements WebServic
         nameValuePairs.add(new BasicNameValuePair("admin_certificate_upload", "false"));
         nameValuePairs.add(new BasicNameValuePair("admin_icard", "false"));
         nameValuePairs.add(new BasicNameValuePair("admin_reg_fees", "false"));
+        nameValuePairs.add(new BasicNameValuePair("sc_admin_rem_fees", "false"));
         nameValuePairs.add(new BasicNameValuePair("admin_full_fees", "false"));
         nameValuePairs.add(new BasicNameValuePair("admin_status", "Please Fill All Details Properly."));
         new WebServiceBase(nameValuePairs, this, APPLY_FOR_COURSE).execute(ApiConfig.add_student_course);
@@ -173,6 +175,7 @@ public class SelectCourseActivity extends AppCompatActivity implements WebServic
                 StudentCourseResultPOJO studentCourseResultPOJO = new Gson().fromJson(jsonObject.optString("Result"),StudentCourseResultPOJO.class);
                 Intent intent = new Intent(SelectCourseActivity.this, StudentCourseStatusActivity.class);
                 intent.putExtra("studentcourseresultpojo", studentCourseResultPOJO);
+                intent.putExtra("coursepojo", courseResultPOJO);
                 startActivity(intent);
 
                 ToastClass.showShortToast(getApplicationContext(), "You Successfully applied for this course");
@@ -194,6 +197,7 @@ public class SelectCourseActivity extends AppCompatActivity implements WebServic
                 StudentCourseResultPOJO studentCourseResultPOJO = studentCoursePOJO.getStudentCourseResultPOJOList().get(0);
                 Intent intent = new Intent(SelectCourseActivity.this, StudentCourseStatusActivity.class);
                 intent.putExtra("studentcourseresultpojo", studentCourseResultPOJO);
+                intent.putExtra("coursepojo", courseResultPOJO);
                 startActivity(intent);
             } else {
                 showSelectCourseDialog(courseResultPOJO);
@@ -208,7 +212,7 @@ public class SelectCourseActivity extends AppCompatActivity implements WebServic
             Gson gson = new Gson();
             CourcesPOJO courcesPOJO = gson.fromJson(response, CourcesPOJO.class);
             if (courcesPOJO.getSuccess().equals("true")) {
-                StudentCourseAdapter courceAdapter = new StudentCourseAdapter(this, courcesPOJO.getCourcesPOJOList());
+                StudentCourseAdapter courceAdapter = new StudentCourseAdapter(this, courcesPOJO.getCourcesPOJOList(),false);
                 LinearLayoutManager horizontalLayoutManagaer
                         = new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.VERTICAL, false);
                 rv_course.setLayoutManager(horizontalLayoutManagaer);

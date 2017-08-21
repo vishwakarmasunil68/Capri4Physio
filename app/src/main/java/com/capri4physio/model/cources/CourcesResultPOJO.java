@@ -23,12 +23,19 @@ public class CourcesResultPOJO implements Serializable{
     String c_place;
     @SerializedName("c_sheet_available")
     String c_sheet_available;
+    @SerializedName("c_rem_seat")
+    String c_rem_seat;
     @SerializedName("c_showing_sheet")
     String c_showing_sheet;
     @SerializedName("c_fees")
     String c_fees;
+    @SerializedName("c_reg_fees")
+    String c_reg_fees;
+    @SerializedName("c_rem_fees")
+    String c_rem_fees;
     @SerializedName("c_pno")
     String c_pno;
+
 
     public String getC_id() {
         return c_id;
@@ -86,6 +93,14 @@ public class CourcesResultPOJO implements Serializable{
         this.c_sheet_available = c_sheet_available;
     }
 
+    public String getC_rem_seat() {
+        return c_rem_seat;
+    }
+
+    public void setC_rem_seat(String c_rem_seat) {
+        this.c_rem_seat = c_rem_seat;
+    }
+
     public String getC_showing_sheet() {
         return c_showing_sheet;
     }
@@ -100,6 +115,22 @@ public class CourcesResultPOJO implements Serializable{
 
     public void setC_fees(String c_fees) {
         this.c_fees = c_fees;
+    }
+
+    public String getC_reg_fees() {
+        return c_reg_fees;
+    }
+
+    public void setC_reg_fees(String c_reg_fees) {
+        this.c_reg_fees = c_reg_fees;
+    }
+
+    public String getC_rem_fees() {
+        return c_rem_fees;
+    }
+
+    public void setC_rem_fees(String c_rem_fees) {
+        this.c_rem_fees = c_rem_fees;
     }
 
     public String getC_pno() {
@@ -120,8 +151,11 @@ public class CourcesResultPOJO implements Serializable{
                 ", c_to_date='" + c_to_date + '\'' +
                 ", c_place='" + c_place + '\'' +
                 ", c_sheet_available='" + c_sheet_available + '\'' +
+                ", c_rem_seat='" + c_rem_seat + '\'' +
                 ", c_showing_sheet='" + c_showing_sheet + '\'' +
                 ", c_fees='" + c_fees + '\'' +
+                ", c_reg_fees='" + c_reg_fees + '\'' +
+                ", c_rem_fees='" + c_rem_fees + '\'' +
                 ", c_pno='" + c_pno + '\'' +
                 '}';
     }

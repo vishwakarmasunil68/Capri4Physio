@@ -43,8 +43,7 @@ public class ScheduleActivity extends AppCompatActivity {
         cv_manage_appointment.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent=new Intent(ScheduleActivity.this,ViewAllAppointmentsActivity.class);
-                startActivity(intent);
+                startActivity(new Intent(ScheduleActivity.this, ManageAppointmentActivity.class));
             }
         });
     }

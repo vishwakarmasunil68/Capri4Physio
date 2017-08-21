@@ -7,6 +7,8 @@ import android.app.FragmentTransaction;
 import android.content.DialogInterface;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
@@ -34,6 +36,8 @@ import com.capri4physio.model.assessment.PainModel;
 import com.capri4physio.net.ApiConfig;
 import com.capri4physio.task.UrlConnectionTask;
 import com.capri4physio.util.AppLog;
+import com.capri4physio.util.HandlerConstant;
+import com.capri4physio.util.TagUtils;
 import com.capri4physio.util.Utils;
 
 import org.json.JSONObject;
@@ -59,7 +63,7 @@ public class PainFragment extends BaseFragment implements HttpUrlListener, ViewI
     private PainAdapter mAdapter;
     private List<PainItem> mList;
     private int itemPosition;
-    private Button mAddpain;
+    private Button mAddpain,btn_skip;
     private static final String KEY_PATIENT_ID = "patient_id";
     private static final String KEY_TYPE = "type";
     private String patientId = "";
@@ -134,6 +138,7 @@ public class PainFragment extends BaseFragment implements HttpUrlListener, ViewI
         mRecyclerView.setLayoutManager(layoutManager);
         mRecyclerView.setAdapter(mAdapter);
         mAddpain = (Button) view.findViewById(R.id.btn_add);
+        btn_skip = (Button) view.findViewById(R.id.btn_skip);
     }
 
     @Override
@@ -143,6 +148,22 @@ public class PainFragment extends BaseFragment implements HttpUrlListener, ViewI
             @Override
             public void onClick(View view) {
                 addFragment();
+            }
+        });
+        btn_skip.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getFragmentManager().popBackStack();
+                HandlerConstant.POP_BACK_HANDLER.sendMessage(HandlerConstant.POP_BACK_HANDLER.obtainMessage(0,"3"));
+            }
+        });
+        HandlerConstant.POP_INNER_BACK_HANDLER= new Handler(new Handler.Callback() {
+            @Override
+            public boolean handleMessage(Message msg) {
+                String message = (String) msg.obj;
+                Log.d(TagUtils.getTag(),"pop back handler:-"+message);
+                btn_skip.callOnClick();
+                return false;
             }
         });
     }

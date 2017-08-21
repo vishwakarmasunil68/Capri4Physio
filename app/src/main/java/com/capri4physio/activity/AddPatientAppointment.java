@@ -2,6 +2,7 @@ package com.capri4physio.activity;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
@@ -27,6 +28,8 @@ import com.capri4physio.Services.WebServicesCallBack;
 import com.capri4physio.model.branch.BranchPOJO;
 import com.capri4physio.model.doctor.DoctorPOJO;
 import com.capri4physio.model.doctor.DoctorResultPOJO;
+import com.capri4physio.model.newappointment.NewAppointmentPOJO;
+import com.capri4physio.model.newappointment.NewAppointmentResultPOJO;
 import com.capri4physio.net.ApiConfig;
 import com.capri4physio.util.AppPreferences;
 import com.capri4physio.util.TagUtils;
@@ -39,6 +42,7 @@ import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -53,6 +57,7 @@ public class AddPatientAppointment extends AppCompatActivity implements WebServi
     private static final String GET_ALL_BRANCHES = "get_all_branches";
     private static final String GET_DOCTORS_API = "get_doctor_api";
     private static final String ADD_APPOINTMENT_API = "add_appointment_api";
+    private static final String GET_BOOKED_APPOINTMENTS = "get_booked_appointments";
     @BindView(R.id.toolbar)
     Toolbar toolbar;
     @BindView(R.id.spinner_branch)
@@ -70,7 +75,7 @@ public class AddPatientAppointment extends AppCompatActivity implements WebServi
     Button btn_select_date;
 
     List<BranchPOJO> branchPOJOList = new ArrayList<>();
-
+    SimpleDateFormat simpleDateFormat=new SimpleDateFormat("dd-MM-yyyy");
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -92,7 +97,7 @@ public class AddPatientAppointment extends AppCompatActivity implements WebServi
                 dpd.show(getFragmentManager(), "Datepickerdialog");
             }
         });
-
+        et_date.setText(simpleDateFormat.format(new Date()));
         new GetWebServices(AddPatientAppointment.this, GET_ALL_BRANCHES).execute(ApiConfig.GetURL);
     }
     @Override
@@ -119,14 +124,54 @@ public class AddPatientAppointment extends AppCompatActivity implements WebServi
             case ADD_APPOINTMENT_API:
                 parseAddAppointmentAPI(response);
                 break;
+            case GET_BOOKED_APPOINTMENTS:
+                parseGetBookedAppointments(response);
+                break;
+        }
+    }
+    List<String> all_times;
+    HorizontalAdapter adapter;
+    public void parseGetBookedAppointments(String response){
+        Log.d(TagUtils.getTag(),"booked response:-"+response);
+        try{
+            list_removed_position.clear();
+            Gson gson=new Gson();
+            NewAppointmentPOJO newAppointmentPOJO=gson.fromJson(response,NewAppointmentPOJO.class);
+            if(newAppointmentPOJO.getSuccess().equals("true")){
+                for(NewAppointmentResultPOJO newAppointmentResultPOJO:newAppointmentPOJO.getNewAppointmentResultPOJOList()){
+                    list_removed_position.add(newAppointmentResultPOJO.getBookingStarttime());
+                }
+
+                all_times=getDifference(doctorResultPOJO.getFromTime(), doctorResultPOJO.getToTime());
+                all_times.removeAll(list_removed_position);
+                adapter= new HorizontalAdapter(this, all_times);
+                GridLayoutManager layoutManager = new GridLayoutManager(this, 5);
+                rv_appointment_time.setHasFixedSize(true);
+                rv_appointment_time.setLayoutManager(layoutManager);
+                rv_appointment_time.setAdapter(adapter);
+            }else{
+                all_times = getDifference(doctorResultPOJO.getFromTime(), doctorResultPOJO.getToTime());
+                adapter = new HorizontalAdapter(this, all_times);
+                GridLayoutManager layoutManager = new GridLayoutManager(this, 5);
+                rv_appointment_time.setHasFixedSize(true);
+                rv_appointment_time.setLayoutManager(layoutManager);
+                rv_appointment_time.setAdapter(adapter);
+            }
+        }catch (Exception e){
+            e.printStackTrace();
         }
     }
 
     public void parseAddAppointmentAPI(String response){
-        Log.d(TagUtils.getTag(),"response:-"+response);
+        Log.d(TagUtils.getTag(),"add appointment response:-"+response);
         try{
             JSONObject jsonObject=new JSONObject(response);
-            if(jsonObject.optString("status").equals("1")){
+            if(jsonObject.optString("success").equals("true")){
+                if(all_times!=null){
+                    all_times.remove(appointment_selected_time);
+                    adapter.notifyDataSetChanged();
+
+                }
                 ToastClass.showShortToast(getApplicationContext(),"Appointment Booked Successfully.");
             }else{
                 ToastClass.showShortToast(getApplicationContext(),"Failed to book appointment");
@@ -159,7 +204,7 @@ public class AddPatientAppointment extends AppCompatActivity implements WebServi
                 ToastClass.showShortToast(getApplicationContext(), "No Doctor Found. Please Select another branch");
             }
 
-            showTimings(doctorResultPOJOList.get(0));
+//            showTimings(doctorResultPOJOList.get(0));
             spinner_doctor.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                 @Override
                 public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -175,25 +220,34 @@ public class AddPatientAppointment extends AppCompatActivity implements WebServi
             e.printStackTrace();
         }
     }
-
+    DoctorResultPOJO doctorResultPOJO;
     public void showTimings(DoctorResultPOJO doctorResultPOJO) {
         if (doctorResultPOJO.getFromTime().length() > 0 && doctorResultPOJO.getToTime().length() > 0) {
-            List<String> time_difference_list = getDifference(doctorResultPOJO.getFromTime(), doctorResultPOJO.getToTime());
-            HorizontalAdapter adapter = new HorizontalAdapter(this, time_difference_list);
-            GridLayoutManager layoutManager = new GridLayoutManager(this, 5);
-            rv_appointment_time.setHasFixedSize(true);
-            rv_appointment_time.setLayoutManager(layoutManager);
-            rv_appointment_time.setAdapter(adapter);
+            this.doctorResultPOJO=doctorResultPOJO;
+            callBookedAppointmentsAPI(doctorResultPOJO.getId());
+
+
         } else {
+            this.doctorResultPOJO=null;
             ToastClass.showShortToast(getApplicationContext(), "Please select another doctor");
-            List<String> time_difference_list = getDifference("08:00", "22:00");
-            Log.d(TagUtils.getTag(),"time differences:-"+time_difference_list.toString());
-            HorizontalAdapter adapter = new HorizontalAdapter(this, time_difference_list);
-            GridLayoutManager layoutManager = new GridLayoutManager(this, 5);
-            rv_appointment_time.setHasFixedSize(true);
-            rv_appointment_time.setLayoutManager(layoutManager);
-            rv_appointment_time.setAdapter(adapter);
+//            List<String> time_difference_list = getDifference("08:00", "22:00");
+//            Log.d(TagUtils.getTag(),"time differences:-"+time_difference_list.toString());
+//            HorizontalAdapter adapter = new HorizontalAdapter(this, time_difference_list);
+//            GridLayoutManager layoutManager = new GridLayoutManager(this, 5);
+//            rv_appointment_time.setHasFixedSize(true);
+//            rv_appointment_time.setLayoutManager(layoutManager);
+//            rv_appointment_time.setAdapter(adapter);
         }
+    }
+
+    public void callBookedAppointmentsAPI(String doctor_id){
+
+        ArrayList<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
+        nameValuePairs.add(new BasicNameValuePair("doctor_id", doctor_id));
+        nameValuePairs.add(new BasicNameValuePair("booking_date", et_date.getText().toString()));
+        nameValuePairs.add(new BasicNameValuePair("appointment_branch_code", branchPOJOList.get(spinner_branch.getSelectedItemPosition()).getBranch_code()));
+        new WebServiceBase(nameValuePairs, this, GET_BOOKED_APPOINTMENTS).execute(ApiConfig.get_doctor_booked_appointment);
+
     }
 
 
@@ -226,6 +280,7 @@ public class AddPatientAppointment extends AppCompatActivity implements WebServi
     }
 
     public void parseAllBranches(String response) {
+        Log.d(TagUtils.getTag(),"branch response:-"+response);
         branchPOJOList.clear();
         try {
             JSONArray jsonArray = new JSONArray(response);
@@ -245,12 +300,14 @@ public class AddPatientAppointment extends AppCompatActivity implements WebServi
             ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<String>(
                     getApplicationContext(), R.layout.dropsimpledown, braStringList);
             spinner_branch.setAdapter(spinnerArrayAdapter);
-            if (branchPOJOList.size() > 0) {
-                getbranchdoctors(branchPOJOList.get(0));
-            }
+//            if (branchPOJOList.size() > 0) {
+//                Log.d(TagUtils.getTag(),"called");
+//                getbranchdoctors(branchPOJOList.get(0));
+//            }
             spinner_branch.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                 @Override
                 public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                    Log.d(TagUtils.getTag(),"called");
                     getbranchdoctors(branchPOJOList.get(position));
                 }
 
@@ -266,21 +323,36 @@ public class AddPatientAppointment extends AppCompatActivity implements WebServi
 
     public void getbranchdoctors(BranchPOJO branchPOJO) {
         ArrayList<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
-        nameValuePairs.add(new BasicNameValuePair("bracch_code  ", branchPOJO.getBranch_code()));
+        nameValuePairs.add(new BasicNameValuePair("bracch_code", branchPOJO.getBranch_code()));
         new WebServiceBase(nameValuePairs, this, GET_DOCTORS_API).execute(ApiConfig.get_branch_doctor);
     }
 
     @Override
     public void onDateSet(DatePickerDialog view, int year, int monthOfYear, int dayOfMonth) {
         String date = "";
-        if ((monthOfYear + 1) < 10) {
-            date = dayOfMonth + "-0" + (monthOfYear + 1) + "-" + year;
-        } else {
-            date = dayOfMonth + "-" + (monthOfYear + 1) + "-" + year;
+        String month="";
+
+        if(dayOfMonth<10){
+            date="0"+dayOfMonth;
+        }else{
+            date=String.valueOf(dayOfMonth);
         }
-        et_date.setText(date);
+
+        if((monthOfYear+1)<10){
+            month="0"+(monthOfYear+1);
+        }else{
+            month=String.valueOf(monthOfYear+1);
+        }
+
+        String dates=date+"-"+month+"-"+year;
+
+        Log.d(TagUtils.getTag(),"dates:-"+dates);
+        et_date.setText(dates);
+        if(doctorResultPOJO!=null) {
+            callBookedAppointmentsAPI(doctorResultPOJO.getId());
+        }
     }
-    List<Integer> list_removed_position = new ArrayList<>();
+    List<String> list_removed_position = new ArrayList<>();
     public class HorizontalAdapter extends RecyclerView.Adapter<HorizontalAdapter.MyViewHolder> {
 
         private List<String> horizontalList;
@@ -320,41 +392,46 @@ public class AddPatientAppointment extends AppCompatActivity implements WebServi
             holder.ll_time.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    callAddAppointmentAPI(horizontalList.get(position));
+                    if(et_reason.getText().toString().length()>0) {
+                        String time_selected=horizontalList.get(position);
+                        String date=et_date.getText().toString();
+
+                        String date_time=date+" "+time_selected;
+
+                        try {
+                            SimpleDateFormat sdf=new SimpleDateFormat("dd-MM-yyyy HH:mm");
+                            Date selected_date=sdf.parse(date_time);
+                            Date current_date=new Date();
+                            Log.d(TagUtils.getTag(),"selected:-"+selected_date.toString());
+                            Log.d(TagUtils.getTag(),"current:-"+current_date.toString());
+                            if(current_date.before(selected_date)){
+//                                callAddAppointmentAPI(horizontalList.get(position));
+                                Intent i = new Intent(AddPatientAppointment.this, PayUMoneyAppointments.class);
+                                String url="http://oldmaker.com/fijiyo/payumoney/PayUMoney_form.php?amount=500"+
+                                        "&name="+AppPreferences.getInstance(getApplicationContext()).getFirstName()
+                                        +" "+AppPreferences.getInstance(getApplicationContext()).getLastName()
+                                        +"&email="+AppPreferences.getInstance(getApplicationContext()).getEmail()+"&phone="
+                                        +AppPreferences.getInstance(getApplicationContext()).getMobile()+"&productinfo=appointment";
+                                i.putExtra("url",url);
+                                i.putExtra("time",horizontalList.get(position));
+                                startActivityForResult(i, 105);
+
+                            }else{
+                                ToastClass.showShortToast(getApplicationContext(),"You selected passed date and time");
+                            }
+
+                        } catch (ParseException e) {
+                            e.printStackTrace();
+                            ToastClass.showShortToast(getApplicationContext(),"Please Select Proper date time");
+                        }
+
+
+                    }
+                    else{
+                        ToastClass.showShortToast(getApplicationContext(),"Please Enter the reason first");
+                    }
                 }
             });
-
-//            if (list_removed_position.contains(position)) {
-//                holder.tv_time.setTextColor(Color.RED);
-//                Log.e(TagUtils.getTag(), "morngtime");
-//
-//            } else {
-//                holder.ll_time.setOnClickListener(new View.OnClickListener() {
-//                    @Override
-//                    public void onClick(View view) {
-//
-////                        methods();
-//                        edit_time = horizontalList.get(position);
-//                        holder.tv_time.setTextColor(Color.BLACK);
-//                        if (edit_reason.getText().toString().length() > 1) {
-//                            if (AppPreferences.getInstance(getActivity()).getUSER_BRANCH_CODE().equals("")) {
-//                                Toast.makeText(getActivity(), "No clinic Branch added by you", Toast.LENGTH_LONG).show();
-//                            } else {
-//                                initProgressDialog("Please wait..");
-//                                addExpenseApiCall(edit_time);
-//                            }
-//                        } else {
-//                            Toast.makeText(getActivity(), "Please add reason for appointments first", Toast.LENGTH_LONG).show();
-//                            edit_reason.requestFocus();
-//                        }
-//                    }
-//
-//                    private void methods() {
-//                        holder.tv_time.setTextColor(Color.GREEN);
-//                    }
-//                });
-//            }
-
         }
 
         @Override
@@ -363,7 +440,7 @@ public class AddPatientAppointment extends AppCompatActivity implements WebServi
         }
     }
 
-
+    String appointment_selected_time="";
     public void callAddAppointmentAPI(String time){
         try {
             ArrayList<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
@@ -374,6 +451,9 @@ public class AddPatientAppointment extends AppCompatActivity implements WebServi
             nameValuePairs.add(new BasicNameValuePair("appointment_branch_code", branchPOJOList.get(spinner_branch.getSelectedItemPosition()).getBranch_code()));
             nameValuePairs.add(new BasicNameValuePair("reason", et_reason.getText().toString()));
             nameValuePairs.add(new BasicNameValuePair("visit_type", "First Visit"));
+
+            appointment_selected_time=time;
+            et_reason.setText("");
             new WebServiceBase(nameValuePairs, this, ADD_APPOINTMENT_API).execute(ApiConfig.add_appointment_api);
         }
         catch (Exception e){
@@ -381,4 +461,18 @@ public class AddPatientAppointment extends AppCompatActivity implements WebServi
             e.printStackTrace();
         }
     }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        if (requestCode == 105) {
+            if(resultCode == Activity.RESULT_OK){
+                String result=data.getStringExtra("result");
+                callAddAppointmentAPI(result);
+            }
+            if (resultCode == Activity.RESULT_CANCELED) {
+                //Write your code if there's no result
+            }
+        }
+    }//onActivityResult
 }

@@ -39,7 +39,7 @@ public class LocationService extends Service {
     Handler ha = new Handler();
     //    private LocationListener locListener = new MyLocationListener();
     GPSTracker gps;
-    String dev_id,latitude,longitude,altitiude,accuracy,time,degree,speed;
+    String dev_id, latitude, longitude, altitiude, accuracy, time, degree, speed;
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
@@ -117,12 +117,11 @@ public class LocationService extends Service {
         new CountDownTimer(30000000, 10000) {
             @Override
             public void onTick(long millisUntilFinished) {
-                Log.d("shubhamlocation","It's true");
-                if (gps_enabled){
-                    gpsenable="1";
-                }
-                else{
-                    gpsenable="0";
+                Log.d("shubhamlocation", "It's true");
+                if (gps_enabled) {
+                    gpsenable = "1";
+                } else {
+                    gpsenable = "0";
                 }
                 locListener = new MyLocationListener();
                 locManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
@@ -156,31 +155,30 @@ public class LocationService extends Service {
 //                locManager.removeUpdates(locListener);
 
 //               for(int sp=0; sp<location.getLatitude()-1)
-                 longitude = location.getLongitude()+"";
-                 latitude = location.getLatitude()+"";
+                longitude = location.getLongitude() + "";
+                latitude = location.getLatitude() + "";
                 Double lon = location.getLatitude();
 
                 Double lan = location.getLongitude();
-                 altitiude = location.getAltitude()+"";
-                 accuracy = location.getAccuracy()+"";
-                 time = location.getTime()+"";
-                 degree = location.getBearing()+"";
-                 speed = location.getSpeed()+"";
+                altitiude = location.getAltitude() + "";
+                accuracy = location.getAccuracy() + "";
+                time = location.getTime() + "";
+                degree = location.getBearing() + "";
+                speed = location.getSpeed() + "";
 //				speedinmph = 16;
 //				 speedtest=16;
                 int speedinmph = (int) ((location.getSpeed() * 2236) / 1000);
                 int speedinkmhr = (int) ((location.getSpeed() * 3600) / 1000);
-try {
-    addAGps();
-}
-catch (Exception e){
-    e.printStackTrace();
-}
+                try {
+                    addAGps();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
 
                 Log.d("shubhamlocation", longitude + " " + " " + latitude + speed + "" + " " + speedinkmhr + "");
 
                 /*Geocoder geocoder;
-				List<Address> addresses;
+                List<Address> addresses;
 				geocoder = new Geocoder(getActivity(), Locale.getDefault());
 				try {
 					addresses = geocoder.getFromLocation(lon, lan, 1); // Here 1 represent max location result to returned, by documents it recommended 1 to 5
@@ -426,14 +424,14 @@ catch (Exception e){
         }
     }
 
-    private void addAGps(){
-        String datetime=System.currentTimeMillis()+"";
-        Log.d("datetime",datetime);
-        Date d=new Date();
-        SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-ddHH:mm:ss");
-        String date_time=sdf.format(d);
-        Log.d("datetime","date:time:-"+date_time);
-        String api = "http://mygpstracker.co.in/api/api_loc.php?"+"imei="+dev_id+"&dt="+date_time+"&lat="+latitude+"&lng="+longitude+"&altitude="+altitiude+"&angle="+degree+"&speed="+speed+"&loc_valid="+gpsenable+"&param=batp=100"+"|"+"acc="+accuracy+"|";
+    private void addAGps() {
+        String datetime = System.currentTimeMillis() + "";
+        Log.d("datetime", datetime);
+        Date d = new Date();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-ddHH:mm:ss");
+        String date_time = sdf.format(d);
+        Log.d("datetime", "date:time:-" + date_time);
+        String api = "http://mygpstracker.co.in/api/api_loc.php?" + "imei=" + dev_id + "&dt=" + date_time + "&lat=" + latitude + "&lng=" + longitude + "&altitude=" + altitiude + "&angle=" + degree + "&speed=" + speed + "&loc_valid=" + gpsenable + "&param=batp=100" + "|" + "acc=" + accuracy + "|";
 //        final String data="{\"email\":\""+email+"\",\"password\":\""+password+"\"}";
         /*Log.e("date",date);
         Log.e("time",time);
@@ -443,7 +441,7 @@ catch (Exception e){
                     @Override
                     public void onResponse(String response) {
                         try {
-                            Log.e("result",response);
+                            Log.e("result", response);
 //                            JSONObject jsonObject=new JSONObject(response);
 //                            String status=jsonObject.optString("status");
 //                            String Usersname=jsonObject.getString("message");
@@ -470,11 +468,11 @@ catch (Exception e){
 //                        Toast.makeText(StmtActivity.this,error.toString(),Toast.LENGTH_LONG).show();
                         Log.w("Postdat", "" + error);
                     }
-                }){
+                }) {
 
 
-            protected Map<String,String> getParams(){
-                Map<String,String> objresponse = new HashMap<String, String>();
+            protected Map<String, String> getParams() {
+                Map<String, String> objresponse = new HashMap<String, String>();
 //                objresponse.put("request", "Login");
 ////                objresponse.put("data",data);
 //                objresponse.put("_token", "");
@@ -486,6 +484,7 @@ catch (Exception e){
         RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
         requestQueue.add(stringRequest);
     }
+
     private void StartForground() {
 //        LocationChangeDetector locationChangeDetector = new LocationChangeDetector(context);
 //        locationChangeDetector.getLatAndLong();
@@ -495,7 +494,7 @@ catch (Exception e){
 
                 //.setSmallIcon(R.drawable.picture)
                 .build();
-        startForeground(101,  notification);
+        startForeground(101, notification);
 
     }
 

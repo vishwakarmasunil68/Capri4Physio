@@ -65,7 +65,7 @@ public class CourceAdapter extends RecyclerView.Adapter<CourceAdapter.MyViewHold
     public void onBindViewHolder(final MyViewHolder holder, final int position) {
 
         holder.tv_cource_name.setText(horizontalList.get(position).getC_name());
-        holder.tv_seat_available.setText(horizontalList.get(position).getC_sheet_available()+ " seats available");
+        holder.tv_seat_available.setText(horizontalList.get(position).getC_showing_sheet()+ " seats available");
         holder.tv_dates.setText(horizontalList.get(position).getC_from_date()+" - "+horizontalList.get(position).getC_to_date());
         holder.tv_place.setText(horizontalList.get(position).getC_place());
         holder.ll_cource.setOnClickListener(new View.OnClickListener() {

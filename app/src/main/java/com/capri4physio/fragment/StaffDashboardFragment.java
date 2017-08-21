@@ -1,10 +1,12 @@
 package com.capri4physio.fragment;
 
 import android.app.Activity;
+import android.app.ActivityManager;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.FragmentTransaction;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -20,12 +22,17 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
 import com.capri4physio.R;
+import com.capri4physio.Services.LocationService;
 import com.capri4physio.activity.ChatUserActivity;
 import com.capri4physio.activity.CourseActivity;
+import com.capri4physio.activity.ManageAppointmentActivity;
 import com.capri4physio.activity.ScheduleActivity;
+import com.capri4physio.activity.TherapistActivity;
+import com.capri4physio.activity.TreatmentActivity;
 import com.capri4physio.addbranch.AddBranchHeadGFragment;
 import com.capri4physio.listener.FragmentListener;
 import com.capri4physio.util.AppPreferences;
+import com.capri4physio.util.TagUtils;
 
 import alarm.AlarmManageService;
 
@@ -92,9 +99,20 @@ public class StaffDashboardFragment extends BaseFragment {
                 }
             }
         } else {
+            if(AppPreferences.getInstance(getActivity().getApplicationContext()).getUserType().equals("2")){
+                rootView = inflater.inflate(R.layout.fragment_doctor_dashboard, container, false);
+                if(!isMyServiceRunning(LocationService.class)){
+                    getActivity().startService(new Intent(getActivity(), LocationService.class));
+                }
+
+                Log.d(TagUtils.getTag(),"device token:-"+AppPreferences.GetDeviceToken(getActivity().getApplicationContext()));
+
+            }else{
+                rootView = inflater.inflate(R.layout.fragment_staff_dashboard, container, false);
+            }
 
             Log.d("sunil", "view222");
-            rootView = inflater.inflate(R.layout.fragment_staff_dashboard, container, false);
+
 
         }
 
@@ -103,7 +121,15 @@ public class StaffDashboardFragment extends BaseFragment {
         setHasOptionsMenu(true);
         return rootView;
     }
-
+    private boolean isMyServiceRunning(Class<?> serviceClass) {
+        ActivityManager manager = (ActivityManager) getActivity().getSystemService(Context.ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+            if (serviceClass.getName().equals(service.service.getClassName())) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     @Override
     protected void initView(View view) {
@@ -122,6 +148,29 @@ public class StaffDashboardFragment extends BaseFragment {
         addbranch = (RelativeLayout) view.findViewById(R.id.addbranch);
         rl_course = (RelativeLayout) view.findViewById(R.id.rl_course);
 
+        try{
+            View rl_appointment=view.findViewById(R.id.rl_appointment);
+            rl_appointment.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    startActivity(new Intent(getActivity(), ManageAppointmentActivity.class));
+                }
+            });
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
+        try{
+            View rl_treatment=view.findViewById(R.id.rl_treatment);
+            rl_treatment.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    startActivity(new Intent(getActivity(), TreatmentActivity.class));
+                }
+            });
+        }catch (Exception e){
+            e.printStackTrace();
+        }
 
         if (AppPreferences.getInstance(getActivity()).getUserType().equals("4")) {
             message.setVisibility(View.VISIBLE);
@@ -147,20 +196,24 @@ public class StaffDashboardFragment extends BaseFragment {
                 }
             });
         }
+        try {
+            rl_course.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    startActivity(new Intent(getActivity(), CourseActivity.class));
+                }
+            });
 
-        rl_course.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(getActivity(), CourseActivity.class));
-            }
-        });
-
-        rl_therapist.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-            }
-        });
+            rl_therapist.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    startActivity(new Intent(getActivity(), TherapistActivity.class));
+                }
+            });
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     private void addNewClinic() {
@@ -223,14 +276,18 @@ public class StaffDashboardFragment extends BaseFragment {
                 addbranch();
             }
         });
+        try {
+            message.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
 
-        message.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                viewclinic();
-            }
-        });
+                    viewclinic();
+                }
+            });
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
         schedule.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

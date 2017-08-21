@@ -52,6 +52,11 @@ public class UpdateCourceActivity extends AppCompatActivity implements WebServic
     EditText et_showing_seat;
     @BindView(R.id.et_fees)
     EditText et_fees;
+    @BindView(R.id.et_rem_fees)
+    EditText et_rem_fees;
+    @BindView(R.id.et_reg_fees)
+    EditText et_reg_fees;
+
     @BindView(R.id.et_phone)
     EditText et_phone;
     @BindView(R.id.btn_add_course)
@@ -81,6 +86,8 @@ public class UpdateCourceActivity extends AppCompatActivity implements WebServic
             et_fees.setText(courcesResultPOJO.getC_fees());
             et_phone.setText(courcesResultPOJO.getC_pno());
             et_place.setText(courcesResultPOJO.getC_place());
+            et_reg_fees.setText(courcesResultPOJO.getC_reg_fees());
+            et_rem_fees.setText(courcesResultPOJO.getC_rem_fees());
         }else{
             finish();
         }
@@ -128,7 +135,10 @@ public class UpdateCourceActivity extends AppCompatActivity implements WebServic
                     nameValuePairs.add(new BasicNameValuePair("c_to_date", et_to_date.getText().toString()));
                     nameValuePairs.add(new BasicNameValuePair("c_place", et_place.getText().toString()));
                     nameValuePairs.add(new BasicNameValuePair("c_sheet_available", et_seat_available.getText().toString()));
+                    nameValuePairs.add(new BasicNameValuePair("c_rem_seat", courcesResultPOJO.getC_rem_seat()));
                     nameValuePairs.add(new BasicNameValuePair("c_showing_sheet", et_showing_seat.getText().toString()));
+                    nameValuePairs.add(new BasicNameValuePair("c_reg_fees", et_showing_seat.getText().toString()));
+                    nameValuePairs.add(new BasicNameValuePair("c_rem_fees", et_showing_seat.getText().toString()));
                     nameValuePairs.add(new BasicNameValuePair("c_fees", et_fees.getText().toString()));
                     nameValuePairs.add(new BasicNameValuePair("c_pno", et_phone.getText().toString()));
                     nameValuePairs.add(new BasicNameValuePair("c_id", courcesResultPOJO.getC_id()));

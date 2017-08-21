@@ -7,6 +7,8 @@ import android.app.FragmentTransaction;
 import android.content.DialogInterface;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
@@ -34,6 +36,8 @@ import com.capri4physio.model.assessment.TreatmentModel;
 import com.capri4physio.net.ApiConfig;
 import com.capri4physio.task.UrlConnectionTask;
 import com.capri4physio.util.AppLog;
+import com.capri4physio.util.HandlerConstant;
+import com.capri4physio.util.TagUtils;
 import com.capri4physio.util.Utils;
 
 import org.json.JSONObject;
@@ -63,7 +67,7 @@ public class TreatmentFragment extends BaseFragment implements HttpUrlListener, 
     private static final String KEY_TYPE = "type";
     private String patientId = "";
     private String assessmentType = "";
-    private Button mBtnAdd;
+    private Button mBtnAdd,btn_skip;
 
 
     /**
@@ -134,6 +138,7 @@ public class TreatmentFragment extends BaseFragment implements HttpUrlListener, 
         mRecyclerView.setLayoutManager(layoutManager);
         mRecyclerView.setAdapter(mAdapter);
         mBtnAdd = (Button) view.findViewById(R.id.btn_add);
+        btn_skip = (Button) view.findViewById(R.id.btn_skip);
     }
 
 
@@ -144,6 +149,22 @@ public class TreatmentFragment extends BaseFragment implements HttpUrlListener, 
             @Override
             public void onClick(View view) {
                 addFragment();
+            }
+        });
+        btn_skip.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getFragmentManager().popBackStack();
+                HandlerConstant.POP_BACK_HANDLER.sendMessage(HandlerConstant.POP_BACK_HANDLER.obtainMessage(0,"11"));
+            }
+        });
+        HandlerConstant.POP_INNER_BACK_HANDLER= new Handler(new Handler.Callback() {
+            @Override
+            public boolean handleMessage(Message msg) {
+                String message = (String) msg.obj;
+                Log.d(TagUtils.getTag(),"pop back handler:-"+message);
+                btn_skip.callOnClick();
+                return false;
             }
         });
     }
@@ -180,14 +201,16 @@ public class TreatmentFragment extends BaseFragment implements HttpUrlListener, 
             Utils.showMessage(getActivity(), getResources().getString(R.string.err_network));
         }
     }
+
     @Override
     public void onPause() {
-        super.onStart();
-        Log.e("start","onStart");
+        super.onPause();
+        Log.e("start", "onStart");
         AppCompatActivity activity = (AppCompatActivity) getActivity();
         ActionBar actionBar = activity.getSupportActionBar();
         actionBar.setTitle("Treatment Advice");
     }
+
     @Override
     public void onStart() {
         super.onStart();
@@ -195,6 +218,7 @@ public class TreatmentFragment extends BaseFragment implements HttpUrlListener, 
         ActionBar actionBar = activity.getSupportActionBar();
         actionBar.setTitle("Treatment Advice");
     }
+
     private void deleteAlert(final String id, final int itemPos) {
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
@@ -204,7 +228,7 @@ public class TreatmentFragment extends BaseFragment implements HttpUrlListener, 
             @Override
             public void onClick(DialogInterface dialog, int which) {
 
-                deleteApiCall(id,itemPos);
+                deleteApiCall(id, itemPos);
 
             }
         });
@@ -212,14 +236,15 @@ public class TreatmentFragment extends BaseFragment implements HttpUrlListener, 
         builder.create();
         builder.show();
     }
-    private void deleteApiCall(String recordId,int itemPos) {
+
+    private void deleteApiCall(String recordId, int itemPos) {
         if (Utils.isNetworkAvailable(getActivity())) {
 
             try {
                 JSONObject params = new JSONObject();
                 params.put(ApiConfig.ASSESSMENT_TYPE, assessmentType);
                 params.put(ApiConfig.DELET_ID, recordId);
-                position=itemPos;
+                position = itemPos;
                 new UrlConnectionTask(getActivity(), ApiConfig.DELETE_ASSESSMENT_URL, ApiConfig.ID2, true, params, BaseModel.class, this).execute("");
 
             } catch (Exception e) {
@@ -230,7 +255,9 @@ public class TreatmentFragment extends BaseFragment implements HttpUrlListener, 
             Utils.showMessage(getActivity(), getResources().getString(R.string.err_network));
         }
     }
+
     int position;
+
     @Override
     public void onPostSuccess(Object response, int id) {
 
@@ -250,11 +277,11 @@ public class TreatmentFragment extends BaseFragment implements HttpUrlListener, 
                 BaseModel deleteResponse = (BaseModel) response;
                 AppLog.i("Capri4Physio", "Patient delete Response : " + deleteResponse.getStatus());
                 if (deleteResponse.getStatus() > 0) {
-                    if(position!=-1) {
+                    if (position != -1) {
                         mList.remove(position);
                         mAdapter.notifyDataSetChanged();
                         showSnackMessage(deleteResponse.getMessage());
-                    viewAssessmentApiCall();
+                        viewAssessmentApiCall();
                         position = -1;
                     }
                 }
@@ -280,7 +307,7 @@ public class TreatmentFragment extends BaseFragment implements HttpUrlListener, 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
-        getActivity().getMenuInflater().inflate(R.menu.main,menu);
+        getActivity().getMenuInflater().inflate(R.menu.main, menu);
     }
 
     /**
@@ -307,16 +334,13 @@ public class TreatmentFragment extends BaseFragment implements HttpUrlListener, 
 
     @Override
     public void onViewItemClick(TreatmentItem treatmentItem, int position, int actionId) {
-        if (position==-2) {
+        if (position == -2) {
             getFragmentManager().popBackStack();
             showSnackMessage("Saved Successfully");
 
+        } else {
+            deleteAlert(treatmentItem.getId(), position);
+            Log.d("id", position + "");
         }
-        else{
-            deleteAlert(treatmentItem.getId(),position);
-            Log.d("id",position+"");
-        }
-}
-
-
+    }
 }

@@ -70,7 +70,7 @@ public class RemarksFragment extends BaseFragment implements HttpUrlListener, Vi
     private static final String KEY_TYPE = "type";
     private String patientId = "";
     private String assessmentType = "";
-    private Button mAdd;
+    private Button mAdd,btn_skip;
 
 
     /**
@@ -143,6 +143,7 @@ public class RemarksFragment extends BaseFragment implements HttpUrlListener, Vi
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         mRecyclerView.setLayoutManager(layoutManager);
         mAdd= (Button) view.findViewById(R.id.btn_add);
+        btn_skip= (Button) view.findViewById(R.id.btn_skip);
     }
 
     @Override
@@ -154,6 +155,7 @@ public class RemarksFragment extends BaseFragment implements HttpUrlListener, Vi
                 addFragment();
             }
         });
+        btn_skip.setVisibility(View.GONE);
     }
 
 

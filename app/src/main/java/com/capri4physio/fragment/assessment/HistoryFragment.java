@@ -7,6 +7,8 @@ import android.app.FragmentTransaction;
 import android.content.DialogInterface;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
@@ -35,6 +37,8 @@ import com.capri4physio.net.ApiConfig;
 import com.capri4physio.task.UrlConnectionTask;
 import com.capri4physio.util.AppLog;
 import com.capri4physio.util.Constants;
+import com.capri4physio.util.HandlerConstant;
+import com.capri4physio.util.TagUtils;
 import com.capri4physio.util.Utils;
 
 import org.json.JSONObject;
@@ -56,7 +60,7 @@ import java.util.List;
 public class HistoryFragment extends BaseFragment implements HttpUrlListener, ViewItemClickListener<HistoryItem> {
 
     private RecyclerView mRecyclerView;
-    private Button mBtnAdd;
+    private Button mBtnAdd, btn_skip;
     private CoordinatorLayout mSnackBarLayout;
     private HistoryAdapter mAdapter;
     private List<HistoryItem> mList;
@@ -136,6 +140,7 @@ public class HistoryFragment extends BaseFragment implements HttpUrlListener, Vi
         mRecyclerView.setAdapter(mAdapter);
 
         mBtnAdd = (Button) view.findViewById(R.id.btn_add);
+        btn_skip = (Button) view.findViewById(R.id.btn_skip);
     }
 
     @Override
@@ -145,6 +150,22 @@ public class HistoryFragment extends BaseFragment implements HttpUrlListener, Vi
             @Override
             public void onClick(View view) {
                 addFragment();
+            }
+        });
+        btn_skip.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getFragmentManager().popBackStack();
+                HandlerConstant.POP_BACK_HANDLER.sendMessage(HandlerConstant.POP_BACK_HANDLER.obtainMessage(0, "2"));
+            }
+        });
+
+        HandlerConstant.POP_INNER_BACK_HANDLER= new Handler(new Handler.Callback() {
+            @Override
+            public boolean handleMessage(Message msg) {
+                String message = (String) msg.obj;
+                btn_skip.callOnClick();
+                return false;
             }
         });
     }
@@ -171,7 +192,7 @@ public class HistoryFragment extends BaseFragment implements HttpUrlListener, Vi
                 JSONObject params = new JSONObject();
                 params.put(ApiConfig.PATIENT_ID, patientId);
                 params.put(ApiConfig.ASSESSMENT_TYPE, assessmentType);
-
+                Log.d(TagUtils.getTag(),"params:-"+params.toString());
                 new UrlConnectionTask(getActivity(), ApiConfig.VIEW_ASSESSMENT_URL, ApiConfig.ID1, true, params, HistoryModel.class, this).execute("");
 
             } catch (Exception e) {
@@ -183,7 +204,7 @@ public class HistoryFragment extends BaseFragment implements HttpUrlListener, Vi
         }
     }
 
-    private void deleteApiCall(String recordId,int position1) {
+    private void deleteApiCall(String recordId, int position1) {
         if (Utils.isNetworkAvailable(getActivity())) {
 
             try {
@@ -201,8 +222,10 @@ public class HistoryFragment extends BaseFragment implements HttpUrlListener, Vi
             Utils.showMessage(getActivity(), getResources().getString(R.string.err_network));
         }
     }
-int position;
-    private void deleteAlert(final String id,final int position1) {
+
+    int position;
+
+    private void deleteAlert(final String id, final int position1) {
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setMessage("Are you sure, you want to delete");
@@ -211,7 +234,7 @@ int position;
             @Override
             public void onClick(DialogInterface dialog, int which) {
 
-                deleteApiCall(id,position1);
+                deleteApiCall(id, position1);
 
             }
         });
@@ -242,7 +265,7 @@ int position;
                     mList.remove(position);
                     mAdapter.notifyDataSetChanged();
                     showSnackMessage(deleteResponse.getMessage());
-                    position=-1;
+                    position = -1;
                 }
                 break;
         }
@@ -265,12 +288,13 @@ int position;
 
     @Override
     public void onPause() {
-        super.onStart();
-        Log.e("start","onStart");
+        super.onPause();
+        Log.e("start", "onStart");
         AppCompatActivity activity = (AppCompatActivity) getActivity();
         ActionBar actionBar = activity.getSupportActionBar();
         actionBar.setTitle("History Exam");
     }
+
     @Override
     public void onStart() {
         super.onStart();
@@ -278,19 +302,20 @@ int position;
         ActionBar actionBar = activity.getSupportActionBar();
         actionBar.setTitle("History Exam");
     }
+
     @Override
     public void onViewItemClick(HistoryItem history, int position, int actionId) {
-        if (actionId == Constants.ClickIDConst.ID_VIEW_CLICK){
+        if (actionId == Constants.ClickIDConst.ID_VIEW_CLICK) {
             getFragmentManager().popBackStack();
-        }
-        else {
-            deleteAlert(history.getId(),position);
+        } else {
+            deleteAlert(history.getId(), position);
         }
     }
+
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
-        getActivity().getMenuInflater().inflate(R.menu.main,menu);
+        getActivity().getMenuInflater().inflate(R.menu.main, menu);
     }
 
     /**

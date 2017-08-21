@@ -54,6 +54,7 @@ public class ChatUserAdapter extends RecyclerView.Adapter<ChatUserAdapter.MyView
     public class MyViewHolder extends RecyclerView.ViewHolder {
         public TextView tv_chat;
         public TextView tv_time;
+        public TextView tv_admin;
         public ImageView iv_image;
         public ImageView iv_video_image;
         public ImageView iv_video_download;
@@ -66,6 +67,7 @@ public class ChatUserAdapter extends RecyclerView.Adapter<ChatUserAdapter.MyView
             super(view);
             tv_chat = (TextView) view.findViewById(R.id.tv_chat);
             tv_time = (TextView) view.findViewById(R.id.tv_time);
+            tv_admin = (TextView) view.findViewById(R.id.tv_admin);
             iv_image = (ImageView) view.findViewById(R.id.iv_image);
             iv_video_image = (ImageView) view.findViewById(R.id.iv_video_image);
             iv_video_download = (ImageView) view.findViewById(R.id.iv_video_download);
@@ -102,7 +104,9 @@ public class ChatUserAdapter extends RecyclerView.Adapter<ChatUserAdapter.MyView
             holder.ll_main.setGravity(Gravity.LEFT | Gravity.CENTER_VERTICAL);
             holder.ll_main.setGravity(Gravity.LEFT | Gravity.CENTER_VERTICAL);
             holder.ll_chat.setBackgroundResource(R.drawable.chat_receive_linear_back);
+            holder.tv_admin.setVisibility(View.VISIBLE);
         } else {
+            holder.tv_admin.setVisibility(View.GONE);
             if (user_id.equals(horizontalList.get(position).getChat_user_id())) {
                 holder.ll_main.setGravity(Gravity.RIGHT | Gravity.CENTER_VERTICAL);
                 holder.ll_main.setGravity(Gravity.RIGHT | Gravity.CENTER_VERTICAL);
@@ -129,6 +133,7 @@ public class ChatUserAdapter extends RecyclerView.Adapter<ChatUserAdapter.MyView
             holder.iv_image.setVisibility(View.GONE);
             holder.frame_video.setVisibility(View.GONE);
             holder.tv_chat.setText(chatPOJO.getChat_msg());
+            holder.tv_chat.setVisibility(View.VISIBLE);
         } else {
             if (chatPOJO.getChat_type().equals("image")) {
                 holder.iv_image.setVisibility(View.VISIBLE);
@@ -196,6 +201,9 @@ public class ChatUserAdapter extends RecyclerView.Adapter<ChatUserAdapter.MyView
                 }
             }
         }
+
+
+        holder.itemView.setTag(horizontalList.get(position));
     }
 
     public void downloadVideoFile(final ImageView imageView, final String destination_path, String url) {

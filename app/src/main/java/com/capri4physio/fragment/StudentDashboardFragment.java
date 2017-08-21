@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.android.volley.Request;
@@ -25,6 +26,7 @@ import com.capri4physio.R;
 import com.capri4physio.activity.ChatActivity;
 import com.capri4physio.activity.ChatUserActivity;
 import com.capri4physio.activity.SelectCourseActivity;
+import com.capri4physio.activity.StudentCourseBillingActivity;
 import com.capri4physio.listener.FragmentListener;
 import com.capri4physio.net.ApiConfig;
 import com.capri4physio.util.AppPreferences;
@@ -44,7 +46,7 @@ public class StudentDashboardFragment extends BaseFragment {
     ProgressDialog pDialog;
     private FragmentListener mListener;
     ImageView img_chat;
-
+    RelativeLayout rl_billing;
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
@@ -99,6 +101,7 @@ public class StudentDashboardFragment extends BaseFragment {
         img_billing = (View) view.findViewById(R.id.img_billing);
         std_dashboard = (LinearLayout) view.findViewById(R.id.std_dashboard);
         img_chat = (ImageView) view.findViewById(R.id.img_chat);
+        rl_billing = (RelativeLayout) view.findViewById(R.id.rl_billing);
 
         img_chat.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -106,6 +109,7 @@ public class StudentDashboardFragment extends BaseFragment {
 
                 if (AppPreferences.getInstance(getActivity().getApplicationContext()).getUserType().equals(Constants.GlobalConst.USER_STUDENT)) {
                     Intent intent = new Intent(getActivity(), ChatActivity.class);
+                    intent.putExtra("user_id",AppPreferences.getInstance(getActivity().getApplicationContext()).getUserID());
                     intent.putExtra("friend_user_id", "1");
                     startActivity(intent);
                 } else {
@@ -113,6 +117,13 @@ public class StudentDashboardFragment extends BaseFragment {
                     intent.putExtra("user_type", AppPreferences.getInstance(getActivity().getApplicationContext()).getUserType());
                     startActivity(intent);
                 }
+            }
+        });
+
+        rl_billing.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(getActivity(), StudentCourseBillingActivity.class));
             }
         });
     }
@@ -293,16 +304,16 @@ public class StudentDashboardFragment extends BaseFragment {
             }
         });
 
-        img_billing.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                ViewInvoicesPatientFragment reportfragment = ViewInvoicesPatientFragment.newInstance();
-                FragmentTransaction ft = getFragmentManager().beginTransaction();
-                ft.replace(R.id.fragment_container, reportfragment);
-                ft.addToBackStack(null);
-                ft.commit();
-            }
-        });
+//        img_billing.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                ViewInvoicesPatientFragment reportfragment = ViewInvoicesPatientFragment.newInstance();
+//                FragmentTransaction ft = getFragmentManager().beginTransaction();
+//                ft.replace(R.id.fragment_container, reportfragment);
+//                ft.addToBackStack(null);
+//                ft.commit();
+//            }
+//        });
 
     }
 }

@@ -34,6 +34,7 @@ import com.capri4physio.model.assessment.CheifComplaintModel;
 import com.capri4physio.net.ApiConfig;
 import com.capri4physio.task.UrlConnectionTask;
 import com.capri4physio.util.AppLog;
+import com.capri4physio.util.HandlerConstant;
 import com.capri4physio.util.Utils;
 
 import org.json.JSONObject;
@@ -65,7 +66,7 @@ public class CheifComplaintFragment extends BaseFragment implements HttpUrlListe
     private static final String KEY_TYPE = "type";
     private String patientId = "";
     private String assessmentType = "";
-
+    private Button btn_skip;
 
     /**
      * Use this factory method to create a new instance of
@@ -130,6 +131,7 @@ public class CheifComplaintFragment extends BaseFragment implements HttpUrlListe
 
         mSnackBarLayout = (CoordinatorLayout) view.findViewById(R.id.coordinator_layout);
         mRecyclerView = (RecyclerView) view.findViewById(R.id.recycler);
+        btn_skip = (Button) view.findViewById(R.id.btn_skip);
         mRecyclerView.setHasFixedSize(true);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
@@ -150,14 +152,22 @@ public class CheifComplaintFragment extends BaseFragment implements HttpUrlListe
             }
         });
 
+        btn_skip.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getFragmentManager().popBackStack();
+                HandlerConstant.POP_BACK_HANDLER.sendMessage(HandlerConstant.POP_BACK_HANDLER.obtainMessage(0,"1"));
+            }
+        });
+
     }
 
 
     private void addFragment() {
-        Intent intent =new Intent(getActivity(),AddComplaintFragment.class);
-        intent.putExtra("patient_id",patientId);
-        intent.putExtra("type",assessmentType);
-        startActivityForResult(intent,2);
+        Intent intent = new Intent(getActivity(), AddComplaintFragment.class);
+        intent.putExtra("patient_id", patientId);
+        intent.putExtra("type", assessmentType);
+        startActivityForResult(intent, 2);
         /*FragmentTransaction ft = getFragmentManager().beginTransaction();
         AddComplaintFragment addComplaintFragment = AddComplaintFragment.newInstance(patientId, assessmentType);
         ft.replace(R.id.fragment_container, addComplaintFragment);
@@ -189,7 +199,7 @@ public class CheifComplaintFragment extends BaseFragment implements HttpUrlListe
     }
 
 
-    private void deleteApiCall(String recordId,int position1) {
+    private void deleteApiCall(String recordId, int position1) {
         if (Utils.isNetworkAvailable(getActivity())) {
 
             try {
@@ -207,8 +217,10 @@ public class CheifComplaintFragment extends BaseFragment implements HttpUrlListe
             Utils.showMessage(getActivity(), getResources().getString(R.string.err_network));
         }
     }
-int position;
-    private void deleteAlert(final String id,final int position) {
+
+    int position;
+
+    private void deleteAlert(final String id, final int position) {
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setMessage("Are you sure, you want to delete");
@@ -217,7 +229,7 @@ int position;
             @Override
             public void onClick(DialogInterface dialog, int which) {
 
-                deleteApiCall(id,position);
+                deleteApiCall(id, position);
 
             }
         });
@@ -247,7 +259,7 @@ int position;
                     mList.remove(position);
                     mAdapter.notifyDataSetChanged();
                     showSnackMessage(deleteResponse.getMessage());
-                    position=-1;
+                    position = -1;
                 }
 
         }
@@ -270,12 +282,13 @@ int position;
 
     @Override
     public void onPause() {
-        super.onStart();
-        Log.e("start","onStart");
+        super.onPause();
+        Log.e("start", "onStart");
         AppCompatActivity activity = (AppCompatActivity) getActivity();
         ActionBar actionBar = activity.getSupportActionBar();
         actionBar.setTitle("Chief Complaint");
     }
+
     @Override
     public void onStart() {
         super.onStart();
@@ -283,28 +296,30 @@ int position;
         ActionBar actionBar = activity.getSupportActionBar();
         actionBar.setTitle("Chief Complaint");
     }
+
     @Override
     public void onViewItemClick(CheifComplaint complaint, int position, int actionId) {
-        if (position ==-2){
+        if (position == -2) {
             getFragmentManager().popBackStack();
-        }
-        else {
-            deleteAlert(complaint.getId(),position);
+        } else {
+            deleteAlert(complaint.getId(), position);
         }
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode==2){
-            Log.d("requestcode","result");
-            viewAssessmentApiCall();
+        if (requestCode == 2) {
+            Log.d("requestcode", "result");
+//            viewAssessmentApiCall();
+
+            btn_skip.callOnClick();
         }
     }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
-        getActivity().getMenuInflater().inflate(R.menu.main,menu);
+        getActivity().getMenuInflater().inflate(R.menu.main, menu);
     }
 
     /**

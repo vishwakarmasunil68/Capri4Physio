@@ -1,5 +1,6 @@
 package com.capri4physio.activity;
 
+import android.Manifest;
 import android.app.FragmentTransaction;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -82,6 +83,7 @@ public class SplashActivity extends BaseActivity implements HttpUrlListener {
         int ACCESS_FINE_LOCATION = ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION);
         int CAMERA = ContextCompat.checkSelfPermission(this, android.Manifest.permission.CAMERA);
         int RECEIVE_SMS = ContextCompat.checkSelfPermission(this, android.Manifest.permission.RECEIVE_SMS);
+        int CALL_PHONE = ContextCompat.checkSelfPermission(this, android.Manifest.permission.CALL_PHONE);
         List<String> listPermissionsNeeded = new ArrayList<>();
 
 
@@ -100,6 +102,9 @@ public class SplashActivity extends BaseActivity implements HttpUrlListener {
         }
         if (RECEIVE_SMS != PackageManager.PERMISSION_GRANTED) {
             listPermissionsNeeded.add(android.Manifest.permission.RECEIVE_SMS);
+        }
+        if (CALL_PHONE != PackageManager.PERMISSION_GRANTED) {
+            listPermissionsNeeded.add(android.Manifest.permission.CALL_PHONE);
         }
 
         if (!listPermissionsNeeded.isEmpty()) {
@@ -123,6 +128,7 @@ public class SplashActivity extends BaseActivity implements HttpUrlListener {
                 perms.put(android.Manifest.permission.ACCESS_FINE_LOCATION, PackageManager.PERMISSION_GRANTED);
                 perms.put(android.Manifest.permission.CAMERA, PackageManager.PERMISSION_GRANTED);
                 perms.put(android.Manifest.permission.RECEIVE_SMS, PackageManager.PERMISSION_GRANTED);
+                perms.put(android.Manifest.permission.CALL_PHONE, PackageManager.PERMISSION_GRANTED);
 
                 // Fill with actual results from user
                 if (grantResults.length > 0) {
@@ -134,6 +140,7 @@ public class SplashActivity extends BaseActivity implements HttpUrlListener {
                             && perms.get(android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
                             && perms.get(android.Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED
                             && perms.get(android.Manifest.permission.RECEIVE_SMS) == PackageManager.PERMISSION_GRANTED
+                            && perms.get(android.Manifest.permission.CALL_PHONE) == PackageManager.PERMISSION_GRANTED
                             ) {
                         Log.d("msg", "All Permissions granted");
                         // process the normal flow
@@ -152,6 +159,7 @@ public class SplashActivity extends BaseActivity implements HttpUrlListener {
                                 || ActivityCompat.shouldShowRequestPermissionRationale(this, android.Manifest.permission.ACCESS_FINE_LOCATION)
                                 || ActivityCompat.shouldShowRequestPermissionRationale(this, android.Manifest.permission.CAMERA)
                                 || ActivityCompat.shouldShowRequestPermissionRationale(this, android.Manifest.permission.RECEIVE_SMS)
+                                || ActivityCompat.shouldShowRequestPermissionRationale(this, android.Manifest.permission.CALL_PHONE)
                                 ) {
                             showDialogOK("Permisions required for this app",
                                     new DialogInterface.OnClickListener() {
@@ -218,7 +226,7 @@ public class SplashActivity extends BaseActivity implements HttpUrlListener {
     }
 
     private void loadScreen() {
-        Log.d(TagUtils.getTag(),"device token:-"+AppPreferences.GetDeviceToken(getApplicationContext()));
+        Log.d(TagUtils.getTag(), "device token:-" + AppPreferences.GetDeviceToken(getApplicationContext()));
         if (AppPreferences.getInstance(this).isUserLogin()) {
             if (AppPreferences.getInstance(this).getOtpVerifiedStatus()) {
                 String userType = AppPreferences.getInstance(SplashActivity.this).getUserType();
@@ -276,6 +284,8 @@ public class SplashActivity extends BaseActivity implements HttpUrlListener {
             ft.addToBackStack(null);
             ft.commit();
         }
+
+
     }
 
 
@@ -337,7 +347,7 @@ public class SplashActivity extends BaseActivity implements HttpUrlListener {
                     AppPreferences.getInstance(SplashActivity.this).setPassword(loginModel.getResult().getUser().getShowPassword());
                     AppPreferences.getInstance(SplashActivity.this).setFirstName(loginModel.getResult().getUser().getFirstName());
                     AppPreferences.getInstance(SplashActivity.this).setaddress(loginModel.getResult().getUser().getAddress2());
-                    Log.d(TagUtils.getTag(),"otp statu  s:-"+loginModel.getResult().getUser().getOtp_status());
+                    Log.d(TagUtils.getTag(), "otp statu  s:-" + loginModel.getResult().getUser().getOtp_status());
                     AppPreferences.getInstance(SplashActivity.this).setOTPVerified(loginModel.getResult().getUser().getOtp_status());
 // AppPreferences.getInstance(SplashActivity.this).setPassword(loginModel.getResult().getUser().getAdd());
                     if (loginModel.getResult().getUser().getOtp_status()) {
@@ -427,7 +437,7 @@ public class SplashActivity extends BaseActivity implements HttpUrlListener {
                     AppPreferences.getInstance(SplashActivity.this).setUserType(userType);
                     AppPreferences.getInstance(SplashActivity.this).setFirstName(registerModel.getResult().getUser().getFirstName());
                     AppPreferences.getInstance(SplashActivity.this).setaddress(registerModel.getResult().getUser().getAddress2());
-                    Log.d(TagUtils.getTag(),"otp statu  s:-"+registerModel.getResult().getUser().getOtp_status());
+                    Log.d(TagUtils.getTag(), "otp statu  s:-" + registerModel.getResult().getUser().getOtp_status());
                     AppPreferences.getInstance(SplashActivity.this).setOTPVerified(registerModel.getResult().getUser().getOtp_status());
                     try {
 //                        //Save profile data
@@ -462,18 +472,20 @@ public class SplashActivity extends BaseActivity implements HttpUrlListener {
 
         }
     }
-    OtpFragment fragment=null;
+
+    OtpFragment fragment = null;
+
     @Override
     protected void onResume() {
         super.onResume();
-        Log.d(TagUtils.getTag(),"on resume");
+        Log.d(TagUtils.getTag(), "on resume");
         getApplicationContext().registerReceiver(mMessageReceiver, new IntentFilter(StringUtils.SMS_CLASS));
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        Log.d(TagUtils.getTag(),"on pause");
+        Log.d(TagUtils.getTag(), "on pause");
         getApplicationContext().unregisterReceiver(mMessageReceiver);
     }
 
@@ -482,15 +494,14 @@ public class SplashActivity extends BaseActivity implements HttpUrlListener {
         public void onReceive(Context context, Intent intent) {
 
             String result = intent.getStringExtra("message");
-            Log.d(TagUtils.getTag(),"result:-"+result);
-            if(result!=null&&result.length()>0&&result.contains("Capri verification")){
+            Log.d(TagUtils.getTag(), "result:-" + result);
+            if (result != null && result.length() > 0 && result.contains("Capri verification")) {
                 try {
                     Log.d(TagUtils.getTag(), "message received:-" + result);
                     String[] msgsplit = result.split("c-");
-                    Log.d(TagUtils.getTag(),"otp:-"+msgsplit[1].trim());
+                    Log.d(TagUtils.getTag(), "otp:-" + msgsplit[1].trim());
                     fragment.checkSmsOTP(msgsplit[1].trim());
-                }
-                catch (Exception e){
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }

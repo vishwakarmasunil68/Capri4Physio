@@ -19,6 +19,7 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -32,6 +33,7 @@ import com.capri4physio.model.chat.ChatUsersListPOJO;
 import com.capri4physio.model.user.UserPOJO;
 import com.capri4physio.net.ApiConfig;
 import com.capri4physio.util.AppPreferences;
+import com.capri4physio.util.TagUtils;
 import com.capri4physio.util.ToastClass;
 import com.capri4physio.util.Utils;
 import com.google.gson.Gson;
@@ -74,8 +76,11 @@ public class AddAppointmentActivity extends AppCompatActivity implements WebServ
     RadioButton rb_follow_up;
     @BindView(R.id.rv_appointment_time)
     RecyclerView rv_appointment_time;
+    @BindView(R.id.rl_branch)
+    RelativeLayout rl_branch;
     @BindView(R.id.btn_choose_timings)
     Button btn_choose_timings;
+
     List<String> list_booked_time = new ArrayList<>();
     List<String> arraytime;
     List<Integer> list_removed_position = new ArrayList<>();
@@ -119,6 +124,7 @@ public class AddAppointmentActivity extends AppCompatActivity implements WebServ
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-MM-yyyy");
         Date d = new Date();
         tv_appointment_date.setText(simpleDateFormat.format(d));
+        getTimings();
         btn_choose_timings.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -139,12 +145,18 @@ public class AddAppointmentActivity extends AppCompatActivity implements WebServ
     @Override
     protected void onResume() {
         super.onResume();
+        Log.d(TagUtils.getTag(),"user id:-"+AppPreferences.getInstance(getApplicationContext()).getUserType());
         if(AppPreferences.getInstance(getApplicationContext()).getUserType().equals("4")){
             getAllBranches();
+            spinner_branch.setVisibility(View.VISIBLE);
+            rl_branch.setVisibility(View.VISIBLE);
         }else{
             spinner_branch.setVisibility(View.GONE);
-            getAllPatients(AppPreferences.getInstance(this).getUSER_BRANCH_CODE());
+            rl_branch.setVisibility(View.GONE);
         }
+
+        getAllPatients(AppPreferences.getInstance(this).getUSER_BRANCH_CODE());
+
     }
 
     public void getAllBranches(){
@@ -153,9 +165,10 @@ public class AddAppointmentActivity extends AppCompatActivity implements WebServ
 
 
     public void getAllPatients(String branch_code) {
-        ArrayList<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
-        nameValuePairs.add(new BasicNameValuePair("branch_code", branch_code));
-        new WebServiceBase(nameValuePairs, this, GET_ALL_PATIENTS).execute(ApiConfig.get_all_patients);
+//        ArrayList<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
+//        nameValuePairs.add(new BasicNameValuePair("branch_code", branch_code));
+//        new WebServiceBase(nameValuePairs, this, GET_ALL_PATIENTS).execute(ApiConfig.get_all_patients);
+        new GetWebServices(this,GET_ALL_PATIENTS).execute(ApiConfig.get_all_patients);
     }
 
     @Override
@@ -228,15 +241,18 @@ public class AddAppointmentActivity extends AppCompatActivity implements WebServ
         }
     }
     public void parseAddAppointments(String response){
+        Log.d(TagUtils.getTag(),"add response:-"+response);
         try{
             JSONObject jsonObject = new JSONObject(response);
-            String result = jsonObject.getString("status");
-            if (result.equals("1")) {
+
+            if(jsonObject.optString("success").equals("true")){
+                ll_time.setClickable(false);
+                tv_time.setTextColor(Color.RED);
                 Toast.makeText(getApplicationContext(), "Appointment Successfully Added", Toast.LENGTH_LONG).show();
-                finish();
-            } else {
+            }else{
                 Utils.showError(getApplicationContext(), getResources().getString(R.string.error), getResources().getString(R.string.err_clinic));
             }
+
         }catch (Exception e){
             e.printStackTrace();
         }
@@ -321,6 +337,7 @@ public class AddAppointmentActivity extends AppCompatActivity implements WebServ
         }
 
         tv_appointment_date.setText(date);
+        getTimings();
     }
 
     public class HorizontalAdapter extends RecyclerView.Adapter<HorizontalAdapter.MyViewHolder> {
@@ -381,7 +398,7 @@ public class AddAppointmentActivity extends AppCompatActivity implements WebServ
                             if (branch_code.equals("")) {
                                 Toast.makeText(activity, "No clinic Branch added by you", Toast.LENGTH_LONG).show();
                             } else {
-                                addAppointment(horizontalList.get(position),branch_code);
+                                addAppointment(horizontalList.get(position),branch_code,holder.ll_time,holder.tv_time);
                             }
                         } else {
                             Toast.makeText(activity.getApplicationContext(), "Please add reason for appointments first", Toast.LENGTH_LONG).show();
@@ -401,8 +418,9 @@ public class AddAppointmentActivity extends AppCompatActivity implements WebServ
             return horizontalList.size();
         }
     }
-
-    public void addAppointment(String time,String branch_code){
+    LinearLayout ll_time;
+    TextView tv_time;
+    public void addAppointment(String time,String branch_code,LinearLayout ll_time,TextView tv_time){
         ArrayList<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
         String visit_type="";
         if(rg_visit_type.getCheckedRadioButtonId()==R.id.rb_first_visit){
@@ -410,14 +428,22 @@ public class AddAppointmentActivity extends AppCompatActivity implements WebServ
         }else{
             visit_type="Follow Up";
         }
+        this.ll_time=ll_time;
+        this.tv_time=tv_time;
 
         nameValuePairs.add(new BasicNameValuePair("patient_id", userPOJOList.get(spinner_patients.getSelectedItemPosition()).getId()));
-        nameValuePairs.add(new BasicNameValuePair("doctor_id", "aaa"));
+        String user_id=AppPreferences.getInstance(getApplicationContext()).getUserID();
+        if(user_id.equals("1")||user_id.equals("2")||user_id.equals("3")){
+            nameValuePairs.add(new BasicNameValuePair("doctor_id", user_id));
+        }else {
+            nameValuePairs.add(new BasicNameValuePair("doctor_id", "138"));
+        }
         nameValuePairs.add(new BasicNameValuePair("booking_date", tv_appointment_date.getText().toString()));
         nameValuePairs.add(new BasicNameValuePair("booking_starttime", time));
         nameValuePairs.add(new BasicNameValuePair("appointment_branch_code", branch_code));
         nameValuePairs.add(new BasicNameValuePair("reason", et_reason.getText().toString()));
         nameValuePairs.add(new BasicNameValuePair("visit_type", visit_type));
+        nameValuePairs.add(new BasicNameValuePair("status", "1"));
         new WebServiceBase(nameValuePairs, this, ADD_APPOINTMENTS).execute(ApiConfig.add_appointment_api);
     }
 }

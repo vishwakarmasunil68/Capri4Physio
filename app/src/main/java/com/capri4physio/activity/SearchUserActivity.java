@@ -172,21 +172,23 @@ public class SearchUserActivity extends AppCompatActivity implements WebServices
                     case "0":
                         user_types.add("1");
                         user_types.add("2");
-                        user_types.add("3");
+//                        user_types.add("3");
                         user_types.add("4");
                         break;
                     case "4":
                         user_types.add("0");
                         user_types.add("1");
                         user_types.add("2");
-                        user_types.add("3");
+//                        user_types.add("3");
                         user_types.add("5");
                         break;
                     case "2":
                         user_types.add("0");
+                        user_types.add("4");
                         break;
                     case "1":
                         user_types.add("0");
+                        user_types.add("4");
                         break;
                     case "3":
                         user_types.add("0");

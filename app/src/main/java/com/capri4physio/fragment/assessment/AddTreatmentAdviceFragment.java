@@ -8,6 +8,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
@@ -19,12 +21,14 @@ import com.capri4physio.model.BaseModel;
 import com.capri4physio.net.ApiConfig;
 import com.capri4physio.task.UrlConnectionTask;
 import com.capri4physio.util.AppLog;
+import com.capri4physio.util.HandlerConstant;
 import com.capri4physio.util.Utils;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -36,8 +40,7 @@ import java.util.ArrayList;
  * @version 1.0
  * @since 2014-03-31
  */
-public class
-AddTreatmentAdviceFragment extends BaseFragment implements HttpUrlListener {
+public class AddTreatmentAdviceFragment extends BaseFragment implements HttpUrlListener {
 
     private Button mBtnSave;
     private EditText mEdtxtGoal;
@@ -50,6 +53,7 @@ AddTreatmentAdviceFragment extends BaseFragment implements HttpUrlListener {
     private String assessmentType = "";
     public ArrayList<String> patientaray;
     InfoApps Detailapp;
+    AutoCompleteTextView et_select_dowses;
     ArrayList<String> stringArrayList;
 
     /**
@@ -94,8 +98,8 @@ AddTreatmentAdviceFragment extends BaseFragment implements HttpUrlListener {
 //        patientaray.add("Select Staff name");
 
         initView(rootView);
-        stringArrayList=new ArrayList<String>();
-        patientaray=new ArrayList<String>();
+        stringArrayList = new ArrayList<String>();
+        patientaray = new ArrayList<String>();
 //        patientaray.add("Select Staff name");
 //        new CatagoryUrlAsynTask().execute();
 
@@ -113,12 +117,26 @@ AddTreatmentAdviceFragment extends BaseFragment implements HttpUrlListener {
         mEdtxtGoal = (EditText) view.findViewById(R.id.edtxt_goal);
         mEdtxtTherapy = (Spinner) view.findViewById(R.id.edtxt_therapy);
         mEdtxtDoses = (Spinner) view.findViewById(R.id.edtxt_therapy_proquant);
+
+
+        et_select_dowses = (AutoCompleteTextView) view.findViewById(R.id.et_select_dowses);
+
+        arrayAdapter = new ArrayAdapter<String>(getActivity(),
+                android.R.layout.select_dialog_item, list_doses);
+        //Used to specify minimum number of
+        //characters the user has to type in order to display the drop down hint.
+        et_select_dowses.setThreshold(1);
+        //Setting adapter
+        et_select_dowses.setAdapter(arrayAdapter);
+
     }
+
+    ArrayAdapter<String> arrayAdapter;
+    List<String> list_doses = new ArrayList<>();
 
     @Override
     protected void setListener() {
         super.setListener();
-
         mBtnSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -128,6 +146,8 @@ AddTreatmentAdviceFragment extends BaseFragment implements HttpUrlListener {
 //        ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<String>(
 //                getActivity(), android.R.layout.simple_dropdown_item_1line);
 //        mEdtxtTherapy.setAdapter(spinnerArrayAdapter);
+
+
     }
 
 
@@ -143,7 +163,7 @@ AddTreatmentAdviceFragment extends BaseFragment implements HttpUrlListener {
                 params.put(ApiConfig.ASSESSMENT_TYPE, assessmentType);
                 params.put(ApiConfig.TREATMENT_GOAL, mEdtxtGoal.getText().toString().trim());
                 params.put(ApiConfig.TREATMENT_THERAPY, mEdtxtTherapy.getSelectedItem().toString().trim());
-                params.put(ApiConfig.TREATMENT_DOSES, mEdtxtDoses.getSelectedItem().toString().trim());
+                params.put(ApiConfig.TREATMENT_DOSES, et_select_dowses.getText().toString());
                 params.put(ApiConfig.DATE, Utils.getCurrentDate());
 
                 new UrlConnectionTask(getActivity(), ApiConfig.ADD_ASSESSMENT_URL, ApiConfig.ID1, true, params, BaseModel.class, this).execute("");
@@ -167,6 +187,7 @@ AddTreatmentAdviceFragment extends BaseFragment implements HttpUrlListener {
                 BaseModel baseModel = (BaseModel) response;
                 AppLog.i("Capri4Physio", "Patient Response : " + baseModel.getStatus());
                 getFragmentManager().popBackStack();
+                HandlerConstant.POP_INNER_BACK_HANDLER.sendMessage(HandlerConstant.POP_INNER_BACK_HANDLER.obtainMessage(0, ""));
                 break;
         }
 
@@ -256,7 +277,7 @@ AddTreatmentAdviceFragment extends BaseFragment implements HttpUrlListener {
                 /*contactAdapter = new ReportAdapter(getActivity(), R.layout.contactlistadap);
                 contactList.setAdapter(contactAdapter);*/
                 }
-            }catch(Exception e){
+            } catch (Exception e) {
                 e.printStackTrace();
 
             }
@@ -268,7 +289,7 @@ AddTreatmentAdviceFragment extends BaseFragment implements HttpUrlListener {
 
         String sgoal = mEdtxtGoal.getText().toString().trim();
         String stherapy = mEdtxtTherapy.getSelectedItem().toString().trim();
-        String sDoses = mEdtxtDoses.getSelectedItem().toString().trim();
+        String sDoses = et_select_dowses.getText().toString().trim();
 
         if (sgoal.isEmpty()) {
             mEdtxtGoal.requestFocus();

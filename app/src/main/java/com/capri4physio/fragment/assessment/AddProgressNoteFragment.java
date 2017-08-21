@@ -23,6 +23,7 @@ import com.capri4physio.listener.HttpUrlListener;
 import com.capri4physio.model.BaseModel;
 import com.capri4physio.net.ApiConfig;
 import com.capri4physio.util.AppLog;
+import com.capri4physio.util.HandlerConstant;
 import com.capri4physio.util.Utils;
 
 import java.util.HashMap;
@@ -134,6 +135,7 @@ public class AddProgressNoteFragment extends BaseFragment implements HttpUrlList
                             getFragmentManager().popBackStack();
                             mBloodPresure.setText("");
                             Log.e("result",response);
+                            HandlerConstant.POP_INNER_BACK_HANDLER.sendMessage(HandlerConstant.POP_INNER_BACK_HANDLER.obtainMessage(0, ""));
 //                            pDialog.dismiss();
                             /*Intent intent=new Intent(StmtActivity.this,HomeActivity.class);
                                 startActivity(intent);*/

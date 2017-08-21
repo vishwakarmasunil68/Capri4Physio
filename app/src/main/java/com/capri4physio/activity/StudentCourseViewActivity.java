@@ -1,14 +1,19 @@
 package com.capri4physio.activity;
 
+import android.app.Dialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.capri4physio.R;
 import com.capri4physio.Services.WebServiceBase;
@@ -64,6 +69,25 @@ public class StudentCourseViewActivity extends AppCompatActivity implements View
     ImageView iv_confirm_reg;
     @BindView(R.id.iv_confirm_full)
     ImageView iv_confirm_full;
+    @BindView(R.id.iv_view_app)
+    ImageView iv_view_app;
+    @BindView(R.id.iv_view_photo)
+    ImageView iv_view_photo;
+    @BindView(R.id.iv_view_cert)
+    ImageView iv_view_cert;
+    @BindView(R.id.iv_view_id)
+    ImageView iv_view_id;
+    @BindView(R.id.iv_view_reg)
+    ImageView iv_view_reg;
+    @BindView(R.id.iv_view_full_fees)
+    ImageView iv_view_full_fees;
+    @BindView(R.id.iv_rem_fees)
+    ImageView iv_rem_fees;
+    @BindView(R.id.iv_rem_confirm)
+    ImageView iv_rem_confirm;
+    @BindView(R.id.iv_rem_view)
+    ImageView iv_rem_view;
+
     @BindView(R.id.et_remark)
     EditText et_remark;
 
@@ -93,17 +117,17 @@ public class StudentCourseViewActivity extends AppCompatActivity implements View
         iv_confirm_id.setOnClickListener(this);
         iv_confirm_reg.setOnClickListener(this);
         iv_confirm_full.setOnClickListener(this);
+        iv_rem_confirm.setOnClickListener(this);
 
 
         btn_submit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(et_remark.getText().toString().length()>0){
+                if (et_remark.getText().toString().length() > 0) {
                     studentCourseResultPOJO.setAdminStatus(et_remark.getText().toString());
                     updateStudent();
-                }
-                else{
-                    ToastClass.showShortToast(getApplicationContext(),"Please write some remark");
+                } else {
+                    ToastClass.showShortToast(getApplicationContext(), "Please write some remark");
                 }
             }
         });
@@ -116,83 +140,394 @@ public class StudentCourseViewActivity extends AppCompatActivity implements View
             if (studentCourseResultPOJO.getScSapplicationformFill().length() == 0) {
                 iv_application_status.setImageResource(R.drawable.ic_not_filled);
                 iv_confirm_app.setVisibility(View.GONE);
+                iv_view_app.setVisibility(View.GONE);
             } else {
                 if (studentCourseResultPOJO.getAdminApplicationForm().equals("false")) {
                     iv_application_status.setImageResource(R.drawable.ic_filled);
                     iv_confirm_app.setVisibility(View.VISIBLE);
+                    iv_view_app.setVisibility(View.VISIBLE);
                 } else {
                     iv_application_status.setImageResource(R.drawable.ic_approved);
                     iv_confirm_app.setVisibility(View.GONE);
+                    iv_view_app.setVisibility(View.VISIBLE);
                 }
+
+                iv_view_app.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent intent = new Intent(StudentCourseViewActivity.this, StudentCourseApplicationActivity.class);
+                        intent.putExtra("studentcourseresultpojo", studentCourseResultPOJO);
+                        startActivity(intent);
+//                        Log.d(TagUtils.getTag(),"application course id:-"+studentCourseResultPOJO.getScCid());
+//                        Log.d(TagUtils.getTag(),"application student id:-"+studentCourseResultPOJO.getScSid());
+
+                    }
+                });
             }
 
             if (studentCourseResultPOJO.getScPhotoUpload().length() == 0) {
                 iv_photo_upload.setImageResource(R.drawable.ic_not_filled);
                 iv_confirm_photo.setVisibility(View.GONE);
+                iv_view_photo.setVisibility(View.GONE);
             } else {
                 if (studentCourseResultPOJO.getAdminPhotoUpload().equals("false")) {
                     iv_photo_upload.setImageResource(R.drawable.ic_filled);
                     iv_confirm_photo.setVisibility(View.VISIBLE);
+                    iv_view_photo.setVisibility(View.VISIBLE);
                 } else {
                     iv_photo_upload.setImageResource(R.drawable.ic_approved);
                     iv_confirm_photo.setVisibility(View.GONE);
+                    iv_view_photo.setVisibility(View.VISIBLE);
                 }
+                iv_view_photo.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent intent = new Intent(StudentCourseViewActivity.this, ImageViewActivity.class);
+                        intent.putExtra("url", studentCourseResultPOJO.getScPhotoUpload());
+                        startActivity(intent);
+                    }
+                });
             }
 
             if (studentCourseResultPOJO.getScCerifiatoUpload().length() == 0) {
                 iv_certificatie_upload.setImageResource(R.drawable.ic_not_filled);
                 iv_confirm_cert.setVisibility(View.GONE);
+                iv_view_cert.setVisibility(View.GONE);
             } else {
                 if (studentCourseResultPOJO.getAdminCertificateUpload().equals("false")) {
                     iv_certificatie_upload.setImageResource(R.drawable.ic_filled);
                     iv_confirm_cert.setVisibility(View.VISIBLE);
+                    iv_view_cert.setVisibility(View.VISIBLE);
                 } else {
                     iv_certificatie_upload.setImageResource(R.drawable.ic_approved);
                     iv_confirm_cert.setVisibility(View.GONE);
+                    iv_view_cert.setVisibility(View.VISIBLE);
                 }
+                iv_view_cert.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent intent = new Intent(StudentCourseViewActivity.this, ImageViewActivity.class);
+                        intent.putExtra("url", studentCourseResultPOJO.getScCerifiatoUpload());
+                        startActivity(intent);
+                    }
+                });
             }
 
             if (studentCourseResultPOJO.getScIdcardUpload().length() == 0) {
                 iv_id_card_upload.setImageResource(R.drawable.ic_not_filled);
                 iv_confirm_id.setVisibility(View.GONE);
+                iv_view_id.setVisibility(View.GONE);
             } else {
                 if (studentCourseResultPOJO.getAdminIcard().equals("false")) {
                     iv_id_card_upload.setImageResource(R.drawable.ic_filled);
                     iv_confirm_id.setVisibility(View.VISIBLE);
+                    iv_view_id.setVisibility(View.VISIBLE);
                 } else {
                     iv_id_card_upload.setImageResource(R.drawable.ic_approved);
                     iv_confirm_id.setVisibility(View.GONE);
+                    iv_view_id.setVisibility(View.VISIBLE);
                 }
+                iv_view_id.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent intent = new Intent(StudentCourseViewActivity.this, ImageViewActivity.class);
+                        intent.putExtra("url", studentCourseResultPOJO.getScIdcardUpload());
+                        startActivity(intent);
+                    }
+                });
             }
+            checkRegistrationFeesStatus();
+            checkRemainingFeesStatus();
+            checkFullFeesStatus();
 
-            if (studentCourseResultPOJO.getScRegFees().length() == 0) {
-                iv_registration_fees.setImageResource(R.drawable.ic_not_filled);
-                iv_confirm_reg.setVisibility(View.GONE);
-            } else {
-                if (studentCourseResultPOJO.getAdminRegFees().equals("false")) {
-                    iv_registration_fees.setImageResource(R.drawable.ic_filled);
-                    iv_confirm_reg.setVisibility(View.VISIBLE);
-                } else {
-                    iv_registration_fees.setImageResource(R.drawable.ic_approved);
-                    iv_confirm_reg.setVisibility(View.GONE);
-                }
-            }
+//            if (studentCourseResultPOJO.getAdminRegFees().equals("false")) {
+//
+//                if (studentCourseResultPOJO.getScRegFees().length() == 0) {
+//                    iv_registration_fees.setImageResource(R.drawable.ic_not_filled);
+//                    iv_confirm_reg.setVisibility(View.GONE);
+//                } else {
+//                    iv_registration_fees.setImageResource(R.drawable.ic_filled);
+//                    iv_confirm_reg.setVisibility(View.VISIBLE);
+//                }
+//            } else {
+//                iv_registration_fees.setImageResource(R.drawable.ic_approved);
+//                iv_confirm_reg.setVisibility(View.GONE);
+//            }
+//
+//
+//            if (studentCourseResultPOJO.getScRemFees().length() == 0) {
+//                iv_rem_fees.setImageResource(R.drawable.ic_not_filled);
+//                iv_rem_confirm.setVisibility(View.GONE);
+//            } else {
+//                if (studentCourseResultPOJO.getSc_admin_rem_fees().equals("false")) {
+//                    iv_rem_fees.setImageResource(R.drawable.ic_filled);
+//                    iv_rem_confirm.setVisibility(View.VISIBLE);
+//                } else {
+//                    iv_rem_fees.setImageResource(R.drawable.ic_approved);
+//                    iv_rem_confirm.setVisibility(View.GONE);
+//                }
+//
+//            }
+//
+//            if (studentCourseResultPOJO.getScFullfees().length() == 0) {
+//                iv_full_fees.setImageResource(R.drawable.ic_not_filled);
+//                iv_confirm_full.setVisibility(View.GONE);
+//            } else {
+//                if (studentCourseResultPOJO.getAdminFullFees().equals("false")) {
+//                    iv_full_fees.setImageResource(R.drawable.ic_filled);
+//                    iv_confirm_full.setVisibility(View.VISIBLE);
+//                } else {
+//                    iv_full_fees.setImageResource(R.drawable.ic_approved);
+//                    iv_confirm_full.setVisibility(View.GONE);
+//                }
+//
+//            }
+//
+//
+//            if (studentCourseResultPOJO.getScRegFees().length() > 0
+//                    && studentCourseResultPOJO.getScRemFees().length() > 0
+//                    && studentCourseResultPOJO.getSc_admin_rem_fees().equals("true")
+//                    && studentCourseResultPOJO.getAdminRegFees().equals("true")
+//                    ) {
+//                iv_registration_fees.setImageResource(R.drawable.ic_approved);
+//                iv_rem_fees.setImageResource(R.drawable.ic_approved);
+//                iv_full_fees.setImageResource(R.drawable.ic_approved);
+//
+//                iv_confirm_reg.setVisibility(View.GONE);
+//                iv_confirm_full.setVisibility(View.GONE);
+//                iv_rem_confirm.setVisibility(View.GONE);
+//            } else {
+//                if (studentCourseResultPOJO.getScRegFees().length() > 0
+//                        && studentCourseResultPOJO.getScRemFees().length() > 0
+//                        && studentCourseResultPOJO.getSc_admin_rem_fees().equals("false")
+//                        && studentCourseResultPOJO.getAdminRegFees().equals("false")
+//                        ) {
+//                    iv_registration_fees.setImageResource(R.drawable.ic_filled);
+//                    iv_rem_fees.setImageResource(R.drawable.ic_filled);
+//                    iv_full_fees.setImageResource(R.drawable.ic_filled);
+//
+//                    iv_confirm_reg.setVisibility(View.VISIBLE);
+//                    iv_confirm_full.setVisibility(View.VISIBLE);
+//                    iv_rem_confirm.setVisibility(View.VISIBLE);
+//                } else {
+//
+//                }
+//            }
+//
+//
+//            if (studentCourseResultPOJO.getScFullfees().length() > 0
+//                    && studentCourseResultPOJO.getAdminFullFees().equals("true")) {
+//                iv_registration_fees.setImageResource(R.drawable.ic_approved);
+//                iv_rem_fees.setImageResource(R.drawable.ic_approved);
+//                iv_full_fees.setImageResource(R.drawable.ic_approved);
+//
+//                iv_confirm_reg.setVisibility(View.GONE);
+//                iv_confirm_full.setVisibility(View.GONE);
+//                iv_rem_confirm.setVisibility(View.GONE);
+//            } else {
+//                if (studentCourseResultPOJO.getScFullfees().length() > 0
+//                        && studentCourseResultPOJO.getAdminFullFees().equals("false")) {
+//                    iv_registration_fees.setImageResource(R.drawable.ic_filled);
+//                    iv_rem_fees.setImageResource(R.drawable.ic_filled);
+//                    iv_full_fees.setImageResource(R.drawable.ic_filled);
+//
+//                    iv_confirm_reg.setVisibility(View.VISIBLE);
+//                    iv_confirm_full.setVisibility(View.VISIBLE);
+//                    iv_rem_confirm.setVisibility(View.VISIBLE);
+//                } else {
+//
+//                }
+//            }
 
-            if (studentCourseResultPOJO.getScFullfees().length() == 0) {
-                iv_full_fees.setImageResource(R.drawable.ic_not_filled);
-                iv_confirm_full.setVisibility(View.GONE);
-            } else {
-                if (studentCourseResultPOJO.getAdminFullFees().equals("false")) {
-                    iv_full_fees.setImageResource(R.drawable.ic_filled);
-                    iv_confirm_full.setVisibility(View.VISIBLE);
-                } else {
-                    iv_full_fees.setImageResource(R.drawable.ic_approved);
-                    iv_confirm_full.setVisibility(View.GONE);
+
+            iv_view_reg.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (studentCourseResultPOJO.getScFullfees().length() > 0) {
+                        if (studentCourseResultPOJO.getScFullfees().equals("online")) {
+                            showOnlineDialog("Full fees has been paid by Pay U Money");
+                        } else {
+                            showOnlineDialog("Full fees has been pain and transaction id is " + studentCourseResultPOJO.getScFullfees());
+                        }
+                    } else {
+                        if (studentCourseResultPOJO.getScRegFees().length() > 0) {
+                            if (studentCourseResultPOJO.getScRegFees().equals("online")) {
+                                showOnlineDialog("Registration Fees has bees paid by Pay U Money");
+                            } else {
+                                showOnlineDialog("Registration Fees has bees paid and transaction id is " + studentCourseResultPOJO.getScRegFees());
+                            }
+                        } else {
+                            ToastClass.showShortToast(getApplicationContext(), "Registration fees has not been submitted");
+                        }
+                    }
                 }
-            }
+            });
+
+
+            iv_view_full_fees.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (studentCourseResultPOJO.getScFullfees().length() > 0) {
+                        if (studentCourseResultPOJO.getScFullfees().equals("online")) {
+                            showOnlineDialog("Full Fees has bees paid by Pay U Money");
+                        } else {
+                            showOnlineDialog("Full Fees has bees paid and transaction id is " + studentCourseResultPOJO.getScFullfees());
+                        }
+                    } else {
+                        if (studentCourseResultPOJO.getScRegFees().length() > 0
+                                && studentCourseResultPOJO.getScRemFees().length() > 0) {
+                            String reg_fees_status = "";
+                            String rem_fees_status = "";
+                            if (studentCourseResultPOJO.getScRegFees().equals("online")) {
+                                reg_fees_status = "Registration fees has been paid by Pay U Money";
+                            } else {
+                                reg_fees_status = "Registration fees has been pain and transaction id is " + studentCourseResultPOJO.getScRegFees();
+                            }
+
+                            if (studentCourseResultPOJO.getScRemFees().equals("online")) {
+                                rem_fees_status = "Remaining fees has been paid by Pay U Money";
+                            } else {
+                                rem_fees_status = "Remaining fees has been pain and transaction id is " + studentCourseResultPOJO.getScRemFees();
+                            }
+
+                            String fees = reg_fees_status + " and " + rem_fees_status;
+                            showOnlineDialog(fees);
+                        } else {
+                            ToastClass.showShortToast(getApplicationContext(), "Full fees has not been submitted");
+                        }
+                    }
+                }
+            });
+
+
+            iv_rem_view.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (studentCourseResultPOJO.getScFullfees().length() > 0) {
+                        if (studentCourseResultPOJO.getScFullfees().equals("online")) {
+                            showOnlineDialog("Full fees has been paid by Pay U Money");
+                        } else {
+                            showOnlineDialog("Full fees has been pain and transaction id is " + studentCourseResultPOJO.getScFullfees());
+                        }
+                    } else {
+                        if (studentCourseResultPOJO.getScRemFees().length() > 0) {
+                            if (studentCourseResultPOJO.getScRemFees().equals("online")) {
+                                showOnlineDialog("Remaining Fees has bees paid by Pay U Money");
+                            } else {
+                                showOnlineDialog("Remaining Fees has bees paid and transaction id is " + studentCourseResultPOJO.getScRemFees());
+                            }
+                        } else {
+                            ToastClass.showShortToast(getApplicationContext(), "Remaining fees has not been submitted");
+                        }
+                    }
+                }
+            });
+
+
         } else {
             finish();
         }
+    }
+
+    public void checkRegistrationFeesStatus() {
+        if (studentCourseResultPOJO != null) {
+            if (studentCourseResultPOJO.getAdminFullFees().equals("true")) {
+                iv_registration_fees.setImageResource(R.drawable.ic_approved);
+                iv_confirm_reg.setVisibility(View.GONE);
+            } else {
+                if (studentCourseResultPOJO.getAdminRegFees().equals("true")) {
+                    iv_registration_fees.setImageResource(R.drawable.ic_approved);
+                    iv_confirm_reg.setVisibility(View.GONE);
+                } else {
+                    if (studentCourseResultPOJO.getAdminRegFees().equals("false")
+                            && studentCourseResultPOJO.getScRegFees().length() > 0) {
+                        iv_registration_fees.setImageResource(R.drawable.ic_filled);
+                        iv_confirm_reg.setVisibility(View.VISIBLE);
+                    } else {
+                        iv_registration_fees.setImageResource(R.drawable.ic_not_filled);
+                        iv_confirm_reg.setVisibility(View.GONE);
+                    }
+                }
+            }
+        }
+    }
+
+    public void checkRemainingFeesStatus() {
+        if (studentCourseResultPOJO != null) {
+            if (studentCourseResultPOJO.getAdminFullFees().equals("true")) {
+                iv_rem_fees.setImageResource(R.drawable.ic_approved);
+                iv_rem_confirm.setVisibility(View.GONE);
+            } else {
+                if (studentCourseResultPOJO.getSc_admin_rem_fees().equals("true")) {
+                    iv_rem_fees.setImageResource(R.drawable.ic_approved);
+                    iv_rem_confirm.setVisibility(View.GONE);
+                } else {
+                    if (studentCourseResultPOJO.getSc_admin_rem_fees().equals("false")
+                            && studentCourseResultPOJO.getScRemFees().length() > 0) {
+                        iv_rem_fees.setImageResource(R.drawable.ic_filled);
+                        iv_rem_confirm.setVisibility(View.VISIBLE);
+                    } else {
+                        iv_rem_fees.setImageResource(R.drawable.ic_not_filled);
+                        iv_rem_confirm.setVisibility(View.GONE);
+                    }
+                }
+            }
+        }
+    }
+
+
+    public void checkFullFeesStatus() {
+        if (studentCourseResultPOJO != null) {
+            if (studentCourseResultPOJO.getAdminFullFees().equals("true")) {
+                iv_full_fees.setImageResource(R.drawable.ic_approved);
+                iv_confirm_full.setVisibility(View.GONE);
+            } else {
+                if(studentCourseResultPOJO.getAdminRegFees().equals("true")
+                        &&studentCourseResultPOJO.getSc_admin_rem_fees().equals("true")){
+                    iv_full_fees.setImageResource(R.drawable.ic_approved);
+                    iv_confirm_full.setVisibility(View.GONE);
+                }else{
+                    if(studentCourseResultPOJO.getScFullfees().length()>0){
+                        iv_full_fees.setImageResource(R.drawable.ic_filled);
+                        iv_confirm_full.setVisibility(View.VISIBLE);
+                    }else{
+                        if(studentCourseResultPOJO.getScRemFees().length()>0
+                                &&studentCourseResultPOJO.getScRegFees().length()>0){
+                            iv_full_fees.setImageResource(R.drawable.ic_filled);
+                            iv_confirm_full.setVisibility(View.VISIBLE);
+                        }else{
+                            iv_full_fees.setImageResource(R.drawable.ic_not_filled);
+                            iv_confirm_full.setVisibility(View.GONE);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+
+    public void showOnlineDialog(String message) {
+        final Dialog dialog1 = new Dialog(StudentCourseViewActivity.this, android.R.style.Theme_DeviceDefault_Light_Dialog);
+        dialog1.setCancelable(true);
+        dialog1.setContentView(R.layout.dialog_fees_paid);
+        dialog1.setTitle("Fees Paid");
+        dialog1.show();
+        dialog1.setCancelable(true);
+        Window window = dialog1.getWindow();
+        window.setLayout(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+
+        TextView tv_fees = (TextView) dialog1.findViewById(R.id.tv_fees);
+        Button btn_ok = (Button) dialog1.findViewById(R.id.btn_ok);
+
+        tv_fees.setText(message);
+
+        btn_ok.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog1.dismiss();
+            }
+        });
+
     }
 
     public void setListenerNull() {
@@ -220,6 +555,7 @@ public class StudentCourseViewActivity extends AppCompatActivity implements View
         nameValuePairs.add(new BasicNameValuePair("sc_cerifiato_upload", studentCourseResultPOJO.getScCerifiatoUpload()));
         nameValuePairs.add(new BasicNameValuePair("sc_idcard_upload", studentCourseResultPOJO.getScIdcardUpload()));
         nameValuePairs.add(new BasicNameValuePair("sc_reg_fees", studentCourseResultPOJO.getScRegFees()));
+        nameValuePairs.add(new BasicNameValuePair("sc_rem_fees", studentCourseResultPOJO.getScRemFees()));
         nameValuePairs.add(new BasicNameValuePair("sc_fullfees", studentCourseResultPOJO.getScFullfees()));
         nameValuePairs.add(new BasicNameValuePair("sc_cid", studentCourseResultPOJO.getScCid()));
         nameValuePairs.add(new BasicNameValuePair("sc_id", studentCourseResultPOJO.getScId()));
@@ -231,6 +567,7 @@ public class StudentCourseViewActivity extends AppCompatActivity implements View
         nameValuePairs.add(new BasicNameValuePair("admin_icard", studentCourseResultPOJO.getAdminIcard()));
         nameValuePairs.add(new BasicNameValuePair("admin_status", studentCourseResultPOJO.getAdminStatus()));
         nameValuePairs.add(new BasicNameValuePair("admin_reg_fees", studentCourseResultPOJO.getAdminRegFees()));
+        nameValuePairs.add(new BasicNameValuePair("sc_admin_rem_fees", studentCourseResultPOJO.getSc_admin_rem_fees()));
         nameValuePairs.add(new BasicNameValuePair("admin_full_fees", studentCourseResultPOJO.getAdminFullFees()));
         new WebServiceBase(nameValuePairs, this, UPDATE_STUDENT).execute(ApiConfig.update_student_course);
     }
@@ -260,6 +597,10 @@ public class StudentCourseViewActivity extends AppCompatActivity implements View
                 break;
             case R.id.iv_confirm_full:
                 studentCourseResultPOJO.setAdminFullFees("true");
+                updateStudent();
+                break;
+            case R.id.iv_rem_confirm:
+                studentCourseResultPOJO.setSc_admin_rem_fees("true");
                 updateStudent();
                 break;
         }

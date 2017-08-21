@@ -17,6 +17,7 @@ import com.capri4physio.R;
 import com.capri4physio.Services.WebServiceBase;
 import com.capri4physio.Services.WebServicesCallBack;
 import com.capri4physio.model.applicationform.ApplicationFormResultPOJO;
+import com.capri4physio.model.cources.CourcesResultPOJO;
 import com.capri4physio.model.studentcourse.StudentCourseResultPOJO;
 import com.capri4physio.net.ApiConfig;
 import com.capri4physio.util.TagUtils;
@@ -79,6 +80,7 @@ public class AddApplicationFormActivity extends AppCompatActivity implements Web
     @BindView(R.id.btn_submit)
     Button btn_submit;
     StudentCourseResultPOJO studentCourseResultPOJO;
+    CourcesResultPOJO courcesResultPOJO;
 
     String[] spinner_items = { "COMT", "Jenny McConell Concept", "CRASH COURSE"};
     ApplicationFormResultPOJO applicationFormResultPOJO;
@@ -97,11 +99,17 @@ public class AddApplicationFormActivity extends AppCompatActivity implements Web
         spinner_course.setAdapter(aa);
 
         studentCourseResultPOJO= (StudentCourseResultPOJO) getIntent().getSerializableExtra("studentcourseresultpojo");
+        courcesResultPOJO= (CourcesResultPOJO) getIntent().getSerializableExtra("coursepojo");
         applicationFormResultPOJO= (ApplicationFormResultPOJO) getIntent().getSerializableExtra("applicationform");
         if(studentCourseResultPOJO!=null){
             btn_submit.setText("Update");
         }else{
             btn_submit.setText("Submit");
+        }
+
+        if(courcesResultPOJO!=null){
+            et_city_date.setText(courcesResultPOJO.getC_place());
+            et_amount.setText(courcesResultPOJO.getC_fees());
         }
 
         if(applicationFormResultPOJO==null){
@@ -131,7 +139,7 @@ public class AddApplicationFormActivity extends AppCompatActivity implements Web
             @Override
             public void onClick(View v) {
                 if (ValidateEdits(et_first_name,et_last_name,et_email,et_mobile,
-                        et_city_date,et_trans_id,et_amount,et_name_of_bank,et_present_addr,et_city,
+                        et_city_date,et_amount,et_name_of_bank,et_present_addr,et_city,
                         et_state,et_zip_code,et_country,et_qualification,et_last_institute)) {
 
                     if(applicationFormResultPOJO==null){
@@ -175,7 +183,7 @@ public class AddApplicationFormActivity extends AppCompatActivity implements Web
             new WebServiceBase(nameValuePairs, this, ADD_APPLICATION_FORM).execute(ApiConfig.add_application_form_api);
         }else{
             nameValuePairs.add(new BasicNameValuePair("a_id", applicationFormResultPOJO.getaId()));
-            new WebServiceBase(nameValuePairs, this, UPDATE_APPLICATION_FORM).execute(ApiConfig.update_course_api);
+            new WebServiceBase(nameValuePairs, this, UPDATE_APPLICATION_FORM).execute(ApiConfig.update_application_form_api);
         }
 
     }

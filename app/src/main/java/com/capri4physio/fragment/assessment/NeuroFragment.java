@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.app.FragmentTransaction;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
@@ -37,6 +39,7 @@ import com.capri4physio.model.assessment.PhysicalExamModel;
 import com.capri4physio.net.ApiConfig;
 import com.capri4physio.task.UrlConnectionTask;
 import com.capri4physio.util.AppLog;
+import com.capri4physio.util.HandlerConstant;
 import com.capri4physio.util.TagUtils;
 import com.capri4physio.util.Utils;
 
@@ -69,7 +72,7 @@ public class NeuroFragment extends BaseFragment implements HttpUrlListener, View
     private String patientId = "";
     private String assessmentType = "";
     InfoApps Detailapp, Detailapp1;
-    private Button mAdd;
+    private Button mAdd,btn_skip;
 
 
     /**
@@ -141,6 +144,7 @@ public class NeuroFragment extends BaseFragment implements HttpUrlListener, View
         mRecyclerView.setLayoutManager(layoutManager);
 //        mRecyclerView.setAdapter(mAdapter);
         mAdd = (Button) view.findViewById(R.id.btn_add);
+        btn_skip = (Button) view.findViewById(R.id.btn_skip);
         getpnotes();
     }
 
@@ -151,6 +155,22 @@ public class NeuroFragment extends BaseFragment implements HttpUrlListener, View
             @Override
             public void onClick(View view) {
                 addFragment();
+            }
+        });
+        btn_skip.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getFragmentManager().popBackStack();
+                HandlerConstant.POP_BACK_HANDLER.sendMessage(HandlerConstant.POP_BACK_HANDLER.obtainMessage(0,"8"));
+            }
+        });
+        HandlerConstant.POP_INNER_BACK_HANDLER= new Handler(new Handler.Callback() {
+            @Override
+            public boolean handleMessage(Message msg) {
+                String message = (String) msg.obj;
+                Log.d(TagUtils.getTag(),"pop back handler:-"+message);
+                btn_skip.callOnClick();
+                return false;
             }
         });
     }

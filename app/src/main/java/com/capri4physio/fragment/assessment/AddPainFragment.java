@@ -17,6 +17,7 @@ import com.capri4physio.model.BaseModel;
 import com.capri4physio.net.ApiConfig;
 import com.capri4physio.task.UrlConnectionTask;
 import com.capri4physio.util.AppLog;
+import com.capri4physio.util.HandlerConstant;
 import com.capri4physio.util.Utils;
 
 import org.json.JSONObject;
@@ -24,8 +25,7 @@ import org.json.JSONObject;
 /**
  * Created by jatinder on 09-06-2016.
  */
-public class AddPainFragment extends BaseFragment implements HttpUrlListener
-{
+public class AddPainFragment extends BaseFragment implements HttpUrlListener {
     private static final String KEY_PATIENT_ID = "patient_id";
     private static final String KEY_TYPE = "type";
     private String patientId = "";
@@ -38,13 +38,14 @@ public class AddPainFragment extends BaseFragment implements HttpUrlListener
     private EditText mTrigger_Point;
     private EditText mAggravative_Factors;
     private EditText mReliving_Factors;
-    private Spinner  mSpinner_Severity_of_pain;
-    private Spinner  mPressure_pain_Threshold;
-    private Spinner  mDiurnal_variations;
+    private Spinner mSpinner_Severity_of_pain;
+    private Spinner mPressure_pain_Threshold;
+    private Spinner mDiurnal_variations;
     private Button mSave;
-    private String severity_pain="";
-    private String threshold_pain="";
-    private String dinural_variation="";
+    private String severity_pain = "";
+    private String threshold_pain = "";
+    private String dinural_variation = "";
+
     @Override
     public void onPostSuccess(Object response, int id) {
         switch (id) {
@@ -54,7 +55,7 @@ public class AddPainFragment extends BaseFragment implements HttpUrlListener
                 AppLog.i("Capri4Physio", "Patient Response : " + baseModel.getStatus());
 
                 getFragmentManager().popBackStack();
-
+                HandlerConstant.POP_INNER_BACK_HANDLER.sendMessage(HandlerConstant.POP_INNER_BACK_HANDLER.obtainMessage(0, ""));
                 break;
         }
 
@@ -104,21 +105,20 @@ public class AddPainFragment extends BaseFragment implements HttpUrlListener
     }
 
     @Override
-    protected void initView(View view)
-    {
+    protected void initView(View view) {
         super.initView(view);
-        mAggravative_Factors= (EditText) view.findViewById(R.id.edtxt_aggravating);
-        mDiurnal_variations= (Spinner) view.findViewById(R.id.spinnervariation);
-        mPain_Duration= (EditText) view.findViewById(R.id.edtxt_painduration);
-        mPain_Nature= (EditText) view.findViewById(R.id.edtxt_painnature);
-        mPain_Onset= (EditText) view.findViewById(R.id.edtxt_painonset);
-        mPain_Site= (EditText) view.findViewById(R.id.edtxt_painsite);
-        mPressure_pain_Threshold= (Spinner) view.findViewById(R.id.presure_pain);
-        mSpinner_Severity_of_pain= (Spinner) view.findViewById(R.id.spinersvierity_pain);
-        mSide_Location= (EditText) view.findViewById(R.id.edtxt_painside);
-        mTrigger_Point= (EditText) view.findViewById(R.id.edtxt_trigger);
-        mReliving_Factors= (EditText) view.findViewById(R.id.edtxt_relieving);
-        mSave= (Button) view.findViewById(R.id.btn_save);
+        mAggravative_Factors = (EditText) view.findViewById(R.id.edtxt_aggravating);
+        mDiurnal_variations = (Spinner) view.findViewById(R.id.spinnervariation);
+        mPain_Duration = (EditText) view.findViewById(R.id.edtxt_painduration);
+        mPain_Nature = (EditText) view.findViewById(R.id.edtxt_painnature);
+        mPain_Onset = (EditText) view.findViewById(R.id.edtxt_painonset);
+        mPain_Site = (EditText) view.findViewById(R.id.edtxt_painsite);
+        mPressure_pain_Threshold = (Spinner) view.findViewById(R.id.presure_pain);
+        mSpinner_Severity_of_pain = (Spinner) view.findViewById(R.id.spinersvierity_pain);
+        mSide_Location = (EditText) view.findViewById(R.id.edtxt_painside);
+        mTrigger_Point = (EditText) view.findViewById(R.id.edtxt_trigger);
+        mReliving_Factors = (EditText) view.findViewById(R.id.edtxt_relieving);
+        mSave = (Button) view.findViewById(R.id.btn_save);
     }
 
     @Override
@@ -130,32 +130,28 @@ public class AddPainFragment extends BaseFragment implements HttpUrlListener
                 addApiCall();
             }
         });
-mSpinner_Severity_of_pain.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-    @Override
-    public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-        if (i > 0) {
-            severity_pain = adapterView.getItemAtPosition(i).toString();
-        } else {
+        mSpinner_Severity_of_pain.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                if (i > 0) {
+                    severity_pain = adapterView.getItemAtPosition(i).toString();
+                } else {
 
-        }
+                }
 
-    }
+            }
 
-    @Override
-    public void onNothingSelected(AdapterView<?> adapterView) {
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
 
-    }
-});
+            }
+        });
         mPressure_pain_Threshold.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l)
-            {
-                if(i>0)
-                {
-                    threshold_pain=adapterView.getItemAtPosition(i).toString();
-                }
-                else
-                {
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                if (i > 0) {
+                    threshold_pain = adapterView.getItemAtPosition(i).toString();
+                } else {
 
                 }
 
@@ -168,14 +164,10 @@ mSpinner_Severity_of_pain.setOnItemSelectedListener(new AdapterView.OnItemSelect
         });
         mDiurnal_variations.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l)
-            {
-                if(i>0)
-                {
-                    dinural_variation=adapterView.getItemAtPosition(i).toString();
-                }
-                else
-                {
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                if (i > 0) {
+                    dinural_variation = adapterView.getItemAtPosition(i).toString();
+                } else {
 
                 }
 
@@ -187,6 +179,7 @@ mSpinner_Severity_of_pain.setOnItemSelectedListener(new AdapterView.OnItemSelect
             }
         });
     }
+
     private void addApiCall() {
 
         if (Utils.isNetworkAvailable(getActivity())) {
