@@ -74,6 +74,7 @@ public class FragementActiSensory1 extends AppCompatActivity {
 
             }
         });
+        getSupportActionBar().setTitle("Add Sensory Exam");
     }
 
     private void addMotorAPi() {

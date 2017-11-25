@@ -14,12 +14,20 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.LinearLayout;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.capri4physio.R;
+import com.capri4physio.Services.GetWebServices;
 import com.capri4physio.Services.WebServiceBase;
 import com.capri4physio.Services.WebServicesCallBack;
 import com.capri4physio.adapter.DoctorAppointmentAdapter;
+import com.capri4physio.model.branch.BranchPOJO;
+import com.capri4physio.model.doctor.DoctorPOJO;
+import com.capri4physio.model.doctor.DoctorResultPOJO;
 import com.capri4physio.model.newappointment.NewAppointmentResultPOJO;
 import com.capri4physio.net.ApiConfig;
 import com.capri4physio.util.AppPreferences;
@@ -44,10 +52,22 @@ public class ManageAppointmentActivity extends AppCompatActivity implements WebS
     private static final String GET_BOOKED_APPOINTMENTS = "get_booked_appointments";
     private static final String DELETE_APPOINTMENT_API = "delete_appointment_api";
     private static final String UPDATE_APPOINTMENT = "update_appointments";
+    private static final String GET_ALL_BRANCHES = "get_all_branches";
+    private static final String GET_DOCTORS_API = "get_doctor_api";
     @BindView(R.id.rv_manage_appointment)
     RecyclerView rv_manage_appointment;
     @BindView(R.id.toolbar)
     Toolbar toolbar;
+    @BindView(R.id.spinner_branch)
+    Spinner spinner_branch;
+    @BindView(R.id.spinner_doctor)
+    Spinner spinner_doctor;
+    @BindView(R.id.ll_doctors)
+    LinearLayout ll_doctors;
+    @BindView(R.id.ll_branch)
+    LinearLayout ll_branch;
+
+    String branch_code="";
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,8 +76,25 @@ public class ManageAppointmentActivity extends AppCompatActivity implements WebS
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
-        callBookedAppointmentsAPI(AppPreferences.getInstance(getApplicationContext()).getUserID());
+        if(AppPreferences.getInstance(getApplicationContext()).getUserType().equals("4")){
+            callBranchCodeAPI();
+        }else{
+            ll_branch.setVisibility(View.GONE);
+            branch_code=AppPreferences.getInstance(getApplicationContext()).getUSER_BRANCH_CODE();
+            if(AppPreferences.getInstance(getApplicationContext()).getUserType().equals("2")){
+                ll_doctors.setVisibility(View.GONE);
+                callBookedAppointmentsAPI(AppPreferences.getInstance(getApplicationContext()).getUserID());
+            }else{
+                getbranchdoctors(AppPreferences.getInstance(getApplicationContext()).getUSER_BRANCH_CODE());
+            }
+        }
+
     }
+
+    public void callBranchCodeAPI(){
+        new GetWebServices(ManageAppointmentActivity.this, GET_ALL_BRANCHES).execute(ApiConfig.GetURL);
+    }
+
     int position;
     public void cancelAppointment(String id,String patient_id, int position) {
         this.position = position;
@@ -109,7 +146,101 @@ public class ManageAppointmentActivity extends AppCompatActivity implements WebS
             case UPDATE_APPOINTMENT:
                 parseUpdateAPpointment(response);
                 break;
+            case GET_ALL_BRANCHES:
+                parseAllBranches(response);
+                break;
+            case GET_DOCTORS_API:
+                parseGetAllDoctors(response);
+                break;
         }
+    }
+    public void parseGetAllDoctors(String response) {
+        Log.d(TagUtils.getTag(), "get doctor response:-" + response);
+        try {
+            Gson gson = new Gson();
+            DoctorPOJO doctorPOJO = gson.fromJson(response, DoctorPOJO.class);
+            if (doctorPOJO.getSuccess().equals("true")) {
+                List<String> doctorStringList = new ArrayList<>();
+                doctorResultPOJOList.addAll(doctorPOJO.getDoctorResultPOJOList());
+                for (DoctorResultPOJO doctorResultPOJO : doctorResultPOJOList) {
+                    doctorStringList.add(doctorResultPOJO.getFirstName() + " " + doctorResultPOJO.getLastName());
+                }
+
+
+                ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<String>(
+                        getApplicationContext(), R.layout.dropsimpledown, doctorStringList);
+                spinner_doctor.setAdapter(spinnerArrayAdapter);
+
+                spinner_doctor.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                    @Override
+                    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+//                        showTimings(doctorResultPOJOList.get(position));
+                        callBookedAppointmentsAPI(doctorResultPOJOList.get(position).getId());
+                    }
+
+                    @Override
+                    public void onNothingSelected(AdapterView<?> parent) {
+
+                    }
+                });
+            } else {
+                List<String> doctorStringList = new ArrayList<>();
+
+                ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<String>(
+                        getApplicationContext(), R.layout.dropsimpledown, doctorStringList);
+                spinner_doctor.setAdapter(spinnerArrayAdapter);
+                ToastClass.showShortToast(getApplicationContext(), "No Doctor Found. Please Select another branch");
+            }
+
+//            showTimings(doctorResultPOJOList.get(0));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    List<BranchPOJO> branchPOJOList = new ArrayList<>();
+    List<DoctorResultPOJO> doctorResultPOJOList = new ArrayList<>();
+    public void parseAllBranches(String response) {
+        Log.d(TagUtils.getTag(),"branch response:-"+response);
+        branchPOJOList.clear();
+        try {
+            JSONArray jsonArray = new JSONArray(response);
+            for (int i = 0; i < jsonArray.length(); i++) {
+                JSONObject jsonObject = jsonArray.optJSONObject(i);
+                BranchPOJO branchPOJO = new BranchPOJO(jsonObject.optString("branch_id"),
+                        jsonObject.optString("branch_name"),
+                        jsonObject.optString("branch_code"),
+                        jsonObject.optString("branch_status"));
+                branchPOJOList.add(branchPOJO);
+            }
+            List<String> braStringList = new ArrayList<>();
+            for (BranchPOJO branchPOJO : branchPOJOList) {
+                braStringList.add(branchPOJO.getBranch_name() + " (" + branchPOJO.getBranch_code() + ")");
+            }
+
+            ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<String>(
+                    getApplicationContext(), R.layout.dropsimpledown, braStringList);
+            spinner_branch.setAdapter(spinnerArrayAdapter);
+
+            spinner_branch.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                    Log.d(TagUtils.getTag(),"called");
+                        getbranchdoctors(branchPOJOList.get(position).getBranch_code());
+                }
+
+                @Override
+                public void onNothingSelected(AdapterView<?> parent) {
+
+                }
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    public void getbranchdoctors(String branch_code) {
+        ArrayList<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
+        nameValuePairs.add(new BasicNameValuePair("bracch_code", branch_code));
+        new WebServiceBase(nameValuePairs, this, GET_DOCTORS_API).execute(ApiConfig.get_branch_doctor);
     }
     @Override
     protected void onResume() {

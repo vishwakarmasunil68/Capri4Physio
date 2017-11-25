@@ -73,6 +73,7 @@ public class SacrolicMotorActivity extends Activity{EditText ed1,ed2,ed3,ed4,ed5
             }
         });
         patient_id =getIntent().getStringExtra("patient_id");
+        setTitle("Add Sacrollic Exam");
     }
     public String ValidateEdit(EditText edit){
         if(edit.getText().toString().equals(null)||edit.getText().toString().equals("")){

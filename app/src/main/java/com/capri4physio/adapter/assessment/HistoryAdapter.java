@@ -19,6 +19,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.capri4physio.R;
+import com.capri4physio.fragment.assessment.HistoryFragment;
 import com.capri4physio.listener.ViewItemClickListener;
 import com.capri4physio.model.assessment.HistoryItem;
 import com.capri4physio.net.ApiConfig;
@@ -45,12 +46,14 @@ public class HistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             heart_diseases, recent_infection, bleeding_disorder, any_implants, pregnancy, htn, tb, cancer, hiv_aids, past_surgery, allergies, osteoporotic, depression, Hepatitis, hereditary_disease, et_past_illness, et_present_illness;
 
     private List<HistoryItem> mList;
+    private HistoryFragment historyFragment;
     private ViewItemClickListener<HistoryItem> mCallback;
 
-    public HistoryAdapter(Context context, List<HistoryItem> mList, ViewItemClickListener<HistoryItem> callback) {
+    public HistoryAdapter(Context context, HistoryFragment historyFragment, List<HistoryItem> mList, ViewItemClickListener<HistoryItem> callback) {
         this.context = context;
         inflater = LayoutInflater.from(context);
         this.mList = mList;
+        this.historyFragment=historyFragment;
         mCallback = callback;
     }
 
@@ -179,85 +182,16 @@ public class HistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 mCallback.onViewItemClick(mList.get(position), position, Constants.ClickIDConst.ID_DELETE_CLICK);
             }
         });
-
-
         holder.img_edit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                dialog = new Dialog(context, android.R.style.Theme_DeviceDefault_Light_Dialog);
-
-                //setting custom layout to dialog
-                dialog.setContentView(R.layout.history_dialogedit);
-                dialog.setTitle("Edit - history exam");
-
-//                //adding text dynamically
-                patient_name = (EditText) dialog.findViewById(R.id.Patient_name);
-                diabetes = (EditText) dialog.findViewById(R.id.diabetes);
-                staff_name = (EditText) dialog.findViewById(R.id.Staff_Name);
-                bill_number = (EditText) dialog.findViewById(R.id.Bill_number);
-                blood_pressure = (EditText) dialog.findViewById(R.id.blood_pressure);
-                paid_amount = (EditText) dialog.findViewById(R.id.Paid_amount);
-                smoking = (EditText) dialog.findViewById(R.id.smoking);
-                fever_and_chill = (EditText) dialog.findViewById(R.id.fever_and_chill);
-                heart_diseases = (EditText) dialog.findViewById(R.id.heart_diseases);
-                recent_infection = (EditText) dialog.findViewById(R.id.recent_infection);
-                bleeding_disorder = (EditText) dialog.findViewById(R.id.bleeding_disorder);
-
-                any_implants = (EditText) dialog.findViewById(R.id.any_implants);
-                pregnancy = (EditText) dialog.findViewById(R.id.pregnancy);
-                htn = (EditText) dialog.findViewById(R.id.htn);
-                tb = (EditText) dialog.findViewById(R.id.tb);
-                cancer = (EditText) dialog.findViewById(R.id.cancer);
-                hiv_aids = (EditText) dialog.findViewById(R.id.hiv_aids);
-                past_surgery = (EditText) dialog.findViewById(R.id.past_surgery);
-                allergies = (EditText) dialog.findViewById(R.id.allergies);
-                osteoporotic = (EditText) dialog.findViewById(R.id.osteoporotic);
-                depression = (EditText) dialog.findViewById(R.id.depression);
-                Hepatitis = (EditText) dialog.findViewById(R.id.hepatitis);
-                hereditary_disease = (EditText) dialog.findViewById(R.id.hereditary_disease);
-                paid_amount.setText(mList.get(position).getMedicineUsed());
-                bill_number.setText(mList.get(position).getOtherHistory());
-                staff_name.setText(mList.get(position).getMedicalHistory());
-                patient_name.setText(mList.get(position).getSurgicalHistory());
-
-                diabetes.setText(mList.get(position).getDiabetes());
-                blood_pressure.setText(mList.get(position).getBp());
-                smoking.setText(mList.get(position).getSmoking());
-                fever_and_chill.setText(mList.get(position).getFever_and_chill());
-
-                heart_diseases.setText(mList.get(position).getHeart_diseases());
-                bleeding_disorder.setText(mList.get(position).getBleeding_disorder());
-                recent_infection.setText(mList.get(position).getRecent_infection());
-                pregnancy.setText(mList.get(position).getPregnancy());
-
-                htn.setText(mList.get(position).getHtn());
-                tb.setText(mList.get(position).getTb());
-                cancer.setText(mList.get(position).getCancer());
-                hiv_aids.setText(mList.get(position).getHiv_aids());
-
-                past_surgery.setText(mList.get(position).getPast_surgery());
-                allergies.setText(mList.get(position).getAllergies());
-                osteoporotic.setText(mList.get(position).getOsteoporotic());
-                depression.setText(mList.get(position).getDepression());
-
-                Hepatitis.setText(mList.get(position).getHepatitis());
-                any_implants.setText(mList.get(position).getAny_implants());
-                hereditary_disease.setText(mList.get(position).getHereditary_disease());
-
-                //adding button click event
-                Button dismissButton = (Button) dialog.findViewById(R.id.button);
-                dismissButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        getpnotes(mList.get(position).getId());
-
-
-                    }
-                });
-                dialog.show();
+                try{
+                    historyFragment.callHistoryEdit(mList.get(position));
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
             }
         });
-
     }
 
     private void getpnotes(final String Id) {

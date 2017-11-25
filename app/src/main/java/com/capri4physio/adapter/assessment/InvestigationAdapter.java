@@ -25,13 +25,13 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.bumptech.glide.Glide;
 import com.capri4physio.R;
 import com.capri4physio.listener.ViewItemClickListener;
 import com.capri4physio.model.assessment.InvestigationItem;
 import com.capri4physio.net.ApiConfig;
 import com.capri4physio.util.Constants;
 import com.capri4physio.util.TagUtils;
-import com.squareup.picasso.Picasso;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -152,30 +152,36 @@ public class InvestigationAdapter extends RecyclerView.Adapter<RecyclerView.View
             public void onClick(View v) {
 
                 try {
-                    bitmap = ApiConfig.IMAGE_BASE_URL + "app/webroot/upload/" + mList.get(position).getAttachment();
-                    Log.d(TagUtils.getTag(), "image url:-" + bitmap);
-                    bitmap1 = mList.get(position).getAttachment();
-                    int endIndex = bitmap1.lastIndexOf(".");
-//                    if (endIndex != -1) {
-//                        String newstr = bitmap1.substring(00, endIndex); // not forgot to put check if(endIndex != -1)
-//
-//                        String bmp[] = newstr.split("00");
-//                        String imgorpdf = bmp[1];
-//                        Log.e("bit1", imgorpdf);
-                    if (bitmap1.contains("pdf") || bitmap1.contains("doc")) {
-                        new DownloadFile().execute();
-                    } else {
+
+//                    bitmap1 = mList.get(position).getAttachment();
+//                    int endIndex = bitmap1.lastIndexOf(".");
+////                    if (endIndex != -1) {
+////                        String newstr = bitmap1.substring(00, endIndex); // not forgot to put check if(endIndex != -1)
+////
+////                        String bmp[] = newstr.split("00");
+////                        String imgorpdf = bmp[1];
+////                        Log.e("bit1", imgorpdf);
+//                    if (bitmap1.contains("pdf") || bitmap1.contains("doc")) {
+//                        new DownloadFile().execute();
+//                    } else {
                         dialog = new Dialog(context, android.R.style.Theme_DeviceDefault_Light_Dialog);
 
                         //setting custom layout to dialog
                         dialog.setContentView(R.layout.inve_dialog_edit);
                         dialog.setTitle("View - Investigation photo");
+//
 
-//                //adding text dynamically
-                        ImageView patient_name = (ImageView) dialog.findViewById(R.id.img);
-                        Picasso.with(context.getApplicationContext()).load(bitmap).resize(500, 500).into(patient_name);
-                    }
-                    Log.e("bitmap", bitmap);
+                    bitmap = ApiConfig.IMAGE_BASE_URL + "app/webroot/upload/" + mList.get(position).getAttachment();
+                    Log.d(TagUtils.getTag(), "image url:-" + bitmap);
+
+                    ImageView patient_name = (ImageView) dialog.findViewById(R.id.img);
+
+                    Glide.with(context).load(bitmap).into(patient_name);
+////                //adding text dynamically
+//                        ImageView patient_name = (ImageView) dialog.findViewById(R.id.img);
+//                        Picasso.with(context.getApplicationContext()).load(bitmap).resize(500, 500).into(patient_name);
+//                    }
+//                    Log.e("bitmap", bitmap);
                     Button dismissButton = (Button) dialog.findViewById(R.id.button);
                     dismissButton.setOnClickListener(new View.OnClickListener() {
                         @Override

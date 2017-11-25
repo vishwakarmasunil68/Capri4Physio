@@ -2,10 +2,12 @@ package com.capri4physio.model.assessment;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.io.Serializable;
+
 /**
  * Created by prabhunathyadav on 05/06/16.
  */
-public class PhysicalItem {
+public class PhysicalItem implements Serializable{
 
 
     @SerializedName("id")

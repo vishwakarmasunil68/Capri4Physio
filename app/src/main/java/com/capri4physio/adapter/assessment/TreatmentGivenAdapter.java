@@ -7,9 +7,12 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.android.volley.Request;
@@ -18,6 +21,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.bumptech.glide.Glide;
 import com.capri4physio.R;
 import com.capri4physio.listener.ViewItemClickListener;
 import com.capri4physio.model.assessment.TreatmentGivenItem;
@@ -71,9 +75,10 @@ public class TreatmentGivenAdapter extends RecyclerView.Adapter<RecyclerView.Vie
     }
 
     class UserViewHolder extends RecyclerView.ViewHolder {
-        private ImageView img_edit,mImg;
-        private TextView mTxtTherapy, mTxtTherapist, mTxtComment, mTxtTimeIn,mTxtTimeOut;
+        private ImageView img_edit, mImg;
+        private TextView mTxtTherapy, mTxtTherapist, mTxtComment, mTxtTimeIn, mTxtTimeOut;
         private TextView txt_date;
+        private RelativeLayout layout_row;
 
         public UserViewHolder(View itemView) {
             super(itemView);
@@ -85,6 +90,7 @@ public class TreatmentGivenAdapter extends RecyclerView.Adapter<RecyclerView.Vie
             mTxtTimeIn = (TextView) itemView.findViewById(R.id.txt_time_in);
             mTxtTimeOut = (TextView) itemView.findViewById(R.id.txt_time_out);
             txt_date = (TextView) itemView.findViewById(R.id.txt_date);
+            layout_row = (RelativeLayout) itemView.findViewById(R.id.layout_row);
         }
     }
 
@@ -93,21 +99,21 @@ public class TreatmentGivenAdapter extends RecyclerView.Adapter<RecyclerView.Vie
         holder.mTxtTherapy.setText(capsFirstLetter(mList.get(position).getTherapy()));
         holder.mTxtTherapist.setText(mList.get(position).getTrea_staff_name());
         holder.mTxtComment.setText(mList.get(position).getComment());
-        holder.mTxtTimeIn.setText("Time IN: "+mList.get(position).getTimeIn());
-        holder.mTxtTimeOut.setText("Time OUT: "+mList.get(position).getTimeOut());
+        holder.mTxtTimeIn.setText("Time IN: " + mList.get(position).getTimeIn());
+        holder.mTxtTimeOut.setText("Time OUT: " + mList.get(position).getTimeOut());
         holder.txt_date.setText(mList.get(position).getDate());
 
         holder.img_edit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                dialog=new Dialog(context,android.R.style.Theme_DeviceDefault_Light_Dialog);
+                dialog = new Dialog(context, android.R.style.Theme_DeviceDefault_Light_Dialog);
 
                 //setting custom layout to dialog
                 dialog.setContentView(R.layout.treat_dialog_edit);
                 dialog.setTitle("Edit - Treatment");
 
 //                //adding text dynamically
-                final  EditText blood_pressure = (EditText) dialog.findViewById(R.id.Patient_name);
+                final EditText blood_pressure = (EditText) dialog.findViewById(R.id.Patient_name);
 //                EditText temperature= (EditText) dialog.findViewById(R.id.diabetes);
                 final EditText heart_rate = (EditText) dialog.findViewById(R.id.Staff_Name);
                 final EditText quantity = (EditText) dialog.findViewById(R.id.quantity);
@@ -116,13 +122,13 @@ public class TreatmentGivenAdapter extends RecyclerView.Adapter<RecyclerView.Vie
 
                 final String Therapy = (mList.get(position).getTherapy().toString());
                 blood_pressure.setText(Therapy);
-                final  String Treatmentamount =(mList.get(position).getQuan_item().toString());
+                final String Treatmentamount = (mList.get(position).getQuan_item().toString());
                 quantity.setText(Treatmentamount);
-                final String Comment =(mList.get(position).getComment().toString());
+                final String Comment = (mList.get(position).getComment().toString());
                 heart_rate.setText(Comment);
-                final String Timein =mList.get(position).getTimeIn().toString();
+                final String Timein = mList.get(position).getTimeIn().toString();
                 respiratory_rate.setText(Timein);
-                final String Time_out =mList.get(position).getTimeOut().toString();
+                final String Time_out = mList.get(position).getTimeOut().toString();
                 built_patient.setText(Time_out);
 
 
@@ -131,9 +137,7 @@ public class TreatmentGivenAdapter extends RecyclerView.Adapter<RecyclerView.Vie
                 dismissButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        getpnotes(mList.get(position).getId(),blood_pressure.getText().toString(),quantity.getText().toString(),heart_rate.getText().toString(),respiratory_rate.getText().toString(),built_patient.getText().toString());
-
-
+                        getpnotes(mList.get(position).getId(), blood_pressure.getText().toString(), quantity.getText().toString(), heart_rate.getText().toString(), respiratory_rate.getText().toString(), built_patient.getText().toString());
                     }
                 });
                 dialog.show();
@@ -147,6 +151,49 @@ public class TreatmentGivenAdapter extends RecyclerView.Adapter<RecyclerView.Vie
             }
         });
 
+        holder.layout_row.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showTreatmentGivenReport(mList.get(position));
+            }
+        });
+
+    }
+
+    public void showTreatmentGivenReport(TreatmentGivenItem treatmentGivenItem){
+        final Dialog dialog1 = new Dialog(context, android.R.style.Theme_DeviceDefault_Light_Dialog);
+        dialog1.setCancelable(true);
+        dialog1.setContentView(R.layout.dialog_treatment_report);
+        dialog1.setTitle("Treatment");
+        dialog1.show();
+        dialog1.setCancelable(true);
+        Window window = dialog1.getWindow();
+        window.setLayout(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+
+        Button btn_ok= (Button) dialog1.findViewById(R.id.btn_ok);
+        TextView tv_therapist_name= (TextView) dialog1.findViewById(R.id.tv_therapist_name);
+        TextView tv_comment= (TextView) dialog1.findViewById(R.id.tv_comment);
+        TextView tv_time_in= (TextView) dialog1.findViewById(R.id.tv_time_in);
+        TextView tv_time_out= (TextView) dialog1.findViewById(R.id.tv_time_out);
+        ImageView iv_signature= (ImageView) dialog1.findViewById(R.id.iv_signature);
+
+        tv_comment.setText(treatmentGivenItem.getComment());
+        tv_therapist_name.setText(treatmentGivenItem.getTrea_staff_name());
+        tv_time_in.setText(treatmentGivenItem.getTimeIn());
+        tv_time_out.setText(treatmentGivenItem.getTimeOut());
+
+        Glide.with(context)
+                .load(ApiConfig.IMAGE_BASE_URL+"app/webroot/upload/"+treatmentGivenItem.getSignature())
+                .into(iv_signature);
+
+
+        btn_ok.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog1.dismiss();
+            }
+        });
+
     }
 
     private String capsFirstLetter(String original) {
@@ -155,21 +202,20 @@ public class TreatmentGivenAdapter extends RecyclerView.Adapter<RecyclerView.Vie
         }
         return original.substring(0, 1).toUpperCase() + original.substring(1);
     }
-    private void getpnotes(final String Id,final String therapy,final String trea_amount,final String comment ,final String time_in,final String time_out){
+
+    private void getpnotes(final String Id, final String therapy, final String trea_amount, final String comment, final String time_in, final String time_out) {
 
 //        final String casedesc =editTextcontents.getText().toString();
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, ApiConfig.EDIT_TREATMENTGIVEN  ,
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, ApiConfig.EDIT_TREATMENTGIVEN,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
                         try {
-                            Log.e("result",response);
+                            Log.e("result", response);
                             dialog.dismiss();
                             mCallback.onViewItemClick(mList.get(0), -2, Constants.ClickIDConst.ID_DELETE_CLICK);
 
-                        }
-
-                        catch (Exception e) {
+                        } catch (Exception e) {
                             e.printStackTrace();
                         }
                         Log.e("Postdat", "" + response.toString());
@@ -181,17 +227,17 @@ public class TreatmentGivenAdapter extends RecyclerView.Adapter<RecyclerView.Vie
 //                        Toast.makeText(StmtActivity.this,error.toString(),Toast.LENGTH_LONG).show();
                         Log.w("Postdat", "" + error);
                     }
-                }){
+                }) {
 
 
-            protected Map<String,String> getParams(){
-                Map<String,String> params = new HashMap<String, String>();
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<String, String>();
 
                 params.put("therapy", therapy);
                 params.put("trea_amount", trea_amount);
-                params.put("comment",comment);
+                params.put("comment", comment);
                 params.put("time_in", time_in);
-                params.put("time_out",time_out);
+                params.put("time_out", time_out);
                 params.put("treamentgiven_id", Id);
                 return params;
             }

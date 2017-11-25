@@ -120,7 +120,7 @@ public class AddAppointmentFragmentbyPatient extends BaseFragment implements Ada
     String st = "0";
     public static ListView contactList;
     // URL of object to be parsed
-    String JsonURL = "http://oldmaker.com/fijiyo/index.php/users/addappointment";
+    String JsonURL = "http://caprispine.in/fijiyo/index.php/users/addappointment";
     InfoApps Detailapp;
     List<String> mrng_time, getbooked_time;
     List<Integer> list_removed_position = new ArrayList<>();
@@ -292,7 +292,7 @@ public class AddAppointmentFragmentbyPatient extends BaseFragment implements Ada
                     listview.setVisibility(View.INVISIBLE);
                     initProgressDialog("Please wait..");
                     addExpenseApiCall1(listview,edit_date.getText().toString());
-//                    new CallServices1(listview,edit_date.getText().toString()).execute("http://oldmaker.com/fijiyo/index.php/users/enquirylistdatewise");
+//                    new CallServices1(listview,edit_date.getText().toString()).execute("http://caprispine.in/fijiyo/index.php/users/enquirylistdatewise");
 
                 } else {
                     Utils.showMessage(getActivity(), getResources().getString(R.string.err_network));
@@ -482,7 +482,7 @@ listview.setVisibility(View.INVISIBLE);
         /*Log.e("date",date);
         Log.e("time",time);
         Log.e("reason",reason);*/
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, "http://oldmaker.com/fijiyo/index.php/users/enquirylistdatewise",
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, "http://caprispine.in/fijiyo/index.php/users/enquirylistdatewise",
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
@@ -567,7 +567,7 @@ listview.setVisibility(View.INVISIBLE);
         /*Log.e("date",date);
         Log.e("time",time);
         Log.e("reason",reason);*/
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, "http://oldmaker.com/fijiyo/index.php/users/addenquiry",
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, "http://caprispine.in/fijiyo/index.php/users/addenquiry",
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {

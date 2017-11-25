@@ -2,7 +2,9 @@ package com.capri4physio.adapter;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,6 +15,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.capri4physio.R;
+import com.capri4physio.activity.CourseActivity;
 import com.capri4physio.activity.ListCourseStudentsActivity;
 import com.capri4physio.activity.UpdateCourceActivity;
 import com.capri4physio.model.cources.CourcesResultPOJO;
@@ -90,6 +93,7 @@ public class CourceAdapter extends RecyclerView.Adapter<CourceAdapter.MyViewHold
         Button btn_cancel= (Button) dialog1.findViewById(R.id.btn_cancel);
         Button btn_view_students= (Button) dialog1.findViewById(R.id.btn_view_students);
         Button btn_update_course= (Button) dialog1.findViewById(R.id.btn_update_course);
+        Button btn_delete_course= (Button) dialog1.findViewById(R.id.btn_delete_course);
 
         btn_cancel.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -116,6 +120,43 @@ public class CourceAdapter extends RecyclerView.Adapter<CourceAdapter.MyViewHold
             }
         });
 
+        btn_delete_course.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog1.dismiss();
+                showAlertDialog(courcesResultPOJO);
+            }
+        });
+
+    }
+
+    public void showAlertDialog(final CourcesResultPOJO courcesResultPOJO){
+        AlertDialog.Builder builder1 = new AlertDialog.Builder(activity);
+        builder1.setMessage("Do you want to delete the course?");
+        builder1.setCancelable(true);
+
+        builder1.setPositiveButton(
+                "Yes",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.cancel();
+                        if(activity instanceof CourseActivity){
+                            CourseActivity courseActivity= (CourseActivity) activity;
+                            courseActivity.callCourseDeleteAPI(courcesResultPOJO);
+                        }
+                    }
+                });
+
+        builder1.setNegativeButton(
+                "No",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.cancel();
+                    }
+                });
+
+        AlertDialog alert11 = builder1.create();
+        alert11.show();
     }
 
     @Override

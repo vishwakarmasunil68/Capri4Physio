@@ -21,10 +21,13 @@ import com.android.volley.toolbox.Volley;
 import com.capri4physio.R;
 import com.capri4physio.net.ApiConfig;
 import com.capri4physio.util.ImageUtil;
+import com.capri4physio.util.TagUtils;
 import com.capri4physio.util.Utils;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import static com.capri4physio.R.id.RotationLeft;
 
 /**
  * Created by emobi5 on 7/2/2016.
@@ -44,7 +47,7 @@ public class MotorActivity3 extends Activity{
         ed2=(EditText)findViewById(R.id.edtxt_temp);
         ed3=(EditText)findViewById(R.id.Left);
         ed4=(EditText)findViewById(R.id.Right);
-        ed5=(EditText)findViewById(R.id.RotationLeft);
+        ed5=(EditText)findViewById(RotationLeft);
         ed6=(EditText)findViewById(R.id.RotationRight);
         scroll_thoraccicspine=(ScrollView) findViewById(R.id.scroll_thoraccicspine);
         savebtn=(Button)findViewById(R.id.savebtn);
@@ -93,9 +96,6 @@ public class MotorActivity3 extends Activity{
         thoraccic_sideflexRight =ValidateEdit(ed4);
         thoraccic_Rotation_Left=ValidateEdit(ed5);
         thoraccic_RotationRight=ValidateEdit(ed6);
-        /*Log.e("date",date);
-        Log.e("time",time);
-        Log.e("reason",reason);*/
         StringRequest stringRequest = new StringRequest(Request.Method.POST, ApiConfig.MOTOR__THORACCIC_URL,
                 new Response.Listener<String>() {
                     @Override
@@ -105,59 +105,7 @@ public class MotorActivity3 extends Activity{
                             pDialog.dismiss();
                             Toast.makeText(MotorActivity3.this,"successfully added", Toast.LENGTH_LONG).show();
                             finish();
-                            /*Intent intent=new Intent(StmtActivity.this,HomeActivity.class);
-                                startActivity(intent);*/
 
-                            /*JSONObject objresponse = new JSONObject(response);
-                            //					Toast.makeText(getApplicationContext(), "Could not retreive Data2!", Toast.LENGTH_LONG).show();
-
-                            String success = objresponse.getString("isSuccess");
-                            String success_msg = objresponse.getString("success_msg");
-
-                            if (success.equalsIgnoreCase("true") || success_msg.equalsIgnoreCase("true")) {
-
-                                Log.e("Postdat", "" + response);
-                                jsonArray = objresponse.getJSONArray("result");
-
-
-                                //Log.i("News Data", jsonArray.toString());
-
-//                    JSONArray cast = jsonArray.getJSONArray("result");
-                                for (int i = 0; i < jsonArray.length(); i++) {
-
-                                    JSONObject jsonObject = jsonArray.getJSONObject(i);
-                                    blnc_id = jsonObject.getString("receiver_name");
-                                    trnsdtime = jsonObject.getString("transaction_datetime");
-                                    trnsamount= jsonObject.getString("balance_amount");
-                                    trnsamounttype= jsonObject.getString("transaction_transfer_type");
-//                                     balance_id=new ArrayList<String>();
-//                                    balance_id.add(blnc_id);
-                                    Detailapp = new InfoApps();
-                                    Detailapp.setName(blnc_id);
-                                    Detailapp.setNumber(trnsdtime);
-                                    Detailapp.setAppname(trnsamount);
-                                    Detailapp.setDataAdd(trnsamounttype);
-                                    Log.e("account_blnc_id", blnc_id);
-                                    Log.e("account_balance_id", contactDetails.toString());
-//                                    if (BalanceDetail.password.equals(pinpassword)) {
-                                    pass.setVisibility(View.GONE);
-                                    linear.setVisibility(View.VISIBLE);
-                                    contactAdapter = new LocationAdapter(getApplicationContext(), R.layout.contactlistadap);
-                                    contactList.setAdapter(contactAdapter);
-//                                    Double user_long = jsonObject.getDouble("user_long");
-//                                    Double user_lat = jsonObject.getDouble("user_lat");
-//                                    UserType = "UserType: " + jsonObject.getString("usertype");
-                                    *//*Intent intent1 = new Intent(LoginActivity.this, HomeActivity.class);
-                                    startActivity(intent1);*//*
-                                    *//*}
-                                    else {
-                                        Toast.makeText(getApplicationContext(),"Pin number is incorrect",Toast.LENGTH_LONG).show();
-                                    }*//*
-                                }*/
-//                            }
-                           /* else {
-                                Toast.makeText(getApplicationContext(),"Phone_no. or password is incorrect",Toast.LENGTH_LONG).show();
-                            }*/
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
@@ -182,27 +130,13 @@ public class MotorActivity3 extends Activity{
                 objresponse.put("thoraccicsp_exten", thoraccic_Extension);
                 objresponse.put("thoraccicsp_side_flex_left", thoraccic_sideflexleft);
                 objresponse.put("thoraccicsp_side_flex_right",thoraccic_sideflexRight);
-                objresponse.put("thoraccicsp_rotation_left ",thoraccic_Rotation_Left);
+                objresponse.put("thoraccicsp_rotation_left ",((EditText) findViewById(R.id.RotationLeft)).getText().toString());
                 objresponse.put("thoraccicsp_rotation_right",thoraccic_RotationRight);
                 objresponse.put("moterexamthoraccic_images", main_base64);
-                /*params.put("sfirst_name",name);
-                params.put("slast_name",lastName);
-                params.put("sdob",dob);
-                params.put("sage", "23");
-                params.put("sdatejoing",doj);
-                params.put("senddate", endingdateofcontract);
-                params.put("sgender", rate);
-                params.put("smarital_status", rate1);
-                params.put("sdesignation",designation);
-                params.put("saddress", address);
-                params.put("scity", city);
-                params.put("spincode", pin_code);
-                params.put("smobile", phone);
-                params.put("semail", email_id);
-                params.put("squalifation", degree);
-                params.put("sexprience", experienceduration);*/
 
-//                Toast.makeText(UserStatement.this, ema +"success", Toast.LENGTH_LONG).show();
+
+                Log.d(TagUtils.getTag(),"thorarric params:-"+objresponse.toString());
+
                 return objresponse;
             }
 

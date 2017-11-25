@@ -14,7 +14,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 
 
 public class ImageUtil {
@@ -308,14 +310,36 @@ public class ImageUtil {
 
 		return sdCardPath;
 	}
-
 	public static String encodeTobase64(Bitmap image) {
 		Bitmap immagex = image;
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		immagex.compress(Bitmap.CompressFormat.PNG, 100, baos);
+		immagex.compress(Bitmap.CompressFormat.JPEG, 100, baos);
 		byte[] b = baos.toByteArray();
 		String imageEncoded = Base64.encodeToString(b, Base64.DEFAULT);
+//		imageEncoded=imageEncoded.replaceAll("data:image/jpeg;base64,","");
+//		imageEncoded=imageEncoded.replaceAll("data:image/png;base64,","");
+		Log.d(TagUtils.getTag(),"image encoded:-"+imageEncoded);
+//		savetoFile(imageEncoded);
 		return imageEncoded;
+	}
+
+	public static void savetoFile(String base64){
+		try {
+			FileOutputStream outPutStream = new FileOutputStream(new File(Environment.getExternalStorageDirectory()+File.separator+"imagestring.txt"));
+			//Create Writer to write STream to file Path
+			OutputStreamWriter outPutStreamWriter = new OutputStreamWriter(outPutStream);
+			// Stream Byte Data to the file
+			outPutStreamWriter.append(base64);
+			//Close Writer
+			outPutStreamWriter.close();
+			//Clear Stream
+			outPutStream.flush();
+			//Terminate STream
+			outPutStream.close();
+		}
+		catch (Exception e){
+			e.printStackTrace();
+		}
 	}
 
 	public static Bitmap decodeBase64(String input) {

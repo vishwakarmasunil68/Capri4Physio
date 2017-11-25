@@ -23,43 +23,50 @@ import com.capri4physio.net.ApiConfig;
 import com.capri4physio.util.ImageUtil;
 import com.capri4physio.util.Utils;
 
+import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicNameValuePair;
+
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+
+import viewreport.Services.WebServiceBase;
 
 /**
  * Created by emobi5 on 7/2/2016.
  */
-public class MotorActivity2 extends Activity{
-    EditText ed1,ed2,ed3,ed4,ed5,ed6,ed7;
+public class MotorActivity2 extends Activity {
+    EditText ed1, ed2, ed3, ed4, ed5, ed6, ed7;
     Button savebtn;
     ProgressDialog pDialog;
     Bitmap bitmap = null;
     ScrollView scroll_survical_spine;
-    public static String cerviccal_Flexion,patient_id,cerviccal_Extension,sideflexleft,sideflexRight,Rotation_Left,RotationRight;
+    public static String cerviccal_Flexion, patient_id, cerviccal_Extension, sideflexleft, sideflexRight, Rotation_Left, RotationRight;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.cervicalspine);
-        ed1=(EditText)findViewById(R.id.edtxt_blood_presure);
-        ed2=(EditText)findViewById(R.id.edtxt_temp);
-        ed3=(EditText)findViewById(R.id.Side_Flexion_Left);
-        ed4=(EditText)findViewById(R.id.Side_Flexion_Right);
-        ed5=(EditText)findViewById(R.id.RotationLeft);
-        ed6=(EditText)findViewById(R.id.RotationRight);
-        scroll_survical_spine=(ScrollView) findViewById(R.id.scroll_survical_spine);
-        savebtn=(Button)findViewById(R.id.savebtn);
+        ed1 = (EditText) findViewById(R.id.edtxt_blood_presure);
+        ed2 = (EditText) findViewById(R.id.edtxt_temp);
+        ed3 = (EditText) findViewById(R.id.Side_Flexion_Left);
+        ed4 = (EditText) findViewById(R.id.Side_Flexion_Right);
+        ed5 = (EditText) findViewById(R.id.RotationLeft);
+        ed6 = (EditText) findViewById(R.id.RotationRight);
+        scroll_survical_spine = (ScrollView) findViewById(R.id.scroll_survical_spine);
+        savebtn = (Button) findViewById(R.id.savebtn);
         savebtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 //                Toast.makeText(getApplicationContext(),"button",Toast.LENGTH_LONG);
                 takeScreenShots(scroll_survical_spine);
-                String main_base64= ImageUtil.encodeTobase64(bitmap);
+                String main_base64 = ImageUtil.encodeTobase64(bitmap);
                 initProgressDialog("Please wait..");
+//                addMotorApi1(main_base64);
                 addMotorAPi(main_base64);
-
             }
         });
-        patient_id =getIntent().getStringExtra("patient_id");
+        patient_id = getIntent().getStringExtra("patient_id");
     }
 
     public Bitmap takeScreenShots(ScrollView scrollView) {
@@ -77,21 +84,42 @@ public class MotorActivity2 extends Activity{
         scrollView.draw(canvas);
         return bitmap;
     }
-    public String ValidateEdit(EditText edit){
-        if(edit.getText().toString().equals(null)||edit.getText().toString().equals("")){
+
+    public String ValidateEdit(EditText edit) {
+        if (edit.getText().toString().equals(null) || edit.getText().toString().equals("")) {
             return "";
-        }
-        else{
+        } else {
             return edit.getText().toString().trim();
         }
     }
-    private void addMotorAPi(final String main_base64){
-          cerviccal_Flexion =ValidateEdit(ed1);
-          cerviccal_Extension =ValidateEdit(ed2);
-          sideflexleft =ValidateEdit(ed3);
-        sideflexRight =ValidateEdit(ed4);
-        Rotation_Left=ValidateEdit(ed5);
-        RotationRight=ValidateEdit(ed6);
+
+    private void addMotorApi1(final String main_base64){
+        final String name =ValidateEdit(ed1);
+        final String lastName =ValidateEdit(ed2);
+        final String dob =ValidateEdit(ed3);
+        ArrayList<NameValuePair> nameValuePairs=new ArrayList<>();
+
+
+        nameValuePairs.add(new BasicNameValuePair("moter_exam_date", Utils.getCurrentDate()));
+        nameValuePairs.add(new BasicNameValuePair("patient_id",patient_id));
+        nameValuePairs.add(new BasicNameValuePair("cervsp_flex",cerviccal_Flexion));
+        nameValuePairs.add(new BasicNameValuePair("cervsp_exten",cerviccal_Extension));
+        nameValuePairs.add(new BasicNameValuePair("cervsp_side_flex_left",sideflexleft));
+        nameValuePairs.add(new BasicNameValuePair("cervsp_side_flex_right",sideflexRight));
+        nameValuePairs.add(new BasicNameValuePair("cervsp_rotation_left",Rotation_Left));
+        nameValuePairs.add(new BasicNameValuePair("cervsp_rotation_right",RotationRight));
+        nameValuePairs.add(new BasicNameValuePair("moterexamcervical_images",main_base64));
+
+        new WebServiceBase(nameValuePairs,this,"cervical_api").execute(ApiConfig.MOTOR_CERVICAL_URL);
+    }
+
+    private void addMotorAPi(final String main_base64) {
+        cerviccal_Flexion = ValidateEdit(ed1);
+        cerviccal_Extension = ValidateEdit(ed2);
+        sideflexleft = ValidateEdit(ed3);
+        sideflexRight = ValidateEdit(ed4);
+        Rotation_Left = ValidateEdit(ed5);
+        RotationRight = ValidateEdit(ed6);
         /*Log.e("date",date);
         Log.e("time",time);
         Log.e("reason",reason);*/
@@ -100,9 +128,9 @@ public class MotorActivity2 extends Activity{
                     @Override
                     public void onResponse(String response) {
                         try {
-                            Log.e("result",response);
+                            Log.e("result", response);
                             pDialog.dismiss();
-                            Toast.makeText(MotorActivity2.this,"successfully added", Toast.LENGTH_LONG).show();
+                            Toast.makeText(MotorActivity2.this, "successfully added", Toast.LENGTH_LONG).show();
                             finish();
                             /*Intent intent=new Intent(StmtActivity.this,HomeActivity.class);
                                 startActivity(intent);*/
@@ -170,20 +198,20 @@ public class MotorActivity2 extends Activity{
 //                        Toast.makeText(StmtActivity.this,error.toString(),Toast.LENGTH_LONG).show();
                         Log.w("Postdat", "" + error);
                     }
-                }){
+                }) {
 
 
-            protected Map<String,String> getParams(){
-                Map<String,String> objresponse = new HashMap<String, String>();
+            protected Map<String, String> getParams() {
+                Map<String, String> objresponse = new HashMap<String, String>();
                 objresponse.put("moter_exam_date", Utils.getCurrentDate());
                 objresponse.put("patient_id", patient_id);
                 objresponse.put("cervsp_flex", cerviccal_Flexion);
                 objresponse.put("cervsp_exten", cerviccal_Extension);
                 objresponse.put("cervsp_side_flex_left", sideflexleft);
-                objresponse.put("cervsp_side_flex_right",sideflexRight);
-                objresponse.put("cervsp_rotation_left",Rotation_Left);
-                objresponse.put("cervsp_rotation_right",RotationRight);
-                objresponse.put("moterexamcervical_images",main_base64);
+                objresponse.put("cervsp_side_flex_right", sideflexRight);
+                objresponse.put("cervsp_rotation_left", Rotation_Left);
+                objresponse.put("cervsp_rotation_right", RotationRight);
+                objresponse.put("moterexamcervical_images", main_base64);
                 /*params.put("sfirst_name",name);
                 params.put("slast_name",lastName);
                 params.put("sdob",dob);

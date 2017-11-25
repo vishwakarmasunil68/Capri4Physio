@@ -29,7 +29,9 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.capri4physio.R;
+import com.capri4physio.fragment.AddSensoryActivity;
 import com.capri4physio.fragment.BaseFragment;
+import com.capri4physio.fragment.UpdateSensoryActivity;
 import com.capri4physio.listener.HttpUrlListener;
 import com.capri4physio.listener.ViewItemClickListener;
 import com.capri4physio.model.BaseModel;
@@ -37,11 +39,13 @@ import com.capri4physio.model.assessment.MotorModel;
 import com.capri4physio.model.assessment.PhysicalExamModel;
 import com.capri4physio.model.assessment.PhysicalItem;
 import com.capri4physio.net.ApiConfig;
+import com.capri4physio.pojo.exams.SensoryExam;
 import com.capri4physio.task.UrlConnectionTask;
 import com.capri4physio.util.AppLog;
 import com.capri4physio.util.HandlerConstant;
 import com.capri4physio.util.TagUtils;
 import com.capri4physio.util.Utils;
+import com.google.gson.Gson;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -68,8 +72,8 @@ public class SensoryFragment extends BaseFragment implements HttpUrlListener, Vi
     private static final String KEY_TYPE = "type";
     private String patientId = "";
     private String assessmentType = "";
-    private Button mAdd,btn_skip;
-    InfoApps Detailapp,Detailapp1;
+    private Button mAdd, btn_skip;
+    InfoApps Detailapp, Detailapp1;
 
 
     /**
@@ -131,7 +135,7 @@ public class SensoryFragment extends BaseFragment implements HttpUrlListener, Vi
     @Override
     protected void initView(View view) {
         super.initView(view);
-        contactDetails1=new ArrayList<InfoApps>();
+        contactDetails1 = new ArrayList<InfoApps>();
 //        contactDetails1.add("sbfjk");
         mSnackBarLayout = (CoordinatorLayout) view.findViewById(R.id.coordinator_layout);
         mRecyclerView = (RecyclerView) view.findViewById(R.id.recycler);
@@ -140,9 +144,15 @@ public class SensoryFragment extends BaseFragment implements HttpUrlListener, Vi
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         mRecyclerView.setLayoutManager(layoutManager);
         mRecyclerView.setAdapter(mAdapter);
-        mAdd= (Button) view.findViewById(R.id.btn_add);
-        btn_skip= (Button) view.findViewById(R.id.btn_skip);
+        mAdd = (Button) view.findViewById(R.id.btn_add);
+        btn_skip = (Button) view.findViewById(R.id.btn_skip);
         mList = new ArrayList<>();
+
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
         getpnotes();
     }
 
@@ -159,15 +169,15 @@ public class SensoryFragment extends BaseFragment implements HttpUrlListener, Vi
             @Override
             public void onClick(View v) {
                 getFragmentManager().popBackStack();
-                HandlerConstant.POP_BACK_HANDLER.sendMessage(HandlerConstant.POP_BACK_HANDLER.obtainMessage(0,"6"));
+                HandlerConstant.POP_BACK_HANDLER.sendMessage(HandlerConstant.POP_BACK_HANDLER.obtainMessage(0, "6"));
             }
         });
 
-        HandlerConstant.POP_INNER_BACK_HANDLER= new Handler(new Handler.Callback() {
+        HandlerConstant.POP_INNER_BACK_HANDLER = new Handler(new Handler.Callback() {
             @Override
             public boolean handleMessage(Message msg) {
                 String message = (String) msg.obj;
-                Log.d(TagUtils.getTag(),"pop back handler:-"+message);
+                Log.d(TagUtils.getTag(), "pop back handler:-" + message);
                 btn_skip.callOnClick();
                 return false;
             }
@@ -187,9 +197,7 @@ public class SensoryFragment extends BaseFragment implements HttpUrlListener, Vi
                 JSONObject params = new JSONObject();
                 params.put(ApiConfig.PATIENT_ID, patientId);
                 params.put(ApiConfig.ASSESSMENT_TYPE, assessmentType);
-
                 new UrlConnectionTask(getActivity(), ApiConfig.VIEW_ASSESSMENT_URL, ApiConfig.ID1, true, params, PhysicalExamModel.class, this).execute("");
-
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -244,79 +252,25 @@ public class SensoryFragment extends BaseFragment implements HttpUrlListener, Vi
     public void onViewItemClick(PhysicalItem physicalItem, int position, int actionId) {
 
     }
-    private void getpnotes(){
+
+    private void getpnotes() {
         StringRequest stringRequest = new StringRequest(Request.Method.POST, ApiConfig.VIEW_SENSORY4_REPORT,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
                         try {
-                            Log.e("result",response);
+                            Log.e("result", response);
 //
-                                JSONArray jsonArray = new JSONArray(response);
-                                for (int i = 0; i < jsonArray.length(); i++) {
-
-                                    JSONObject jsonObject = jsonArray.getJSONObject(i);
-
-                                    Detailapp1 = new InfoApps();
-                                    Detailapp1.setPatientid(jsonObject.getString("patient_id"));
-                                    Detailapp1.setAge(jsonObject.getString("sensory_exam_id"));
-                                    Detailapp1.setSend_date(jsonObject.getString("sensory_exam_date"));
-                                    Detailapp1.setDesig(jsonObject.getString("sensory_occipital_port"));
-                                    Detailapp1.setExp(jsonObject.getString("sensory_neck_musc"));
-                                    Detailapp1.setId(jsonObject.getString("sensory_supra_fossa"));
-                                    Detailapp1.setAppname(jsonObject.getString("sensory_neck_lateral"));
-                                    Detailapp1.setOne(jsonObject.getString("sensory_acrom_joint"));
-                                    Detailapp1.setTwo(jsonObject.getString("sensory_shoulder_elevation"));
-                                    Detailapp1.setThree(jsonObject.getString("sensory_ante_fossa"));
-                                    Detailapp1.setFour(jsonObject.getString("sensory_shoulder_abduction"));
-                                    Detailapp1.setFive(jsonObject.getString("sensory_biceps_brachi"));
-                                    Detailapp1.setSix(jsonObject.getString("sensory_thumb"));
-                                    Detailapp1.setSeven(jsonObject.getString("sensory_biceps_supin_wrist"));
-                                    Detailapp1.setEight(jsonObject.getString("sensory_biceps_brachi1"));
-                                    Detailapp1.setNine(jsonObject.getString("sensory_middle_finger"));
-                                    Detailapp1.setTen(jsonObject.getString("sensory_wrist_flex"));
-                                    Detailapp1.setEleven(jsonObject.getString("sensory_triceps"));
-                                    Detailapp1.setFourteen(jsonObject.getString("sensory_little_finger"));
-                                    Detailapp1.setFiftn(jsonObject.getString("sensory_thumb_extensors"));
-                                    Detailapp1.setSixt(jsonObject.getString("sensory_triceps1"));
-                                    Detailapp1.setSevent(jsonObject.getString("sensory_medial_side"));
-                                    Detailapp1.setEightt(jsonObject.getString("sensory_apexaxilla"));
-                                    Detailapp1.setNinet(jsonObject.getString("sensory_nipples"));
-                                    Detailapp1.setTwenty(jsonObject.getString("sensory_xiphisternum"));
-                                    Detailapp1.setTwentyone(jsonObject.getString("sensory_umbilicus"));
-                                    Detailapp1.setTwentytwo(jsonObject.getString("sensory_midpoint_inguinal"));
-                                    Detailapp1.setTwentythree(jsonObject.getString("sensory_mid_anterior"));
-                                    Detailapp1.setTwentyfour(jsonObject.getString("sensory_hip_flexion"));
-                                    Detailapp1.setTwentyfive(jsonObject.getString("sensory_patellar"));
-                                    Detailapp1.setTwentysix(jsonObject.getString("sensory_medial_epicondyle"));
-                                    Detailapp1.setTwentyseven(jsonObject.getString("sensory_knee_extension"));
-                                    Detailapp1.setTwentyeight(jsonObject.getString("sensory_painslr"));
-                                    Detailapp1.setTwentynine(jsonObject.getString("sensory_medial_malleolus"));
-                                    Detailapp1.setThirtyone(jsonObject.getString("sensory_ankle_dorsi"));
-                                    Detailapp1.setThirtytwo(jsonObject.getString("sensory_dorsum_foot"));
-                                    Detailapp1.setThirtythree(jsonObject.getString("sensory_extensor"));
-                                    Detailapp1.setThirtyfour(jsonObject.getString("sensory_Lateral_heel"));
-                                    Detailapp1.setThirtyfive(jsonObject.getString("sensory_ankle_plantar"));
-                                    Detailapp1.setThirtysix(jsonObject.getString("sensory_limitedslr"));
-                                    Detailapp1.setThirtyseven(jsonObject.getString("sensory_popliteal_fossa"));
-                                    Detailapp1.setThirtyeight(jsonObject.getString("sensory_knee_flexion"));
-                                    Detailapp1.setThirty(jsonObject.getString("sensory_limitedslr_achilles"));
-                                    Detailapp1.setThirtynine(jsonObject.getString("sensory_perianal"));
-                                    Detailapp1.setFourty(jsonObject.getString("sensory_bladder_rectum"));
-                                    Detailapp1.setSeventysix(jsonObject.getString("sensory_saphenres_left"));
-                                    Detailapp1.setSeventyseven(jsonObject.getString("sensory_saphenres_right"));
-
-                                   /* Detailapp1 = new InfoApps();
-                                    Detailapp1.setSend_date(sensory_exam_date);
-                                    Detailapp1.setName(sensory_occipital_port);
-                                   */
-                                    contactDetails1.add(Detailapp1);
-                                    Collections.reverse(contactDetails1);
-                                    Log.e("contactDetails1",contactDetails1.toString());
-
-                                }
-                                mAdapter = new UsersAdapterSensory_(contactDetails1, getActivity(),mSnackBarLayout);
-                                mRecyclerView.setAdapter(mAdapter);
+                            JSONArray jsonArray=new JSONArray(response);
+                            List<SensoryExam> sensoryExamList=new ArrayList<>();
+                            for(int i=0;i<jsonArray.length();i++){
+                                Gson gson=new Gson();
+                                SensoryExam sensoryExam=gson.fromJson(jsonArray.optJSONObject(i).toString(),SensoryExam.class);
+                                sensoryExamList.add(sensoryExam);
+                            }
+                            Collections.reverse(sensoryExamList);
+                            mAdapter = new UsersAdapterSensory_(sensoryExamList, getActivity(), SensoryFragment.this);
+                            mRecyclerView.setAdapter(mAdapter);
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
@@ -329,13 +283,13 @@ public class SensoryFragment extends BaseFragment implements HttpUrlListener, Vi
 //                        Toast.makeText(StmtActivity.this,error.toString(),Toast.LENGTH_LONG).show();
                         Log.w("Postdat", "" + error);
                     }
-                }){
+                }) {
 
 
-            protected Map<String,String> getParams(){
-                Map<String,String> objresponse = new HashMap<String, String>();
+            protected Map<String, String> getParams() {
+                Map<String, String> objresponse = new HashMap<String, String>();
                 objresponse.put("patient_id", patientId);
-                Log.d(TagUtils.getTag(),"patient id:-"+patientId);
+                Log.d(TagUtils.getTag(), "patient id:-" + patientId);
                 return objresponse;
             }
 
@@ -344,45 +298,57 @@ public class SensoryFragment extends BaseFragment implements HttpUrlListener, Vi
         RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
         requestQueue.add(stringRequest);
     }
+
     private void addFragment() {
-        /*FragmentTransaction ft = getFragmentManager().beginTransaction();
-        *//*AddSensoryFragment sensoryFragment = AddSensoryFragment.newInstance(patientId, assessmentType);
-        ft.replace(R.id.fragment_container, sensoryFragment);*//*
-        ft.addToBackStack(null);
-        ft.commit();*/
-        Intent intent=new Intent(getActivity(),FragementActiSensory1.class);
-        intent.putExtra("patient_id",patientId);
-        startActivityForResult(intent,1);
+        Intent intent = new Intent(getActivity(), AddSensoryActivity.class);
+        intent.putExtra("patient_id", patientId);
+        startActivityForResult(intent, 1);
     }
+    void updateExam(SensoryExam sensoryExam) {
+        Intent intent=new Intent(getActivity(), UpdateSensoryActivity.class);
+        intent.putExtra("sensoryexam",sensoryExam);
+        startActivityForResult(intent,2);
+    }
+
+
+
+
     @Override
     public void onPause() {
         super.onPause();
-        Log.e("start","onStart");
+        Log.e("start", "onStart");
         AppCompatActivity activity = (AppCompatActivity) getActivity();
         ActionBar actionBar = activity.getSupportActionBar();
-        actionBar.setTitle("Sensory Exam");
+        actionBar.setTitle("Assesment");
     }
+
     @Override
     public void onStart() {
         super.onStart();
         AppCompatActivity activity = (AppCompatActivity) getActivity();
         ActionBar actionBar = activity.getSupportActionBar();
-        actionBar.setTitle("Sensory Exam");
+        actionBar.setTitle("Sensory Examination");
     }
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode ==1){
+        if (requestCode == 1) {
 //            getFragmentManager().popBackStack();
 //            HandlerConstant.POP_INNER_BACK_HANDLER.sendMessage(HandlerConstant.POP_INNER_BACK_HANDLER.obtainMessage(0, ""));
-            btn_skip.callOnClick();
+            if (resultCode == Activity.RESULT_OK) {
+                String result = data.getStringExtra("result");
+                if (result.equals("2")) {
+                    btn_skip.callOnClick();
+                }
+            }
         }
     }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
-        getActivity().getMenuInflater().inflate(R.menu.main,menu);
+        getActivity().getMenuInflater().inflate(R.menu.main, menu);
     }
 
     /**
@@ -393,9 +359,6 @@ public class SensoryFragment extends BaseFragment implements HttpUrlListener, Vi
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
@@ -406,12 +369,5 @@ public class SensoryFragment extends BaseFragment implements HttpUrlListener, Vi
         return super.onOptionsItemSelected(item);
 
     }
-/*@Override
-    public void onResume() {
-        super.onResume();
-        if (FragementActiSensory1.status = true){
-            getFragmentManager().popBackStack();
-        }
-    }*/
 }
 

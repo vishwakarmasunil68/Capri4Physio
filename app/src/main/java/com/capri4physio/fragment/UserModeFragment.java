@@ -19,7 +19,7 @@ import com.capri4physio.util.Constants;
  */
 public class UserModeFragment extends BaseFragment {
 
-    private View mViewPatient, mViewBranchAdmin, mViewTherapist;
+    private View mViewPatient, layout_branch_admin, mViewTherapist;
 
     /**
      * Use this factory method to create a new instance of
@@ -56,7 +56,7 @@ public class UserModeFragment extends BaseFragment {
         super.initView(view);
         ((SplashActivity) getActivity()).getSupportActionBar().show();
         mViewPatient = (View) view.findViewById(R.id.layout_patient);
-        mViewBranchAdmin = (View) view.findViewById(R.id.layout_branch_admin);
+        layout_branch_admin = (View) view.findViewById(R.id.layout_branch_admin);
         mViewTherapist = (View) view.findViewById(R.id.layout_therapist);
     }
 
@@ -75,7 +75,7 @@ public class UserModeFragment extends BaseFragment {
             }
         });
 
-        mViewBranchAdmin.setOnClickListener(new View.OnClickListener() {
+        layout_branch_admin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 SignUpStudentDetailFragment fragment = SignUpStudentDetailFragment.newInstance(Constants.GlobalConst.USER_STUDENT);

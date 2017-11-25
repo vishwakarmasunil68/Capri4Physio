@@ -115,7 +115,7 @@ public class StudentCourseApplicationActivity extends AppCompatActivity implemen
         et_middle_name.setText(applicationFormResultPOJO.getaMiddleName());
         et_last_name.setText(applicationFormResultPOJO.getaLastName());
         et_email.setText(applicationFormResultPOJO.getaEmail());
-        et_mobile.setText(applicationFormResultPOJO.getaEmail());
+        et_mobile.setText(applicationFormResultPOJO.getaMobile());
         et_city_date.setText(applicationFormResultPOJO.getaCityDate());
         et_trans_id.setText(applicationFormResultPOJO.getaTranstionid());
         et_amount.setText(applicationFormResultPOJO.getaAmount());

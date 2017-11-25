@@ -17,6 +17,8 @@ public class UserItem {
     public String profilePic;
     @SerializedName("mobile")
     public String mobile;
+    @SerializedName("bracch_code")
+    public String bracch_code;
 
     public String getId() {
         return id;
@@ -56,5 +58,13 @@ public class UserItem {
 
     public void setMobile(String mobile) {
         this.mobile = mobile;
+    }
+
+    public String getBracch_code() {
+        return bracch_code;
+    }
+
+    public void setBracch_code(String bracch_code) {
+        this.bracch_code = bracch_code;
     }
 }

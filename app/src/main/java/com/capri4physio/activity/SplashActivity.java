@@ -1,6 +1,5 @@
 package com.capri4physio.activity;
 
-import android.Manifest;
 import android.app.FragmentTransaction;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -349,6 +348,9 @@ public class SplashActivity extends BaseActivity implements HttpUrlListener {
                     AppPreferences.getInstance(SplashActivity.this).setaddress(loginModel.getResult().getUser().getAddress2());
                     Log.d(TagUtils.getTag(), "otp statu  s:-" + loginModel.getResult().getUser().getOtp_status());
                     AppPreferences.getInstance(SplashActivity.this).setOTPVerified(loginModel.getResult().getUser().getOtp_status());
+                    AppPreferences.getInstance(SplashActivity.this).setStartTime(loginModel.getResult().getUser().getFrom_time());
+                    AppPreferences.getInstance(SplashActivity.this).setEND_TIME(loginModel.getResult().getUser().getTo_time());
+                    AppPreferences.getInstance(SplashActivity.this).setTreatmentType(loginModel.getResult().getUser().getTreatment_type());
 // AppPreferences.getInstance(SplashActivity.this).setPassword(loginModel.getResult().getUser().getAdd());
                     if (loginModel.getResult().getUser().getOtp_status()) {
                         try {
@@ -472,7 +474,13 @@ public class SplashActivity extends BaseActivity implements HttpUrlListener {
 
         }
     }
-
+    public void callOTPFragment(String user_type){
+        fragment = OtpFragment.newInstance(user_type);
+        FragmentTransaction ft = getFragmentManager().beginTransaction();
+        ft.add(R.id.fragment_container, fragment);
+        ft.addToBackStack(null);
+        ft.commit();
+    }
     OtpFragment fragment = null;
 
     @Override

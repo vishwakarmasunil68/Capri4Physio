@@ -1,7 +1,9 @@
 package com.capri4physio.adapter.assessment;
 
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -20,6 +22,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.capri4physio.R;
+import com.capri4physio.fragment.assessment.PhysicalExamFragment;
 import com.capri4physio.listener.ViewItemClickListener;
 import com.capri4physio.model.assessment.PhysicalItem;
 import com.capri4physio.net.ApiConfig;
@@ -47,12 +50,13 @@ public class PhysicalExamAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             ,past_surgery,allergies,osteoporotic,depression,Hepatitis,hereditary_disease;
     private List<PhysicalItem> mList;
     private ViewItemClickListener<PhysicalItem> mCallback;
-
-    public PhysicalExamAdapter(Context context, List<PhysicalItem> mList, ViewItemClickListener<PhysicalItem> callback) {
+    private PhysicalExamFragment physicalExamFragment;
+    public PhysicalExamAdapter(Context context, List<PhysicalItem> mList, ViewItemClickListener<PhysicalItem> callback, PhysicalExamFragment physicalExamFragment) {
         this.context = context;
         inflater = LayoutInflater.from(context);
         this.mList = mList;
         mCallback = callback;
+        this.physicalExamFragment=physicalExamFragment;
     }
 
     @Override
@@ -101,7 +105,7 @@ public class PhysicalExamAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 //                mCallback.onViewItemClick(mList.get(position), position, Constants.ClickIDConst.ID_DELETE_CLICK);
                 PhysicalItem pos=mList.get(position);
                 Log.e("exam",String.valueOf(pos));
-                delepnotes(mList.get(position).getId().toString(),mList.get(position));
+                deleteAlert(mList.get(position).getId().toString(),mList.get(position));
             }
         });
 
@@ -155,60 +159,7 @@ public class PhysicalExamAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         holder.img_edit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                dialog=new Dialog(context,android.R.style.Theme_DeviceDefault_Light_Dialog);
-
-                //setting custom layout to dialog
-                dialog.setContentView(R.layout.phys_history_dialogedit);
-                dialog.setTitle("Edit - history exam");
-
-//                //adding text dynamically
-                blood_pressure = (EditText) dialog.findViewById(R.id.Patient_name);
-                temperature= (EditText) dialog.findViewById(R.id.diabetes);
-                heart_rate = (EditText) dialog.findViewById(R.id.Staff_Name);
-                respiratory_rate = (EditText) dialog.findViewById(R.id.Bill_number);
-                built_patient = (EditText) dialog.findViewById(R.id.blood_pressure);
-                posture = (EditText) dialog.findViewById(R.id.Paid_amount);
-                galt = (EditText) dialog.findViewById(R.id.smoking);
-                scare_type = (EditText) dialog.findViewById(R.id.fever_and_chill);
-                description = (EditText) dialog.findViewById(R.id.heart_diseases);
-                edtxt_swelling = (EditText) dialog.findViewById(R.id.edtxt_swelling);
-
-
-                posture.setText(mList.get(position).getRespiratoryRate());
-                respiratory_rate.setText(mList.get(position).getHeartRate());
-                heart_rate.setText(mList.get(position).getBloodPressure());
-                blood_pressure.setText(mList.get(position).getTemperature());
-
-                temperature.setText(mList.get(position).getBuiltPatient());
-                built_patient.setText(mList.get(position).getPosture());
-                galt.setText(mList.get(position).getGalt());
-                scare_type.setText(mList.get(position).getScareType());
-
-                description.setText(mList.get(position).getDescription());
-                edtxt_swelling.setText(mList.get(position).getSwelling());
-
-                /*blood_pressure.setText(mList.get(position).getBloodPressure());
-                temperature.setText(mList.get(position).getTemperature());
-                heart_rate.setText(mList.get(position).getHeartRate());
-                respiratory_rate.setText(mList.get(position).getRespiratoryRate());
-
-                built_patient.setText(mList.get(position).getBuiltPatient());
-                posture.setText(mList.get(position).getPosture());
-                galt.setText(mList.get(position).getGalt());
-                scare_type.setText(mList.get(position).getScareType());
-                description.setText(mList.get(position).getDescription());*/
-
-                //adding button click event
-                Button dismissButton = (Button) dialog.findViewById(R.id.button);
-                dismissButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        getpnotes(mList.get(position).getId());
-
-
-                    }
-                });
-                dialog.show();
+                physicalExamFragment.updateFragment(mList.get(position));
             }
         });
     }
@@ -268,6 +219,23 @@ public class PhysicalExamAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             return original;
         }
         return original.substring(0, 1).toUpperCase() + original.substring(1);
+    }
+    private void deleteAlert(final String  textView,final PhysicalItem posi) {
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setMessage("Are you sure, you want to delete");
+        builder.setCancelable(false);
+        builder.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+                delepnotes(textView, posi);
+
+            }
+        });
+        builder.setNegativeButton(android.R.string.no, null);
+        builder.create();
+        builder.show();
     }
     private void delepnotes(final String  textView,final PhysicalItem posi){
 

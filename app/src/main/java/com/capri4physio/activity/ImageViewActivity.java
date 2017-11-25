@@ -41,7 +41,7 @@ public class ImageViewActivity extends AppCompatActivity {
         getSupportActionBar().setHomeButtonEnabled(true);
         Bundle bundle=getIntent().getExtras();
         if(bundle!=null) {
-            String url="http://oldmaker.com/fijiyo/app/webroot/upload/"+bundle.getString("url");
+            String url="http://caprispine.in/fijiyo/app/webroot/upload/"+bundle.getString("url");
             Log.d(TagUtils.getTag(),"image url:-"+url);
             progressBar.setVisibility(View.VISIBLE);
             Glide.with(getApplicationContext())

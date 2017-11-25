@@ -32,6 +32,7 @@ import com.android.volley.toolbox.Volley;
 import com.capri4physio.R;
 import com.capri4physio.net.ApiConfig;
 import com.capri4physio.util.ImageUtil;
+import com.capri4physio.util.TagUtils;
 import com.capri4physio.util.Utils;
 
 import java.io.File;
@@ -51,8 +52,8 @@ public class FragementActi11 extends AppCompatActivity {
     Button savebtn;
     ProgressDialog progressDialog;
     ProgressDialog pDialog;
-    Android frag_left;
-    Windows frag_right;
+    FingerFragment frag_left;
+    FingerFragment frag_right;
     Ios frag_parameters;
     public static String knlt1, patient_id, knlt2, knlt3, knlt4, knlp1, knlp2, knlp3, knlp4, knlr1, knlr2, knlr3, knlr4, respiration_Base3, knrt1, knrt2, knrt3, knrt4, knrp1, knrp2, knrp3,
             knrp4, knrr1, knrr2, knrr3, knrr4, knlt10, knlt20, knlt30, knlt40, knlp10, knlp20, knlp30, knlp40, knlr10, knlr20, knlr30, knlr40;
@@ -83,6 +84,7 @@ public class FragementActi11 extends AppCompatActivity {
         });
         patient_id = getIntent().getStringExtra("patient_id");
         viewPager.setOffscreenPageLimit(2);
+        getSupportActionBar().setTitle("Fingers Exam");
     }
 
     public void captureBitmap() {
@@ -209,8 +211,8 @@ public class FragementActi11 extends AppCompatActivity {
 
 
     private void setupViewPager(ViewPager viewPager) {
-        frag_left = new Android();
-        frag_right = new Windows();
+        frag_left = new FingerFragment();
+        frag_right = new FingerFragment();
 //		frag_parameters=new Ios();
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
         adapter.addFrag(frag_left, "Left");
@@ -255,42 +257,6 @@ public class FragementActi11 extends AppCompatActivity {
     }
 
     private void addMotorAPi(final String base_string) {
-        knlt1 = Android.spinner1.getSelectedItem().toString().trim();
-        knlt2 = Android.spinner2.getSelectedItem().toString().trim();
-        knlt3 = Android.spinner3.getSelectedItem().toString().trim();
-        knlt4 = Android.spinner4.getSelectedItem().toString().trim();
-        knlp1 = Android.spinner8.getSelectedItem().toString().trim();
-        knlp2 = Android.spinner9.getSelectedItem().toString().trim();
-        knlp3 = Android.spinner10.getSelectedItem().toString().trim();
-        knlp4 = Android.spinner11.getSelectedItem().toString().trim();
-        knlr1 = ValidateEdit(Android.editText1);
-        knlr2 = ValidateEdit(Android.editText2);
-        knlr3 = ValidateEdit(Android.editText3);
-        knlr4 = ValidateEdit(Android.editText4);
-        knrt1 = ValidateSpinner(Windows.spinner1);
-        knrt2 = ValidateSpinner(Windows.spinner2);
-        knrt3 = ValidateSpinner(Windows.spinner3);
-        knrt4 = ValidateSpinner(Windows.spinner4);
-        knrp1 = ValidateSpinner(Windows.spinner8);
-        knrp2 = ValidateSpinner(Windows.spinner9);
-        knrp3 = ValidateSpinner(Windows.spinner10);
-        knrp4 = ValidateSpinner(Windows.spinner11);
-        knrr1 = ValidateEdit(Windows.editText1);
-        knrr2 = ValidateEdit(Windows.editText2);
-        knrr3 = ValidateEdit(Windows.editText3);
-        knrr4 = ValidateEdit(Windows.editText4);
-        knlt10 = Android.spinner5.getSelectedItem().toString().trim();
-        knlt20 = Android.spinner6.getSelectedItem().toString().trim();
-        knlt30 = Android.spinner12.getSelectedItem().toString().trim();
-        knlt40 = Android.spinner13.getSelectedItem().toString().trim();
-        knlp10 = ValidateSpinner(Windows.spinner5);
-        knlp20 = ValidateSpinner(Windows.spinner6);
-        knlp30 = ValidateSpinner(Windows.spinner12);
-        knlp40 = ValidateSpinner(Windows.spinner13);
-        knlr10 = ValidateEdit(Windows.editText5);
-        knlr20 = ValidateEdit(Windows.editText6);
-        knlr30 = ValidateEdit(Android.editText5);
-        knlr40 = ValidateEdit(Android.edit);
 
         StringRequest stringRequest = new StringRequest(Request.Method.POST, ApiConfig.MOTER_FINGER_URL,
                 new Response.Listener<String>() {
@@ -322,43 +288,32 @@ public class FragementActi11 extends AppCompatActivity {
                 Map<String, String> params = new HashMap<String, String>();
                 params.put("moter_exam_date", Utils.getCurrentDate());
                 params.put("patient_id", patient_id);
-                params.put("moter_examfinger_left_tone1", knlt1);
-                params.put("moter_examfinger_left_tone2", knlt2);
-                params.put("moter_examfinger_left_tone3", knlt3);
-                params.put("moter_examfinger_left_tone4", knlt4);
-                params.put("moter_examfinger_left_power1", knlp1);
-                params.put("moter_examfinger_left_power2", knlp2);
-                params.put("moter_examfinger_left_power3", knlp3);
-                params.put("moter_examfinger_left_power4", knlp4);
-                params.put("moter_examfinger_left_rom1", knlr1);
-                params.put("moter_examfinger_left_rom2", knlr2);
-                params.put("moter_examfinger_left_rom3", knlr3);
-                params.put("moter_examfinger_left_rom4", knlr4);
-                params.put("moter_examfinger_right_tone1", knrt1);
-                params.put("moter_examfinger_right_tone2", knrt2);
-                params.put("moter_examfinger_right_tone3", knrt3);
-                params.put("moter_examfinger_right_tone4", knrt4);
-                params.put("moter_examfinger_right_power1", knrp1);
-                params.put("moter_examfinger_right_power2", knrp2);
-                params.put("moter_examfinger_right_power3", knrp3);
-                params.put("moter_examfinger_right_power4", knrp4);
-                params.put("moter_examfinger_right_rom1", knrr1);
-                params.put("moter_examfinger_right_rom2", knrr2);
-                params.put("moter_examfinger_right_rom3", knrr3);
-                params.put("moter_examfinger_right_rom4", knrr4);
-                params.put("moter_examfinger_left_tone5", knlt10);
-                params.put("moter_examfinger_left_tone6", knlt20);
-                params.put("moter_examfinger_left_power5", knlt30);
-                params.put("moter_examfinger_left_power6", knlt40);
-                params.put("moter_examfinger_left_rom5", knlp10);
-                params.put("moter_examfinger_left_rom6", knlp20);
-                params.put("moter_examfinger_right_tone5", knlp30);
-                params.put("moter_examfinger_right_tone6", knlp40);
-                params.put("moter_examfinger_right_power5", knlr10);
-                params.put("moter_examfinger_right_power6", knlr20);
-                params.put("moter_examfinger_right_rom5", knlr30);
-                params.put("moter_examfinger_right_rom6", knlr40);
+                params.put("moter_examfinger_left_tone1", Utils.getToneSpinnerData(getApplicationContext(),frag_left.getSpinner1().getSelectedItemPosition()));
+                params.put("moter_examfinger_left_tone2", Utils.getToneSpinnerData(getApplicationContext(),frag_left.getSpinner2().getSelectedItemPosition()));
+                params.put("moter_examfinger_left_tone3", Utils.getToneSpinnerData(getApplicationContext(),frag_left.getSpinner3().getSelectedItemPosition()));
+                params.put("moter_examfinger_left_tone4", Utils.getToneSpinnerData(getApplicationContext(),frag_left.getSpinner4().getSelectedItemPosition()));
+                params.put("moter_examfinger_left_power1", Utils.getPowerSpinnerData(getApplicationContext(),frag_left.getSpinner8().getSelectedItemPosition()));
+                params.put("moter_examfinger_left_power2", Utils.getPowerSpinnerData(getApplicationContext(),frag_left.getSpinner9().getSelectedItemPosition()));
+                params.put("moter_examfinger_left_power3", Utils.getPowerSpinnerData(getApplicationContext(),frag_left.getSpinner10().getSelectedItemPosition()));
+                params.put("moter_examfinger_left_power4", Utils.getPowerSpinnerData(getApplicationContext(),frag_left.getSpinner11().getSelectedItemPosition()));
+                params.put("moter_examfinger_left_rom1", Utils.getEdittextData(frag_left.getEdtxt_1()));
+                params.put("moter_examfinger_left_rom2", Utils.getEdittextData(frag_left.getEdtxt_2()));
+                params.put("moter_examfinger_left_rom3", Utils.getEdittextData(frag_left.getEdtxt_3()));
+                params.put("moter_examfinger_left_rom4", Utils.getEdittextData(frag_left.getEdtxt_4()));
+                params.put("moter_examfinger_right_tone1", Utils.getToneSpinnerData(getApplicationContext(),frag_right.getSpinner1().getSelectedItemPosition()));
+                params.put("moter_examfinger_right_tone2", Utils.getToneSpinnerData(getApplicationContext(),frag_right.getSpinner2().getSelectedItemPosition()));
+                params.put("moter_examfinger_right_tone3", Utils.getToneSpinnerData(getApplicationContext(),frag_right.getSpinner3().getSelectedItemPosition()));
+                params.put("moter_examfinger_right_tone4", Utils.getToneSpinnerData(getApplicationContext(),frag_right.getSpinner4().getSelectedItemPosition()));
+                params.put("moter_examfinger_right_power1", Utils.getPowerSpinnerData(getApplicationContext(),frag_right.getSpinner8().getSelectedItemPosition()));
+                params.put("moter_examfinger_right_power2", Utils.getPowerSpinnerData(getApplicationContext(),frag_right.getSpinner9().getSelectedItemPosition()));
+                params.put("moter_examfinger_right_power3", Utils.getPowerSpinnerData(getApplicationContext(),frag_right.getSpinner10().getSelectedItemPosition()));
+                params.put("moter_examfinger_right_power4", Utils.getPowerSpinnerData(getApplicationContext(),frag_right.getSpinner11().getSelectedItemPosition()));
+                params.put("moter_examfinger_right_rom1", Utils.getEdittextData(frag_right.getEdtxt_1()));
+                params.put("moter_examfinger_right_rom2", Utils.getEdittextData(frag_right.getEdtxt_2()));
+                params.put("moter_examfinger_right_rom3", Utils.getEdittextData(frag_right.getEdtxt_3()));
+                params.put("moter_examfinger_right_rom4", Utils.getEdittextData(frag_right.getEdtxt_4()));
                 params.put("moterexamsfingers_images", base_string);
+                Log.d(TagUtils.getTag(),"fingers params:-"+params.toString());
                 return params;
             }
 

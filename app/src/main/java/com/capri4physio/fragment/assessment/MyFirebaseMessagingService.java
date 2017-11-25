@@ -12,6 +12,7 @@ import android.util.Log;
 import com.capri4physio.R;
 import com.capri4physio.activity.ManageAppointmentActivity;
 import com.capri4physio.activity.ManagePatientAppointmentsActivity;
+import com.capri4physio.activity.StudentDashboardActivity;
 import com.capri4physio.database.DatabaseHelper;
 import com.capri4physio.model.appointment.AppointmentResultPOJO;
 import com.capri4physio.model.chat.ChatPOJO;
@@ -96,6 +97,11 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                                 updateconfirmAppointment(getApplicationContext(), message);
 
                             }
+                        }else if(type.equals("courseapproved")){
+                            if(AppPreferences.getInstance(getApplicationContext()).getUserType().equals("5")){
+                                JSONObject jsonObject=new JSONObject(message);
+                                sendCourseApprovedNotification(jsonObject.optString("message"));
+                            }
                         }
                     }
                 }
@@ -103,6 +109,27 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public void sendCourseApprovedNotification(String messageBody) {
+        Intent intent = new Intent(this, StudentDashboardActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent,
+                PendingIntent.FLAG_ONE_SHOT);
+
+        Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
+                .setSmallIcon(R.mipmap.ic_launcher)
+                .setContentTitle("Course Approved.")
+                .setContentText(messageBody)
+                .setAutoCancel(true)
+                .setSound(defaultSoundUri)
+                .setContentIntent(pendingIntent);
+
+        NotificationManager notificationManager =
+                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+        notificationManager.notify(0, notificationBuilder.build());
     }
 
     public void sendConfirmAppointment(String messageBody) {

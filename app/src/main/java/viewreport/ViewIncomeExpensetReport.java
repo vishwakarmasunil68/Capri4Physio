@@ -1,6 +1,7 @@
 package viewreport;
 
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -21,6 +22,7 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.capri4physio.Invoice.InfoApps1;
 import com.capri4physio.R;
+import com.capri4physio.activity.IncomeReportPrintActivity;
 import com.capri4physio.fragment.ViewExpenseReport;
 import com.capri4physio.net.ApiConfig;
 
@@ -47,6 +49,7 @@ public class ViewIncomeExpensetReport extends AppCompatActivity {
     //    LocationAdapter5 locationAdapter5;
     public static Button savechange;
     UsersAdapterExpense mAdapter;
+    Button btn_print;
     public  static String invo_id,invo_patient_name,invo_bill_amount,invo_due_amount,invo_paid_amount,
             invo_status,invo_bill_number,invo_pro_name,invo_pro_quantity,invo_staff,invo_date,invo_pay_mode;
     @Override
@@ -55,6 +58,7 @@ public class ViewIncomeExpensetReport extends AppCompatActivity {
         setContentView(R.layout.viewexps);
         contactDetails1=new ArrayList<InfoApps1>();
         liear_total=(LinearLayout)findViewById(R.id.liear_total);
+        btn_print=(Button) findViewById(R.id.btn_print);
 
         liear_total.setVisibility(View.VISIBLE);
 
@@ -70,6 +74,22 @@ public class ViewIncomeExpensetReport extends AppCompatActivity {
         Log.e("to_date",to_date);
         initProgressDialog("Please wait..");
         report8();
+
+        btn_print.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                try {
+                    Intent intent = new Intent(ViewIncomeExpensetReport.this, IncomeReportPrintActivity.class);
+                    intent.putExtra("type", "expensereport");
+                    intent.putExtra("branch_code", ViewExpenseReport.newaddress);
+                    intent.putExtra("start_date", fromdate);
+                    intent.putExtra("end_date", to_date);
+                    startActivity(intent);
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+            }
+        });
     }
 
     private void report8(){

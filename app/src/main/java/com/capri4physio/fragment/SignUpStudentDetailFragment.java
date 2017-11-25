@@ -1,9 +1,11 @@
 package com.capri4physio.fragment;
 
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.ProgressDialog;
+import android.content.ContentUris;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -11,10 +13,12 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.provider.DocumentsContract;
 import android.provider.MediaStore;
-import android.support.v7.widget.GridLayoutManager;
+import android.support.v4.content.FileProvider;
 import android.support.v7.widget.RecyclerView;
 import android.util.Base64;
 import android.util.Log;
@@ -24,8 +28,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.android.volley.Request;
@@ -34,14 +37,15 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.bumptech.glide.Glide;
 import com.capri4physio.R;
-import com.capri4physio.activity.CropActivity;
 import com.capri4physio.activity.SplashActivity;
 import com.capri4physio.listener.HttpUrlListener;
 import com.capri4physio.model.UserDetailModel;
 import com.capri4physio.net.ApiConfig;
 import com.capri4physio.task.UrlConnectionAuthTask;
 import com.capri4physio.util.AppLog;
+import com.capri4physio.util.FileUtil;
 import com.capri4physio.util.TagUtils;
 import com.capri4physio.util.Utils;
 import com.capri4physio.view.CircleImageView;
@@ -50,22 +54,14 @@ import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import multipleimageselect.activities.AlbumSelectActivity;
-import multipleimageselect.helpers.Constants;
-import multipleimageselect.models.Image;
 
 
 /**
@@ -96,12 +92,13 @@ public class SignUpStudentDetailFragment extends BaseFragment {
     byte[] byteArray;
 
     ProgressDialog pDialog;
-    private String mImgBase64;
+    private String mImgBase64="";
     ArrayList<String> arrayListbitmap = new ArrayList<>();
     private String mUserType = "5";
     private static final String USER_TYPE = "user_type";
-
-
+    private EditText et_tell_about;
+    private RelativeLayout rl_branch;
+    private RelativeLayout rl_opd;
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
@@ -137,7 +134,7 @@ public class SignUpStudentDetailFragment extends BaseFragment {
 
         if (getArguments() != null) {
             mUserType = getArguments().getString(USER_TYPE);
-            Log.d(TagUtils.getTag(),"user type:-"+mUserType);
+            Log.d(TagUtils.getTag(), "user type:-" + mUserType);
             AppLog.i("App", "mUserType  :" + mUserType);
         }
     }
@@ -168,6 +165,15 @@ public class SignUpStudentDetailFragment extends BaseFragment {
         mImgProfile = (CircleImageView) view.findViewById(R.id.img_profile);
         mBtnRegister = (Button) view.findViewById(R.id.btn_submit);
         listview = (RecyclerView) view.findViewById(R.id.listview);
+        rl_branch = (RelativeLayout) view.findViewById(R.id.rl_branch);
+        rl_opd = (RelativeLayout) view.findViewById(R.id.rl_opd);
+        et_tell_about = (EditText) view.findViewById(R.id.et_tell_about);
+
+        rl_branch.setVisibility(View.GONE);
+        et_tell_about.setVisibility(View.GONE);
+
+
+        rl_opd.setVisibility(View.GONE);
 
     }
 
@@ -178,8 +184,7 @@ public class SignUpStudentDetailFragment extends BaseFragment {
         mImgProfile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                openGallery();
-//                dialogOption();
+                dialogOption();
             }
         });
         mBtnRegister.setOnClickListener(new View.OnClickListener() {
@@ -187,71 +192,10 @@ public class SignUpStudentDetailFragment extends BaseFragment {
             public void onClick(View view) {
                 initProgressDialog("Please wait...");
                 addStudentApiCall();
-//                registerApiCall();
             }
         });
     }
 
-    public class HorizontalAdapter extends RecyclerView.Adapter<HorizontalAdapter.MyViewHolder> {
-
-        private List<String> horizontalList;
-        Boolean allvalue;
-        private Context context;
-        Activity activity;
-
-        public class MyViewHolder extends RecyclerView.ViewHolder {
-
-            public ImageView tv_time;
-            public ImageView tv_time_cross;
-            public LinearLayout ll_time;
-
-            public MyViewHolder(View view) {
-                super(view);
-                tv_time = (ImageView) view.findViewById(R.id.tv_time);
-                tv_time_cross = (ImageView) view.findViewById(R.id.tv_time_cross);
-                ll_time = (LinearLayout) view.findViewById(R.id.ll_time);
-
-                allvalue = false;
-
-
-            }
-        }
-
-
-        public HorizontalAdapter(Context context, List<String> horizontalList) {
-            this.horizontalList = horizontalList;
-            this.context = context;
-        }
-
-        @Override
-        public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            View itemView = LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.inflate_monday_time, parent, false);
-
-            return new MyViewHolder(itemView);
-        }
-
-        @Override
-        public void onBindViewHolder(final MyViewHolder holder, final int position) {
-            Bitmap bitmap = BitmapFactory.decodeFile(horizontalList.get(position));
-            holder.tv_time.setImageBitmap(bitmap);
-            holder.tv_time_cross.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    horizontalList.remove(position);
-//                    listview.noti
-//                    listview.notify();
-                }
-            });
-
-
-        }
-
-        @Override
-        public int getItemCount() {
-            return horizontalList.size();
-        }
-    }
 
     private void initProgressDialog(String loading) {
         pDialog = new ProgressDialog(getActivity());
@@ -279,105 +223,67 @@ public class SignUpStudentDetailFragment extends BaseFragment {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == CAMERA_REQUEST && resultCode == Activity.RESULT_OK) {
+//            Bitmap photo = (Bitmap) data.getExtras().get("data");
+//            Log.d(TAG, photo.toString());
 
-        if (resultCode != SplashActivity.RESULT_OK)
-            return;
+            File imgFile = new File(pictureImagePath);
+            if (imgFile.exists()) {
+                Bitmap bmp = BitmapFactory.decodeFile(pictureImagePath);
+                bmp = Bitmap.createScaledBitmap(bmp, bmp.getWidth() / 4, bmp.getHeight() / 4, false);
+                String strMyImagePath = FileUtil.getChatDirPath();
+                File file_name = new File(strMyImagePath + File.separator + System.currentTimeMillis() + ".png");
+                FileOutputStream fos = null;
 
-        Intent intent = null;
-
-        switch (requestCode) {
-            case Constants.REQUEST_CODE:
-                ArrayList<String> arrayList = new ArrayList<>();
-                ArrayList<Image> images = data.getParcelableArrayListExtra(Constants.INTENT_EXTRA_IMAGES);
-                StringBuffer stringBuffer = new StringBuffer();
-                for (int i = 0, l = images.size(); i < l; i++) {
-                    stringBuffer.append(images.get(i).path + "\n");
-                }
-                for (Image image : images) {
-
-                    arrayList.add(image.path.toString());
-                    Bitmap bitmap = BitmapFactory.decodeFile(image.path);
-                    mImgProfile.setVisibility(View.GONE);
-                    Log.e("images1", image.path);
-                    Log.e("images1", arrayList.toString());
-                    Log.e("images1", bitmap.toString());
-                    ByteArrayOutputStream stream = new ByteArrayOutputStream();
-                    bitmap.compress(Bitmap.CompressFormat.PNG, 0, stream);
-                    byteArray = stream.toByteArray();
-                    mImgBase64 = Base64.encodeToString(byteArray, 0);
-
-                    AppLog.e("Capri4Physio", "Base64 IMG - " + arrayListbitmap);
-//                    StringToBitMap(image.path);
-//                    Uri filepath =image.path;
-                }
-                arrayListbitmap.add(mImgBase64.replace("[", "").replace("]", ""));
-//                Log.e("images",arrayList+"");
-                listview.setVisibility(View.VISIBLE);
-                Toast.makeText(getActivity(), stringBuffer.toString(), Toast.LENGTH_LONG).show();
-                HorizontalAdapter adapter = new HorizontalAdapter(getActivity(), arrayList);
-                GridLayoutManager layoutManager = new GridLayoutManager(getActivity(), 3);
-                listview.setHasFixedSize(true);
-                listview.setLayoutManager(layoutManager);
-//                layoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
-                listview.setAdapter(adapter);
-//                textView.setText(stringBuffer.toString());
-                break;
-            case PICK_FROM_CAMERA:
-                intent = new Intent(getActivity(), CropActivity.class);
-                intent.putExtra("url", SplashActivity.mImageCaptureUri.getPath());
-                startActivityForResult(intent, PIC_CROP);
-
-                break;
-            case PICK_FROM_FILE:
-                Uri selectedImage = data.getData();
-                String[] filePathColumn = {MediaStore.Images.Media.DATA};
-                Cursor cursor = getActivity().getContentResolver().query(selectedImage, filePathColumn, null, null, null);
-                cursor.moveToFirst();
-                int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
-                String picturePath = cursor.getString(columnIndex);
-                cursor.close();
-                File mFile = new File(picturePath);
-                InputStream inStream;
                 try {
-                    inStream = new FileInputStream(mFile);
-                    @SuppressWarnings("resource")
-                    OutputStream mOutputStream = new FileOutputStream(new File(SplashActivity.mImageCaptureUri.getPath()));
-                    byte[] buffer = new byte[1024];
-                    int length;
-                    while ((length = inStream.read(buffer)) > 0) {
-                        mOutputStream.write(buffer, 0, length);
-                    }
-
-                    inStream.close();
-
+                    fos = new FileOutputStream(file_name);
+                    Log.d(TagUtils.getTag(), "taking photos");
+                    bmp.compress(Bitmap.CompressFormat.PNG, 100, fos);
+                    fos.flush();
+                    fos.close();
+                    setImage(file_name.toString());
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
-                } catch (IOException e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
-
-
-                intent = new Intent(getActivity(), CropActivity.class);
-                intent.putExtra("url", picturePath);
-                startActivityForResult(intent, PIC_CROP);
-
-                break;
-
-            case PIC_CROP:
-                bitmapImage = CropActivity.croppedImage;
-                mImgProfile.setImageBitmap(bitmapImage);
-                ByteArrayOutputStream stream = new ByteArrayOutputStream();
-                bitmapImage.compress(Bitmap.CompressFormat.PNG, 0, stream);
-                byteArray = stream.toByteArray();
-                mImgBase64 = Base64.encodeToString(byteArray, 0);
-                AppLog.e("Capri4Physio", "Base64 IMG - " + mImgBase64);
-
-                break;
-            default:
-                break;
-
+            }
+        }
+        if (requestCode == PICK_IMAGE_REQUEST) {
+            if (resultCode == Activity.RESULT_OK) {
+                if (null == data)
+                    return;
+                Uri selectedImageUri = data.getData();
+                System.out.println(selectedImageUri.toString());
+                // MEDIA GALLERY
+                String selectedImagePath = getPath(
+                        getActivity(), selectedImageUri);
+                Log.d("sun", "" + selectedImagePath);
+                if (selectedImagePath != null && selectedImagePath != "") {
+//                    image_path_string = selectedImagePath;
+                    Log.d(TagUtils.getTag(), "selected path:-" + selectedImagePath);
+                    setImage(selectedImagePath);
+                } else {
+                    Toast.makeText(getActivity(), "File Selected is corrupted", Toast.LENGTH_LONG).show();
+                }
+                System.out.println("Image Path =" + selectedImagePath);
+            }
         }
     }
+
+    private int PICK_IMAGE_REQUEST = 1;
+
+    public void setImage(String path) {
+        Glide.with(getActivity().getApplicationContext()).load(path.toString()).into(mImgProfile);
+        bitmapImage = BitmapFactory.decodeFile(path.toString());
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        bitmapImage.compress(Bitmap.CompressFormat.PNG, 0, stream);
+        byteArray = stream.toByteArray();
+        mImgBase64 = Base64.encodeToString(byteArray, 0);
+        AppLog.e("Capri4Physio", "Base64 IMG - " + mImgBase64);
+    }
+
 
     private void dialogOption() {
         final String[] items = new String[]{"Take from camera", "Select from gallery"};
@@ -396,70 +302,6 @@ public class SignUpStudentDetailFragment extends BaseFragment {
 
         final AlertDialog dialog = builder.create();
         dialog.show();
-    }
-
-
-    /**
-     * @return none
-     * @description Login web service API calling
-     */
-    private void registerApiCall() {
-        if (!isValid())
-            return;
-
-
-        if (Utils.isNetworkAvailable(getActivity())) {
-
-            try {
-                JSONObject params = new JSONObject();
-                params.put(ApiConfig.FIRST_NAME, mEdtxtFname.getText().toString().trim());
-                params.put(ApiConfig.ADDED_BY, "");
-                params.put(ApiConfig.LAST_NAME, mEdtxtLname.getText().toString().trim());
-                params.put(ApiConfig.MOBILE, mEdtxtPhone.getText().toString().trim());
-                params.put(ApiConfig.USER_TYPE, mUserType);
-                params.put(ApiConfig.LATITUDE, "");
-                params.put(ApiConfig.LONGITUDE, "");
-//                params.put(ApiConfig.DEVICE_TYPE, Constants.GlobalConst.DEVICE_TYPE);
-                params.put(ApiConfig.DEVICE_TOKEN, "");
-                params.put(ApiConfig.STATUS, "1");
-                params.put(ApiConfig.EMAIL, mEdtxtEmail.getText().toString().trim());
-                params.put(ApiConfig.PASSWORD, mEdtxtPassword.getText().toString().trim());
-                params.put(ApiConfig.REG_AS_A_PATIENT, "");
-                params.put("age", "");
-                params.put("height", "");
-                params.put("weight", "");
-                params.put("aadhar_id", "");
-                params.put("address2", "");
-                params.put("pincode", "");
-                params.put("city", "");
-                params.put("gender", "");
-                params.put("food_habit", "");
-                params.put("bmi", "");
-                params.put("ref_source", "");
-                params.put("contact_person", "");
-                params.put("contact_person_mob", "");
-                params.put("treatment_type", "Opd");
-
-                if (mImgBase64 != null && !mImgBase64.equals("")) {
-                    params.put(ApiConfig.PROFILE_PIC, mImgBase64);
-                } else {
-                    params.put(ApiConfig.PROFILE_PIC, "");
-                }
-
-                new UrlConnectionAuthTask(getActivity(), ApiConfig.REGISTER_URL, ApiConfig.ID2, true, params, UserDetailModel.class, mListener).execute("");
-
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-//            OtpFragment fragment = OtpFragment.newInstance();
-//            FragmentTransaction ft = getFragmentManager().beginTransaction();
-//            ft.add(R.id.fragment_container, fragment);
-//            ft.addToBackStack(null);
-//            ft.commit();
-
-        } else {
-            Utils.showMessage(getActivity(), getResources().getString(R.string.err_network));
-        }
     }
 
     private void addStudentApiCall() {
@@ -506,8 +348,8 @@ public class SignUpStudentDetailFragment extends BaseFragment {
                 params.put(ApiConfig.EMAIL, mEdtxtEmail.getText().toString().trim());
                 params.put(ApiConfig.PASSWORD, mEdtxtPassword.getText().toString().trim());
                 params.put(ApiConfig.SHOW_PASSWORD, mEdtxtPassword.getText().toString().trim());
-                params.put(ApiConfig.att_photo, arrayListbitmap + "");
-                Log.d(TagUtils.getTag(),"students params:-"+params.toString());
+                params.put(ApiConfig.att_photo, mImgBase64);
+                Log.d(TagUtils.getTag(), "students params:-" + params.toString());
                 return params;
             }
 
@@ -536,24 +378,26 @@ public class SignUpStudentDetailFragment extends BaseFragment {
         }
     }
 
+    private static final int CAMERA_REQUEST = 1888;
+    String pictureImagePath = "";
 
     private void dispatchTakePictureIntent() {
-        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        if (takePictureIntent.resolveActivity(getActivity().getPackageManager()) != null) {
-            File photoFile = null;
-            try {
-                photoFile = createImageFile();
-            } catch (IOException ex) {
-                ex.printStackTrace();
-            }
-            if (photoFile != null) {
-                SplashActivity.mImageCaptureUri = Uri.fromFile(photoFile);
-                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, SplashActivity.mImageCaptureUri);
-                //takePictureIntent.putExtra("android.intent.extras.CAMERA_FACING", 1);
-                takePictureIntent.putExtra("return-data", true);
-                startActivityForResult(takePictureIntent, PICK_FROM_CAMERA);
-            }
+        String strMyImagePath = FileUtil.getBaseFilePath() + File.separator + "temp.png";
+
+        pictureImagePath = strMyImagePath;
+        File file = new File(pictureImagePath);
+        Uri outputFileUri = Uri.fromFile(file);
+        Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            cameraIntent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            Uri contentUri = FileProvider.getUriForFile(getActivity().getApplicationContext(), "com.capri4physio.fileProvider", file);
+            cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, contentUri);
+
+        } else {
+            cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, outputFileUri);
+
         }
+        startActivityForResult(cameraIntent, CAMERA_REQUEST);
     }
 
     private File createImageFile() throws IOException {
@@ -569,27 +413,10 @@ public class SignUpStudentDetailFragment extends BaseFragment {
 
 
     private void openGallery() {
-        Intent intent = new Intent(getActivity(), AlbumSelectActivity.class);
-//set limit on number of images that can be selected, default is 10
-        intent.putExtra(Constants.INTENT_EXTRA_LIMIT, 3);
-        startActivityForResult(intent, Constants.REQUEST_CODE);
-//        Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-//        intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
-//        File photoFile = null;
-//        try {
-//            photoFile = createImageFile();
-//        } catch (IOException ex) {
-//            ex.printStackTrace();
-//        }
-//
-//        if (photoFile != null) {
-//            SplashActivity.mImageCaptureUri = Uri.fromFile(photoFile);
-//            try {
-//                startActivityForResult(Intent.createChooser(intent, "Complete action using"), PICK_FROM_FILE);
-//            } catch (ActivityNotFoundException e) {
-//                e.printStackTrace();
-//            }
-//        }
+        Intent intent = new Intent();
+        intent.setType("image/*");
+        intent.setAction(Intent.ACTION_PICK);
+        startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_REQUEST);
 
     }
 
@@ -652,5 +479,113 @@ public class SignUpStudentDetailFragment extends BaseFragment {
         return true;
     }
 
+    @TargetApi(Build.VERSION_CODES.KITKAT)
+    public static String getPath(final Context context, final Uri uri) {
 
+        // check here to KITKAT or new version
+        final boolean isKitKat = Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT;
+
+        // DocumentProvider
+        if (isKitKat && DocumentsContract.isDocumentUri(context, uri)) {
+
+            // ExternalStorageProvider
+            if (isExternalStorageDocument(uri)) {
+                final String docId = DocumentsContract.getDocumentId(uri);
+                final String[] split = docId.split(":");
+                final String type = split[0];
+
+                if ("primary".equalsIgnoreCase(type)) {
+                    return Environment.getExternalStorageDirectory() + "/"
+                            + split[1];
+                }
+            }
+            // DownloadsProvider
+            else if (isDownloadsDocument(uri)) {
+
+                final String id = DocumentsContract.getDocumentId(uri);
+                final Uri contentUri = ContentUris.withAppendedId(
+                        Uri.parse("content://downloads/public_downloads"),
+                        Long.valueOf(id));
+
+                return getDataColumn(context, contentUri, null, null);
+            }
+            // MediaProvider
+            else if (isMediaDocument(uri)) {
+                final String docId = DocumentsContract.getDocumentId(uri);
+                final String[] split = docId.split(":");
+                final String type = split[0];
+
+                Uri contentUri = null;
+                if ("image".equals(type)) {
+                    contentUri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
+                } else if ("video".equals(type)) {
+                    contentUri = MediaStore.Video.Media.EXTERNAL_CONTENT_URI;
+                } else if ("audio".equals(type)) {
+                    contentUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
+                }
+
+                final String selection = "_id=?";
+                final String[] selectionArgs = new String[]{split[1]};
+
+                return getDataColumn(context, contentUri, selection,
+                        selectionArgs);
+            }
+        }
+        // MediaStore (and general)
+        else if ("content".equalsIgnoreCase(uri.getScheme())) {
+
+            // Return the remote address
+            if (isGooglePhotosUri(uri))
+                return uri.getLastPathSegment();
+
+            return getDataColumn(context, uri, null, null);
+        }
+        // File
+        else if ("file".equalsIgnoreCase(uri.getScheme())) {
+            return uri.getPath();
+        }
+
+        return null;
+    }
+
+    public static String getDataColumn(Context context, Uri uri,
+                                       String selection, String[] selectionArgs) {
+
+        Cursor cursor = null;
+        final String column = "_data";
+        final String[] projection = {column};
+
+        try {
+            cursor = context.getContentResolver().query(uri, projection,
+                    selection, selectionArgs, null);
+            if (cursor != null && cursor.moveToFirst()) {
+                final int index = cursor.getColumnIndexOrThrow(column);
+                return cursor.getString(index);
+            }
+        } finally {
+            if (cursor != null)
+                cursor.close();
+        }
+        return null;
+    }
+
+    public static boolean isExternalStorageDocument(Uri uri) {
+        return "com.android.externalstorage.documents".equals(uri
+                .getAuthority());
+    }
+
+    public static boolean isDownloadsDocument(Uri uri) {
+        return "com.android.providers.downloads.documents".equals(uri
+                .getAuthority());
+    }
+
+    public static boolean isMediaDocument(Uri uri) {
+        return "com.android.providers.media.documents".equals(uri
+                .getAuthority());
+    }
+
+    public static boolean isGooglePhotosUri(Uri uri) {
+        return "com.google.android.apps.photos.content".equals(uri
+                .getAuthority());
+    }
 }

@@ -155,7 +155,7 @@ public class TreatmentFragment extends BaseFragment implements HttpUrlListener, 
             @Override
             public void onClick(View v) {
                 getFragmentManager().popBackStack();
-                HandlerConstant.POP_BACK_HANDLER.sendMessage(HandlerConstant.POP_BACK_HANDLER.obtainMessage(0,"11"));
+                HandlerConstant.POP_BACK_HANDLER.sendMessage(HandlerConstant.POP_BACK_HANDLER.obtainMessage(0,"13"));
             }
         });
         HandlerConstant.POP_INNER_BACK_HANDLER= new Handler(new Handler.Callback() {
@@ -208,7 +208,7 @@ public class TreatmentFragment extends BaseFragment implements HttpUrlListener, 
         Log.e("start", "onStart");
         AppCompatActivity activity = (AppCompatActivity) getActivity();
         ActionBar actionBar = activity.getSupportActionBar();
-        actionBar.setTitle("Treatment Advice");
+        actionBar.setTitle("Assesment");
     }
 
     @Override
@@ -216,7 +216,7 @@ public class TreatmentFragment extends BaseFragment implements HttpUrlListener, 
         super.onStart();
         AppCompatActivity activity = (AppCompatActivity) getActivity();
         ActionBar actionBar = activity.getSupportActionBar();
-        actionBar.setTitle("Treatment Advice");
+        actionBar.setTitle("Treatment Plan");
     }
 
     private void deleteAlert(final String id, final int itemPos) {

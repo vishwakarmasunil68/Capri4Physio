@@ -41,8 +41,8 @@ public class ViewInvoicesPatientFragment extends BaseFragment {
     Button button;
     ProgressDialog progressDialog;
     public static ArrayList<InfoApps1> contactDetails1;
-    public static TextView date,_starttime,booking_reason;
-    public static String patient,patientname,booking_date,booking_starttime,getPatientname,reason,getuniqueid,patientid,doctorid;
+    public static TextView date, _starttime, booking_reason;
+    public static String patient, patientname, booking_date, booking_starttime, getPatientname, reason, getuniqueid, patientid, doctorid;
     JSONArray jsonArray;
     Button btn;
     InfoApps1 Detailapp;
@@ -62,34 +62,18 @@ public class ViewInvoicesPatientFragment extends BaseFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.viewappo, container, false);
 
-        contactDetails1=new ArrayList<InfoApps1>();
+        contactDetails1 = new ArrayList<InfoApps1>();
         mRecyclerView = (RecyclerView) rootView.findViewById(R.id.recycler_view);
         mRecyclerView.setHasFixedSize(true);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         mRecyclerView.setLayoutManager(layoutManager);
-        /*View rootView = inflater.inflate(R.layout.cusotm_dialog_edit, container, false);
 
-        patient_name = (TextView) rootView.findViewById(R.id.Patient_name);
-        button= (Button) rootView.findViewById(R.id.button);
-        staff_name = (TextView) rootView.findViewById(R.id.Staff_Name);
-        bill_number = (TextView) rootView.findViewById(R.id.Bill_number);
-        bill_amount = (TextView) rootView.findViewById(R.id.Bill_amount);
-        paid_amount = (TextView) rootView.findViewById(R.id.Paid_amount);
-        due_amount = (TextView) rootView.findViewById(R.id.Due_amount);
-        pro_name = (TextView) rootView.findViewById(R.id.Pro_name);
-        pro_quantity = (TextView) rootView.findViewById(R.id.Pro_quantity);
-        invodate = (TextView) rootView.findViewById(R.id.Invoice_date);
-        invo_staaus = (TextView) rootView.findViewById(R.id.Invoice_status);
-        button.setVisibility(View.INVISIBLE );*/
-
-        initProgressDialog("Please wait...");
-        report8();
 
         return rootView;
-}
+    }
 
-    private void report8(){
+    private void report8() {
 
 
         StringRequest stringRequest = new StringRequest(Request.Method.POST, ApiConfig.INVOICE_P_VIEW,
@@ -106,7 +90,7 @@ public class ViewInvoicesPatientFragment extends BaseFragment {
 
                             Log.e("response", "" + response);
                             JSONArray jsonArray = new JSONArray(response);
-                            for (int i =0; i < jsonArray.length(); i++) {
+                            for (int i = 0; i < jsonArray.length(); i++) {
                                 JSONObject jsonObject2 = jsonArray.optJSONObject(i);
                                 Log.e("2", jsonObject2.toString());
                                 String invo_id = jsonObject2.getString("invo_id");
@@ -143,11 +127,11 @@ public class ViewInvoicesPatientFragment extends BaseFragment {
 
                             }
 
-                        mAdapter = new UsersAdapter_1(contactDetails1,getActivity());
-                        mRecyclerView.setAdapter(mAdapter);
+                            mAdapter = new UsersAdapter_1(contactDetails1, getActivity());
+                            mRecyclerView.setAdapter(mAdapter);
 
-                        }catch(Exception e){
-                            Log.e("error",e.toString());
+                        } catch (Exception e) {
+                            Log.e("error", e.toString());
 
                         }
                     }
@@ -159,13 +143,13 @@ public class ViewInvoicesPatientFragment extends BaseFragment {
 //                        Toast.makeText(StmtActivity.this,error.toString(),Toast.LENGTH_LONG).show();
                         Log.w("Postdat", "" + error);
                     }
-                }){
+                }) {
             @Override
-            protected Map<String,String> getParams(){
-                Map<String,String> params = new HashMap<String, String>();
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<String, String>();
                 params.put("patient_id", AppPreferences.getInstance(getActivity()).getUserID());
                 params.put("admin_permisstion_status", AppPreferences.getInstance(getActivity()).getAdminStatsu());
-                Log.d(TagUtils.getTag(),"params:-"+params.toString());
+                Log.d(TagUtils.getTag(), "params:-" + params.toString());
                 return params;
             }
 
@@ -174,7 +158,6 @@ public class ViewInvoicesPatientFragment extends BaseFragment {
         RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
         requestQueue.add(stringRequest);
     }
-
 
 
     private void initProgressDialog(String loading) {

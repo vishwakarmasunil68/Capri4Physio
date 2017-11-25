@@ -96,7 +96,7 @@ public class CheifComplaintFragment extends BaseFragment implements HttpUrlListe
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        setHasOptionsMenu(true);
         if (getArguments() != null) {
             patientId = getArguments().getString(KEY_PATIENT_ID);
             assessmentType = getArguments().getString(KEY_TYPE);
@@ -137,6 +137,7 @@ public class CheifComplaintFragment extends BaseFragment implements HttpUrlListe
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         mRecyclerView.setLayoutManager(layoutManager);
         mRecyclerView.setAdapter(mAdapter);
+        setHasOptionsMenu(false);
 
         mBtnAdd = (Button) view.findViewById(R.id.btn_add);
     }
@@ -156,7 +157,7 @@ public class CheifComplaintFragment extends BaseFragment implements HttpUrlListe
             @Override
             public void onClick(View v) {
                 getFragmentManager().popBackStack();
-                HandlerConstant.POP_BACK_HANDLER.sendMessage(HandlerConstant.POP_BACK_HANDLER.obtainMessage(0,"1"));
+                HandlerConstant.POP_BACK_HANDLER.sendMessage(HandlerConstant.POP_BACK_HANDLER.obtainMessage(0, "1"));
             }
         });
 
@@ -311,15 +312,19 @@ public class CheifComplaintFragment extends BaseFragment implements HttpUrlListe
         if (requestCode == 2) {
             Log.d("requestcode", "result");
 //            viewAssessmentApiCall();
-
-            btn_skip.callOnClick();
+            if (resultCode == Activity.RESULT_OK) {
+                String result = data.getStringExtra("result");
+                if (result.equals("2")) {
+                    btn_skip.callOnClick();
+                }
+            }
         }
     }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
-        getActivity().getMenuInflater().inflate(R.menu.main, menu);
+//        getActivity().getMenuInflater().inflate(R.menu.main, menu);
     }
 
     /**

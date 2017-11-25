@@ -2,7 +2,6 @@ package com.capri4physio.fragment;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
@@ -51,6 +50,7 @@ import com.capri4physio.task.UrlConnectionTask;
 import com.capri4physio.util.AppLog;
 import com.capri4physio.util.AppPreferences;
 import com.capri4physio.util.Constants;
+import com.capri4physio.util.TagUtils;
 import com.capri4physio.util.Utils;
 
 import org.json.JSONArray;
@@ -62,15 +62,6 @@ import java.util.List;
 import java.util.Map;
 
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link ViewPatientFragment#newInstance} factory method to
- * create an instance of this fragment.
- *
- * @author prabhunathy
- * @version 1.0
- * @since 2016-03-31
- */
 public class ViewPatientFragment extends BaseFragment implements HttpUrlListener, ViewItemClickListener<UserItem>, AdapterView.OnItemClickListener {
 
     private RecyclerView mRecyclerView;
@@ -135,16 +126,8 @@ public class ViewPatientFragment extends BaseFragment implements HttpUrlListener
         mSnackBarLayout = (CoordinatorLayout) rootView.findViewById(R.id.coordinator_layout);
         setHasOptionsMenu(true);
         initView(rootView);
-//        (BranchAdminActivity)getActivity().setActionBarTitle("Your title");
         setListener();
-        try {
-            initProgressDialog("Please wait...");
-//    Snackbar.make()
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
         getpatientlist();
-//        viewPatientApiCall();
         return rootView;
     }
 
@@ -211,13 +194,8 @@ public class ViewPatientFragment extends BaseFragment implements HttpUrlListener
         getActivity().getMenuInflater().inflate(R.menu.menu_main1, menu);
         MenuItem searchItem = menu.findItem(R.id.action_search);
         int mNotifCount = 0;
-//        View count = menu.findItem(R.id.action_notification).getActionView();
-//        Home_Fragment.find.setText(String.valueOf(mNotifCount));
-
         if (searchItem != null) {
             SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
-
-            // use this method for search process
             searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
                 @Override
                 public boolean onQueryTextSubmit(String query) {
@@ -229,11 +207,6 @@ public class ViewPatientFragment extends BaseFragment implements HttpUrlListener
                     try {
                         if (newText.length() > 0 && Branch_Code.length() > 0) {
                             try {
-//                                try {
-//                                    initProgressDialog("Please wait...");
-//                                } catch (Exception e) {
-//                                    e.printStackTrace();
-//                                }
                                 isInteger(newText);
                                 mRecyclerView.setVisibility(View.INVISIBLE);
                             } catch (Exception e) {
@@ -253,7 +226,6 @@ public class ViewPatientFragment extends BaseFragment implements HttpUrlListener
             });
 
         } else {
-
             try {
                 contactDetails1.clear();
             } catch (Exception e) {
@@ -310,8 +282,7 @@ public class ViewPatientFragment extends BaseFragment implements HttpUrlListener
                 Log.e("catch", "catch@");
                 mRecyclerView.setVisibility(View.VISIBLE);
                 getsearchlistEmail(s);
-            }
-            else {
+            } else {
                 Log.e("try", "catchstri");
                 mRecyclerView.setVisibility(View.VISIBLE);
                 getsearchlist(s);
@@ -416,7 +387,7 @@ public class ViewPatientFragment extends BaseFragment implements HttpUrlListener
             showSnackMessage("Record Successfully Removed");
         } else {
             String clinicId = AppPreferences.getInstance(getActivity()).getClinicId();
-            MyClinicPatientFragment fragment = MyClinicPatientFragment.newInstance(clinicId, userItem.getId());
+            MyClinicPatientFragment fragment = MyClinicPatientFragment.newInstance(clinicId, userItem.getId(), userItem.getBracch_code());
             FragmentTransaction ft = getFragmentManager().beginTransaction();
             ft.add(R.id.fragment_container, fragment);
             ft.addToBackStack(null);
@@ -523,7 +494,7 @@ public class ViewPatientFragment extends BaseFragment implements HttpUrlListener
                                 contactDetails1.clear();
                             }
                             Log.e("result", response);
-                            if(progressDialog!=null) {
+                            if (progressDialog != null) {
                                 progressDialog.hide();
                             }
 //                            new UrlConnectionTask(getActivity(), ApiConfig.VIEW_PATIENT_URL, ApiConfig.ID1, true, objresponse, UserListModel.class, this).execute("");                            else {
@@ -611,7 +582,7 @@ public class ViewPatientFragment extends BaseFragment implements HttpUrlListener
                                 contactDetails1.clear();
                             }
                             Log.e("result", response);
-                            if(progressDialog!=null) {
+                            if (progressDialog != null) {
                                 progressDialog.hide();
                             }
                             JSONObject jsonObject1 = new JSONObject(response);
@@ -695,7 +666,7 @@ public class ViewPatientFragment extends BaseFragment implements HttpUrlListener
                                 contactDetails1.clear();
                             }
                             Log.e("result", response);
-                            if(progressDialog!=null) {
+                            if (progressDialog != null) {
                                 progressDialog.hide();
                             }
                             JSONObject jsonObject1 = new JSONObject(response);
@@ -778,8 +749,8 @@ public class ViewPatientFragment extends BaseFragment implements HttpUrlListener
                             if (contactDetails1.size() > 0) {
                                 contactDetails1.clear();
                             }
-                            Log.e("result", response);
-                            if(progressDialog!=null) {
+                            Log.d(TagUtils.getTag(), "patient list:-" + response);
+                            if (progressDialog != null) {
                                 progressDialog.hide();
                             }
 //                            new UrlConnectionTask(getActivity(), ApiConfig.VIEW_PATIENT_URL, ApiConfig.ID1, true, objresponse, UserListModel.class, this).execute("");                            else {
@@ -800,6 +771,7 @@ public class ViewPatientFragment extends BaseFragment implements HttpUrlListener
                                     String last_name = jsonObject.getString("last_name");
                                     String email = jsonObject.getString("email");
                                     String profile_pic = jsonObject.getString("profile_pic");
+                                    String bracch_code = jsonObject.getString("bracch_code");
 
 
                                     Detailapp1 = new UserItem();
@@ -807,6 +779,7 @@ public class ViewPatientFragment extends BaseFragment implements HttpUrlListener
                                     Detailapp1.setEmail(email);
                                     Detailapp1.setId(id);
                                     Detailapp1.setProfilePic(profile_pic);
+                                    Detailapp1.setBracch_code(bracch_code);
                                     contactDetails1.add(Detailapp1);
 
                                     mRecyclerView.setAdapter(mAdapter1);
@@ -869,16 +842,12 @@ public class ViewPatientFragment extends BaseFragment implements HttpUrlListener
 
             try {
                 Log.e("DoInBackGroundtr", String.valueOf(s));
-                ///     pDialog.dismiss();
-//                Log.e("Post Method Call  here ....", "Method ...");
                 JSONArray jsonArray = new JSONArray(s);
                 for (int i = 0; i < jsonArray.length(); i++) {
                     JSONObject jsonObject2 = jsonArray.optJSONObject(i);
                     Log.e("2", jsonObject2.toString());
                     String branch_name = jsonObject2.getString("branch_name");
                     String bracch_code = jsonObject2.getString("branch_code");
-                    //branch_code
-//                    arrayList.add(bracch_code);
 
                     detailApps = new InfoApps1();
                     detailApps.setName(branch_name);
@@ -915,7 +884,7 @@ public class ViewPatientFragment extends BaseFragment implements HttpUrlListener
 
     @Override
     public void onPause() {
-        super.onStart();
+        super.onPause();
         Log.e("start", "onStart");
         AppCompatActivity activity = (AppCompatActivity) getActivity();
         ActionBar actionBar = activity.getSupportActionBar();

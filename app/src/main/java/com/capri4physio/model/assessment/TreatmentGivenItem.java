@@ -15,6 +15,8 @@ public class TreatmentGivenItem {
     public String therapist;
     @SerializedName("therapy")
     public String therapy;
+    @SerializedName("signature")
+    public String signature;
 
     public String getTrea_staff_name() {
         return trea_staff_name;
@@ -68,5 +70,13 @@ public class TreatmentGivenItem {
 
     public String getDate() {
         return date;
+    }
+
+    public String getSignature() {
+        return signature;
+    }
+
+    public void setSignature(String signature) {
+        this.signature = signature;
     }
 }

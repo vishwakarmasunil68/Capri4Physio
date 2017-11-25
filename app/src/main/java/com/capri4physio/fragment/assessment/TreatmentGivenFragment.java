@@ -66,8 +66,10 @@ public class TreatmentGivenFragment extends BaseFragment implements HttpUrlListe
 
     private static final String KEY_PATIENT_ID = "patient_id";
     private static final String KEY_TYPE = "type";
+    private static final String KEY_BRANCH_CODE = "branch_code";
     private String patientId = "";
     private String assessmentType = "";
+    private String patient_branch_code = "";
     private Button mBtnAdd,btn_skip;
 
 
@@ -77,11 +79,12 @@ public class TreatmentGivenFragment extends BaseFragment implements HttpUrlListe
      *
      * @return A new instance of fragment CheifComplaintFragment.
      */
-    public static TreatmentGivenFragment newInstance(String patientId, String assessmentType) {
+    public static TreatmentGivenFragment newInstance(String patientId, String assessmentType,String patient_branch_code) {
         TreatmentGivenFragment fragment = new TreatmentGivenFragment();
         Bundle bundle = new Bundle();
         bundle.putString(KEY_PATIENT_ID, patientId);
         bundle.putString(KEY_TYPE, assessmentType);
+        bundle.putString(KEY_BRANCH_CODE, patient_branch_code);
 
         fragment.setArguments(bundle);
         return fragment;
@@ -103,6 +106,7 @@ public class TreatmentGivenFragment extends BaseFragment implements HttpUrlListe
         if (getArguments() != null) {
             patientId = getArguments().getString(KEY_PATIENT_ID);
             assessmentType = getArguments().getString(KEY_TYPE);
+            patient_branch_code = getArguments().getString(KEY_BRANCH_CODE);
         }
 
         mList = new ArrayList<>();
@@ -156,7 +160,7 @@ public class TreatmentGivenFragment extends BaseFragment implements HttpUrlListe
             @Override
             public void onClick(View v) {
                 getFragmentManager().popBackStack();
-                HandlerConstant.POP_BACK_HANDLER.sendMessage(HandlerConstant.POP_BACK_HANDLER.obtainMessage(0,"12"));
+                HandlerConstant.POP_BACK_HANDLER.sendMessage(HandlerConstant.POP_BACK_HANDLER.obtainMessage(0,"14"));
             }
         });
 
@@ -174,7 +178,7 @@ public class TreatmentGivenFragment extends BaseFragment implements HttpUrlListe
 
     private void addFragment() {
         FragmentTransaction ft = getFragmentManager().beginTransaction();
-        AddTreatmentGivenFragment fragment = AddTreatmentGivenFragment.newInstance(patientId, assessmentType);
+        AddTreatmentGivenFragment fragment = AddTreatmentGivenFragment.newInstance(patientId, assessmentType,patient_branch_code);
         ft.replace(R.id.fragment_container, fragment);
         ft.addToBackStack(null);
         ft.commit();
@@ -206,10 +210,9 @@ public class TreatmentGivenFragment extends BaseFragment implements HttpUrlListe
     @Override
     public void onPause() {
         super.onPause();
-        Log.e("start","onStart");
         AppCompatActivity activity = (AppCompatActivity) getActivity();
         ActionBar actionBar = activity.getSupportActionBar();
-        actionBar.setTitle("Treatment Given");
+        actionBar.setTitle("Assesment");
     }
     @Override
     public void onStart() {
@@ -334,6 +337,5 @@ public class TreatmentGivenFragment extends BaseFragment implements HttpUrlListe
             Log.d("id",position+"");
             Log.e("getid",treatmentItem.getId());
         }
-
     }
 }

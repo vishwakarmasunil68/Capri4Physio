@@ -31,23 +31,23 @@ import java.util.List;
 import java.util.Map;
 
 /**
- *Create to bind jobs in list
- * @see RecyclerView.Adapter
+ * Create to bind jobs in list
  *
- * @version 1.0
  * @author prabhunathy
+ * @version 1.0
+ * @see RecyclerView.Adapter
  * @since 1/4/16.
  */
 
-public class CheifComplaintAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>  {
+public class CheifComplaintAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private LayoutInflater inflater;
     private Context context;
     RadioGroup mRadioGroup;
-    RadioButton yes,no;
+    RadioButton yes, no;
     String hadProblemBefore = "NO";
     Dialog dialog;
-    EditText editTextcontents,editTextprobbefore;
-    private String posn,contents,id,note_iid;
+    EditText editTextcontents, editTextprobbefore;
+    private String posn, contents, id, note_iid;
     private List<CheifComplaint> mList;
     private ViewItemClickListener<CheifComplaint> mCallback;
 
@@ -78,17 +78,17 @@ public class CheifComplaintAdapter extends RecyclerView.Adapter<RecyclerView.Vie
     }
 
     class UserViewHolder extends RecyclerView.ViewHolder {
-        private ImageView mImg,mImgattact;
-        private TextView mTxtTitle,txt_title1,mTxtDuration,mTxtPast;
+        private ImageView mImg, mImgattact;
+        private TextView mTxtTitle, txt_title1, mTxtDuration, mTxtPast;
 
         public UserViewHolder(View itemView) {
             super(itemView);
-            mImg = (ImageView)itemView.findViewById(R.id.img);
-            mImgattact = (ImageView)itemView.findViewById(R.id.img_edit);
-            txt_title1 = (TextView)itemView.findViewById(R.id.txt_title1);
-            mTxtTitle = (TextView)itemView.findViewById(R.id.txt_title);
-            mTxtDuration = (TextView)itemView.findViewById(R.id.txt_duration);
-            mTxtPast = (TextView)itemView.findViewById(R.id.txt_past);
+            mImg = (ImageView) itemView.findViewById(R.id.img);
+            mImgattact = (ImageView) itemView.findViewById(R.id.img_edit);
+            txt_title1 = (TextView) itemView.findViewById(R.id.txt_title1);
+            mTxtTitle = (TextView) itemView.findViewById(R.id.txt_title);
+            mTxtDuration = (TextView) itemView.findViewById(R.id.txt_duration);
+            mTxtPast = (TextView) itemView.findViewById(R.id.txt_past);
         }
     }
 
@@ -107,94 +107,81 @@ public class CheifComplaintAdapter extends RecyclerView.Adapter<RecyclerView.Vie
         });
 
 
-    holder.mImgattact.setOnClickListener(new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            posn = mList.get(position).getComplaints();
-            contents = mList.get(position).getProblemDuration().toString();
-            id = mList.get(position).getProblemBefore().toString();
-            note_iid = mList.get(position).getId().toString();
-            String prob=mList.get(position).getProblemBefore().toString();
+        holder.mImgattact.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                posn = mList.get(position).getComplaints();
+                contents = mList.get(position).getProblemDuration().toString();
+                id = mList.get(position).getProblemBefore().toString();
+                note_iid = mList.get(position).getId().toString();
+                String prob = mList.get(position).getProblemBefore().toString();
 
 
-            Log.e("notes",posn + note_iid);
-            dialog = new Dialog(context, android.R.style.Theme_DeviceDefault_Light_Dialog);
+                Log.e("notes", posn + note_iid);
+                dialog = new Dialog(context, android.R.style.Theme_DeviceDefault_Light_Dialog);
 
-            //setting custom layout to dialog
-            dialog.setContentView(R.layout.dialog_edit_chief);
-            dialog.setTitle("Edit - " +
-                    " Chief compalints");
+                //setting custom layout to dialog
+                dialog.setContentView(R.layout.dialog_edit_chief);
+                dialog.setTitle("Edit - " +
+                        " Chief compalints");
 
-            //adding text dynamically
+                //adding text dynamically
 //            radioGroup= (RadioGroup) dialog.findViewById(R.id.radio_group);
 //            radioGroup.set(contents);
-            editTextcontents= (EditText) dialog.findViewById(R.id.edtxt_how_long);
-            editTextcontents.setText(contents);
-            editTextprobbefore= (EditText) dialog.findViewById(R.id.edtxt_problem);
-            editTextprobbefore.setText(posn);
-            mRadioGroup = (RadioGroup) dialog.findViewById(R.id.radio_group);
-            yes = (RadioButton ) dialog.findViewById(R.id.radio_yes);
-            no = (RadioButton ) dialog.findViewById(R.id.radio_no);
-            if (prob.equalsIgnoreCase("YES")){
-                yes.setChecked(true);
-            }
-            else{
-                no.setChecked(true);
-            }
-
-            mRadioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-
-
-                @Override
-                public void onCheckedChanged(RadioGroup radioGroup, int checkedId) {
-
-                    RadioButton rb = (RadioButton) radioGroup.findViewById(checkedId);
-                    hadProblemBefore = rb.getText().toString();
-                    Log.e("hadProblemBefore",hadProblemBefore);
+                editTextcontents = (EditText) dialog.findViewById(R.id.edtxt_how_long);
+                editTextcontents.setText(contents);
+                editTextprobbefore = (EditText) dialog.findViewById(R.id.edtxt_problem);
+                editTextprobbefore.setText(posn);
+                mRadioGroup = (RadioGroup) dialog.findViewById(R.id.radio_group);
+                yes = (RadioButton) dialog.findViewById(R.id.radio_yes);
+                no = (RadioButton) dialog.findViewById(R.id.radio_no);
+                if (prob.equalsIgnoreCase("YES")) {
+                    yes.setChecked(true);
+                } else {
+                    no.setChecked(true);
                 }
-            });
-           /* if (prob.equalsIgnoreCase("YES")){
-yes.setChecked(true);
+
+                mRadioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+
+
+                    @Override
+                    public void onCheckedChanged(RadioGroup radioGroup, int checkedId) {
+
+                        RadioButton rb = (RadioButton) radioGroup.findViewById(checkedId);
+                        hadProblemBefore = rb.getText().toString();
+                        Log.e("hadProblemBefore", hadProblemBefore);
+                    }
+                });
+                Button dismissButton = (Button) dialog.findViewById(R.id.btn_save);
+                dismissButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+
+                        getpnotes(holder.mTxtTitle, holder.mTxtDuration, hadProblemBefore);
+
+                    }
+                });
+                dialog.show();
             }
-            else {
-                no.setChecked(true);
+        });
+    }
 
-            }*/
-
-
-            //adding button click event
-            Button dismissButton = (Button) dialog.findViewById(R.id.btn_save);
-            dismissButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-
-                    getpnotes(holder.mTxtTitle,holder.mTxtDuration,hadProblemBefore);
-
-                }
-            });
-            dialog.show();
-        }
-    });
-}
-    private void getpnotes(final TextView textView1 , final TextView textView2 ,final String  textView3 ){
+    private void getpnotes(final TextView textView1, final TextView textView2, final String textView3) {
 
 
-
-        final String casedesc =editTextcontents.getText().toString();
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, ApiConfig.EDIT_CHIF_NOTES  ,
+        final String casedesc = editTextcontents.getText().toString();
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, ApiConfig.EDIT_CHIF_NOTES,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
                         try {
-                            Log.e("result",response);
+                            Log.e("result", response);
                             textView1.setText(editTextprobbefore.getText().toString());
                             textView2.setText(editTextcontents.getText().toString());
                             dialog.dismiss();
                             mCallback.onViewItemClick(mList.get(0), -2, Constants.ClickIDConst.ID_DELETE_CLICK);
 
-                        }
-
-                        catch (Exception e) {
+                        } catch (Exception e) {
                             e.printStackTrace();
                         }
                         Log.e("Postdat", "" + response.toString());
@@ -206,11 +193,11 @@ yes.setChecked(true);
 //                        Toast.makeText(StmtActivity.this,error.toString(),Toast.LENGTH_LONG).show();
                         Log.w("Postdat", "" + error);
                     }
-                }){
+                }) {
 
 
-            protected Map<String,String> getParams(){
-                Map<String,String> objresponse = new HashMap<String, String>();
+            protected Map<String, String> getParams() {
+                Map<String, String> objresponse = new HashMap<String, String>();
                 objresponse.put("complaints", editTextprobbefore.getText().toString());
                 objresponse.put("problem_duration", editTextcontents.getText().toString());
                 objresponse.put("problem_before", textView3);
@@ -223,6 +210,7 @@ yes.setChecked(true);
         RequestQueue requestQueue = Volley.newRequestQueue(context);
         requestQueue.add(stringRequest);
     }
+
     private String capsFirstLetter(String original) {
         if (original == null || original.length() == 0) {
             return original;

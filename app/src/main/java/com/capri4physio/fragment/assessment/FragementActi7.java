@@ -34,6 +34,7 @@ import com.android.volley.toolbox.Volley;
 import com.capri4physio.R;
 import com.capri4physio.net.ApiConfig;
 import com.capri4physio.util.ImageUtil;
+import com.capri4physio.util.TagUtils;
 import com.capri4physio.util.Utils;
 
 import java.io.File;
@@ -50,8 +51,8 @@ public class FragementActi7 extends AppCompatActivity {
 	private ViewPager viewPager;
 	Button savebtn;
 	ProgressDialog pDialog;
-	Android frag_left;
-	Windows frag_right;
+	ShoulderFragment frag_left;
+	ShoulderFragment frag_right;
 	Ios frag_parameters;
 	public static String Shoulderlt1="",patient_id="",Shoulderlt2="",Shoulderlt3="",Shoulderlt4="",Shoulderlt5="",Shoulderlt6="",Shoulderlt7="",Shoulderlt8="",Shoulderlp1="",Shoulderlp2="",Shoulderlp3="",Shoulderlp4="",Shoulderlp5="",Shoulderlp6="",Shoulderlp7="",Shoulderlp8="",Shoulderlr1="",Shoulderlr2="",Shoulderlr3="",Shoulderlr4="",Shoulderlr5="",Shoulderlr6="",Shoulderlr7="",Shoulderlr8="",Shoulderrt1="",Shoulderrt2="",Shoulderrt3="",Shoulderrt4="",Shoulderrt5="",Shoulderrt6="",Shoulderrt7="",Shoulderrt8="",Shoulderrp1="",Shoulderrp2="",Shoulderrp3="",
 			Shoulderrp4="",Shoulderrp5="",Shoulderrp6="",Shoulderrp7="",Shoulderrp8="",Shoulderrr1="",Shoulderrr2="",Shoulderrr3="",Shoulderrr4="",Shoulderrr5="",Shoulderrr6="",Shoulderrr7="",Shoulderrr8="";
@@ -83,6 +84,8 @@ public class FragementActi7 extends AppCompatActivity {
 		});
 		patient_id =getIntent().getStringExtra("patient_id");
 		viewPager.setOffscreenPageLimit(2);
+
+		getSupportActionBar().setTitle("Shoulder Exam");
     }
 	public String ValidateEdit(EditText edit){
 		try {
@@ -232,57 +235,6 @@ public class FragementActi7 extends AppCompatActivity {
 		}
 	}
 	private void addMotorAPi(final String base_string){
-		Shoulderlt1 = Android.spinner1.getSelectedItem().toString().trim();
-		Shoulderlt2 = Android.spinner2.getSelectedItem().toString().trim();
-		Shoulderlt3  = Android.spinner3.getSelectedItem().toString().trim();
-		Shoulderlt4  = Android.spinner4.getSelectedItem().toString().trim();
-		Shoulderlt5=Android.spinner5.getSelectedItem().toString().trim();
-		Shoulderlt6=Android.spinner6.getSelectedItem().toString().trim();
-		Shoulderlt7=Android.spinner7.getSelectedItem().toString().trim();
-//		Shoulderlt8=Android.spinner1_1.getSelectedItem().toString().trim();
-		Shoulderlp1 = Android.spinner8.getSelectedItem().toString().trim();
-		Shoulderlp2 = Android.spinner9.getSelectedItem().toString().trim();
-		Shoulderlp3 = Android.spinner10.getSelectedItem().toString().trim();
-		Shoulderlp4 = Android.spinner11.getSelectedItem().toString().trim();
-		Shoulderlp5=Android.spinner12.getSelectedItem().toString().trim();
-		Shoulderlp6=Android.spinner13.getSelectedItem().toString().trim();
-//		Shoulderlp7=Android.spinner14.getSelectedItem().toString().trim();
-//		Shoulderlp8=Android.spinner15.getSelectedItem().toString().trim();
-		Shoulderlr1 = ValidateEdit(Android.editText1);
-		Shoulderlr2 =ValidateEdit(Android.editText2);
-		Shoulderlr3 = ValidateEdit(Android.editText3);
-		Shoulderlr4 = ValidateEdit(Android.editText4);
-		Shoulderlr5 =ValidateEdit(Android.editText5);
-		Shoulderlr6 =ValidateEdit(Android.editText6);
-//		Shoulderlr7 =ValidateEdit(Android.editText7);
-//		Shoulderlr8 =ValidateEdit(Android.editText8);
-		Shoulderrt1= ValidateSpinner( Windows.spinner1);
-		Shoulderrt2 =ValidateSpinner( Windows.spinner2);
-		Shoulderrt3=ValidateSpinner( Windows.spinner3);
-		Shoulderrt4 = ValidateSpinner( Windows.spinner4);
-		Shoulderrt5 =ValidateSpinner( Windows.spinner5);
-		Shoulderrt6 =ValidateSpinner( Windows.spinner6);
-		Shoulderrt7 =ValidateSpinner( Windows.spinner7);
-//		Shoulderrt8 =ValidateSpinner( Windows.spinner1_1);
-		Shoulderrp1 =ValidateSpinner( Windows.spinner8);
-		Shoulderrp2 = ValidateSpinner( Windows.spinner9);
-		Shoulderrp3 = ValidateSpinner( Windows.spinner10);
-		Shoulderrp4 =ValidateSpinner( Windows.spinner11);
-		Shoulderrp5=ValidateSpinner( Windows.spinner12);
-		Shoulderrp6=ValidateSpinner( Windows.spinner13);
-		Shoulderrp7=ValidateSpinner( Windows.spinner14);
-		Shoulderrp8=ValidateSpinner( Windows.spinner15);
-		Shoulderrr1= ValidateEdit(Windows.editText1);
-		Shoulderrr2= ValidateEdit(Windows.editText2);
-		Shoulderrr3=ValidateEdit(Windows.editText3);
-		Shoulderrr4=ValidateEdit(Windows.editText4);
-		Shoulderrr5=ValidateEdit(Windows.editText5);
-		Shoulderrr6=ValidateEdit(Windows.editText6);
-//		Shoulderrr7=ValidateEdit(Windows.editText7);
-		Shoulderrr8=ValidateEdit(Windows.editText8);
-        /*Log.e("date",date);
-        Log.e("time",time);
-        Log.e("reason",reason);*/
 		StringRequest stringRequest = new StringRequest(Request.Method.POST, ApiConfig.MOTOR_SHOULDER_URL,
 				new Response.Listener<String>() {
 					@Override
@@ -322,55 +274,50 @@ public class FragementActi7 extends AppCompatActivity {
 				Map<String,String> params = new HashMap<String, String>();
 				params.put("moter_exam_date", Utils.getCurrentDate());
 				params.put("patient_id", patient_id);
-				params.put("moter_examshoulder_left_tone1", Shoulderlt1);
-				params.put("moter_examshoulder_left_tone2", Shoulderlt2);
-				params.put("moter_examshoulder_left_tone3", Shoulderlt3);
-				params.put("moter_examshoulder_left_tone4",Shoulderlt4);
-				params.put("moter_examshoulder_left_tone5",Shoulderlt5);
-				params.put("moter_examshoulder_left_tone6",Shoulderlt6);
-				params.put("moter_examshoulder_left_tone7",Shoulderlt7);
-				params.put("moter_examshoulder_left_tone8 ",Shoulderlt8);
-				params.put("moter_examshoulder_left_power1",Shoulderlp1);
-				params.put("moter_examshoulder_left_power2", Shoulderlp2);
-				params.put("moter_examshoulder_left_power3", Shoulderlp3);
-				params.put("moter_examshoulder_left_power4", Shoulderlp4);
-				params.put("moter_examshoulder_left_power5", Shoulderlp5);
-				params.put("moter_examshoulder_left_power6", Shoulderlp6);
-				params.put("moter_examshoulder_left_power7", Shoulderlp7);
-				params.put("moter_examshoulder_left_power8", Shoulderlp8);
-				params.put("moter_examshoulder_left_rom1", Shoulderlr1);
-				params.put("moter_examshoulder_left_rom2",Shoulderlr2);
-				params.put("moter_examshoulder_left_rom3",Shoulderlr3);
-				params.put("moter_examshoulder_left_rom4",Shoulderlr4);
-				params.put("moter_examshoulder_left_rom5", Shoulderlr5);
-				params.put("moter_examshoulder_left_rom6",Shoulderlr6);
-				params.put("moter_examshoulder_left_rom7", Shoulderlr7);
-				params.put("moter_examshoulder_left_rom8", Shoulderlr8);
-				params.put("moter_examshoulder_right_tone1",Shoulderrt1);
-				params.put("moter_examshoulder_right_tone2", Shoulderrt2);
-				params.put("moter_examshoulder_right_tone3", Shoulderrt3);
-				params.put("moter_examshoulder_right_tone4", Shoulderrt4);
-				params.put("moter_examshoulder_right_tone5",Shoulderrt5);
-				params.put("moter_examshoulder_right_tone6", Shoulderrt6);
-				params.put("moter_examshoulder_right_tone7",Shoulderrt7);
-				params.put("moter_examshoulder_right_tone8",Shoulderrt8);
-				params.put("moter_examshoulder_right_power1", Shoulderrp1);
-				params.put("moter_examshoulder_right_power2", Shoulderrp2);
-				params.put("moter_examshoulder_right_power3", Shoulderrp3);
-				params.put("moter_examshoulder_right_power4", Shoulderrp4);
-				params.put("moter_examshoulder_right_power5", Shoulderrp5);
-				params.put("moter_examshoulder_right_power6", Shoulderrp6);
-				params.put("moter_examshoulder_right_power7", Shoulderrp7);
-				params.put("moter_examshoulder_right_power8", Shoulderrp8);
-				params.put("moter_examshoulder_right_rom1", Shoulderrr1);
-				params.put("moter_examshoulder_right_rom2", Shoulderrr2);
-				params.put("moter_examshoulder_right_rom3", Shoulderrr3);
-				params.put("moter_examshoulder_right_rom4", Shoulderrr4);
-				params.put("moter_examshoulder_right_rom5", Shoulderrr5);
-				params.put("moter_examshoulder_right_rom6", Shoulderrr6);
-				params.put("moter_examshoulder_right_rom7", Shoulderrr7);
-				params.put("moter_examshoulder_right_rom8", Shoulderrr8);
+				params.put("moter_examshoulder_left_tone1", Utils.getToneSpinnerData(getApplicationContext(),frag_left.getSpinner1().getSelectedItemPosition()));
+				params.put("moter_examshoulder_left_tone2", Utils.getToneSpinnerData(getApplicationContext(),frag_left.getSpinner2().getSelectedItemPosition()));
+				params.put("moter_examshoulder_left_tone3", Utils.getToneSpinnerData(getApplicationContext(),frag_left.getSpinner3().getSelectedItemPosition()));
+				params.put("moter_examshoulder_left_tone4",Utils.getToneSpinnerData(getApplicationContext(),frag_left.getSpinner4().getSelectedItemPosition()));
+				params.put("moter_examshoulder_left_tone5",Utils.getToneSpinnerData(getApplicationContext(),frag_left.getSpinner5().getSelectedItemPosition()));
+				params.put("moter_examshoulder_left_tone6",Utils.getToneSpinnerData(getApplicationContext(),frag_left.getSpinner6().getSelectedItemPosition()));
+				params.put("moter_examshoulder_left_tone7",Utils.getToneSpinnerData(getApplicationContext(),frag_left.getSpinner7().getSelectedItemPosition()));
+				params.put("moter_examshoulder_left_power1",Utils.getPowerSpinnerData(getApplicationContext(),frag_left.getSpinner8().getSelectedItemPosition()));
+				params.put("moter_examshoulder_left_power2", Utils.getPowerSpinnerData(getApplicationContext(),frag_left.getSpinner9().getSelectedItemPosition()));
+				params.put("moter_examshoulder_left_power3", Utils.getPowerSpinnerData(getApplicationContext(),frag_left.getSpinner10().getSelectedItemPosition()));
+				params.put("moter_examshoulder_left_power4", Utils.getPowerSpinnerData(getApplicationContext(),frag_left.getSpinner11().getSelectedItemPosition()));
+				params.put("moter_examshoulder_left_power5", Utils.getPowerSpinnerData(getApplicationContext(),frag_left.getSpinner12().getSelectedItemPosition()));
+				params.put("moter_examshoulder_left_power6", Utils.getPowerSpinnerData(getApplicationContext(),frag_left.getSpinner13().getSelectedItemPosition()));
+				params.put("moter_examshoulder_left_power7", Utils.getPowerSpinnerData(getApplicationContext(),frag_left.getSpinner14().getSelectedItemPosition()));
+				params.put("moter_examshoulder_left_rom1", Utils.getEdittextData(frag_left.getEdtxt_1()));
+				params.put("moter_examshoulder_left_rom2",Utils.getEdittextData(frag_left.getEdtxt_2()));
+				params.put("moter_examshoulder_left_rom3",Utils.getEdittextData(frag_left.getEdtxt_3()));
+				params.put("moter_examshoulder_left_rom4",Utils.getEdittextData(frag_left.getEdtxt_4()));
+				params.put("moter_examshoulder_left_rom5", Utils.getEdittextData(frag_left.getEdtxt_5()));
+				params.put("moter_examshoulder_left_rom6",Utils.getEdittextData(frag_left.getEdtxt_6()));
+				params.put("moter_examshoulder_left_rom7", Utils.getEdittextData(frag_left.getEdtxt_7()));
+				params.put("moter_examshoulder_right_tone1",Utils.getToneSpinnerData(getApplicationContext(),frag_right.getSpinner1().getSelectedItemPosition()));
+				params.put("moter_examshoulder_right_tone2", Utils.getToneSpinnerData(getApplicationContext(),frag_right.getSpinner2().getSelectedItemPosition()));
+				params.put("moter_examshoulder_right_tone3", Utils.getToneSpinnerData(getApplicationContext(),frag_right.getSpinner3().getSelectedItemPosition()));
+				params.put("moter_examshoulder_right_tone4", Utils.getToneSpinnerData(getApplicationContext(),frag_right.getSpinner4().getSelectedItemPosition()));
+				params.put("moter_examshoulder_right_tone5",Utils.getToneSpinnerData(getApplicationContext(),frag_right.getSpinner5().getSelectedItemPosition()));
+				params.put("moter_examshoulder_right_tone6", Utils.getToneSpinnerData(getApplicationContext(),frag_right.getSpinner6().getSelectedItemPosition()));
+				params.put("moter_examshoulder_right_tone7",Utils.getToneSpinnerData(getApplicationContext(),frag_right.getSpinner7().getSelectedItemPosition()));
+				params.put("moter_examshoulder_right_power1", Utils.getPowerSpinnerData(getApplicationContext(),frag_right.getSpinner8().getSelectedItemPosition()));
+				params.put("moter_examshoulder_right_power2", Utils.getPowerSpinnerData(getApplicationContext(),frag_right.getSpinner9().getSelectedItemPosition()));
+				params.put("moter_examshoulder_right_power3", Utils.getPowerSpinnerData(getApplicationContext(),frag_right.getSpinner10().getSelectedItemPosition()));
+				params.put("moter_examshoulder_right_power4", Utils.getPowerSpinnerData(getApplicationContext(),frag_right.getSpinner11().getSelectedItemPosition()));
+				params.put("moter_examshoulder_right_power5", Utils.getPowerSpinnerData(getApplicationContext(),frag_right.getSpinner12().getSelectedItemPosition()));
+				params.put("moter_examshoulder_right_power6", Utils.getPowerSpinnerData(getApplicationContext(),frag_right.getSpinner13().getSelectedItemPosition()));
+				params.put("moter_examshoulder_right_power7", Utils.getPowerSpinnerData(getApplicationContext(),frag_right.getSpinner14().getSelectedItemPosition()));
+				params.put("moter_examshoulder_right_rom1", Utils.getEdittextData(frag_right.getEdtxt_1()));
+				params.put("moter_examshoulder_right_rom2", Utils.getEdittextData(frag_right.getEdtxt_1()));
+				params.put("moter_examshoulder_right_rom3", Utils.getEdittextData(frag_right.getEdtxt_1()));
+				params.put("moter_examshoulder_right_rom4", Utils.getEdittextData(frag_right.getEdtxt_1()));
+				params.put("moter_examshoulder_right_rom5", Utils.getEdittextData(frag_right.getEdtxt_1()));
+				params.put("moter_examshoulder_right_rom6", Utils.getEdittextData(frag_right.getEdtxt_1()));
+				params.put("moter_examshoulder_right_rom7", Utils.getEdittextData(frag_right.getEdtxt_1()));
 				params.put("moterexamsshoulder_image", base_string);
+				Log.d(TagUtils.getTag(),"shoulder params:-"+params.toString());
 				return params;
 			}
 
@@ -381,8 +328,8 @@ public class FragementActi7 extends AppCompatActivity {
 	}
 
 	private void setupViewPager(ViewPager viewPager) {
-		frag_left=new Android();
-		frag_right=new Windows();
+		frag_left=new ShoulderFragment();
+		frag_right=new ShoulderFragment();
 //		frag_parameters=new Ios();
 		ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
 		adapter.addFrag(frag_left, "Left");

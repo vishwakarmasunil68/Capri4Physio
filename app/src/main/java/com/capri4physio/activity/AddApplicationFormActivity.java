@@ -8,10 +8,8 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Spinner;
 
 import com.capri4physio.R;
 import com.capri4physio.Services.WebServiceBase;
@@ -39,8 +37,8 @@ public class AddApplicationFormActivity extends AppCompatActivity implements Web
     private static final String UPDATE_APPLICATION_FORM = "update_application_form";
     @BindView(R.id.toolbar)
     Toolbar toolbar;
-    @BindView(R.id.spinner_course)
-    Spinner spinner_course;
+//    @BindView(R.id.spinner_course)
+//    Spinner spinner_course;
     @BindView(R.id.et_first_name)
     EditText et_first_name;
     @BindView(R.id.et_middle_name)
@@ -82,7 +80,7 @@ public class AddApplicationFormActivity extends AppCompatActivity implements Web
     StudentCourseResultPOJO studentCourseResultPOJO;
     CourcesResultPOJO courcesResultPOJO;
 
-    String[] spinner_items = { "COMT", "Jenny McConell Concept", "CRASH COURSE"};
+//    String[] spinner_items = { "COMT", "Jenny McConell Concept", "CRASH COURSE"};
     ApplicationFormResultPOJO applicationFormResultPOJO;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -94,12 +92,13 @@ public class AddApplicationFormActivity extends AppCompatActivity implements Web
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
 
-        ArrayAdapter aa = new ArrayAdapter(this,android.R.layout.simple_spinner_item,spinner_items);
-        aa.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner_course.setAdapter(aa);
+//        ArrayAdapter aa = new ArrayAdapter(this,android.R.layout.simple_spinner_item,spinner_items);
+//        aa.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+//        spinner_course.setAdapter(aa);
 
         studentCourseResultPOJO= (StudentCourseResultPOJO) getIntent().getSerializableExtra("studentcourseresultpojo");
         courcesResultPOJO= (CourcesResultPOJO) getIntent().getSerializableExtra("coursepojo");
+//        Log.d(TagUtils.getTag(),"course pojo:-"+courcesResultPOJO.toString());
         applicationFormResultPOJO= (ApplicationFormResultPOJO) getIntent().getSerializableExtra("applicationform");
         if(studentCourseResultPOJO!=null){
             btn_submit.setText("Update");
@@ -120,17 +119,18 @@ public class AddApplicationFormActivity extends AppCompatActivity implements Web
             et_middle_name.setText(applicationFormResultPOJO.getaMiddleName());
             et_last_name.setText(applicationFormResultPOJO.getaLastName());
             et_email.setText(applicationFormResultPOJO.getaEmail());
+            et_mobile.setText(applicationFormResultPOJO.getaMobile());
             et_city_date.setText(applicationFormResultPOJO.getaCityDate());
             et_trans_id.setText(applicationFormResultPOJO.getaTranstionid());
             et_amount.setText(applicationFormResultPOJO.getaAmount());
-            et_name_of_bank.setText(applicationFormResultPOJO.getaBankName());
+//            et_name_of_bank.setText(applicationFormResultPOJO.getaBankName());
             et_present_addr.setText(applicationFormResultPOJO.getaPresentAddress());
             et_city.setText(applicationFormResultPOJO.getaCity());
             et_state.setText(applicationFormResultPOJO.getaState());
             et_zip_code.setText(applicationFormResultPOJO.getaZipCode());
             et_country.setText(applicationFormResultPOJO.getaCountry());
             et_qualification.setText(applicationFormResultPOJO.getaQualification());
-            et_clinic_addr.setText(applicationFormResultPOJO.getaClinic());
+            et_clinic_addr.setText(applicationFormResultPOJO.getaCollege());
             et_comments.setText(applicationFormResultPOJO.getaComment());
 
         }
@@ -139,8 +139,8 @@ public class AddApplicationFormActivity extends AppCompatActivity implements Web
             @Override
             public void onClick(View v) {
                 if (ValidateEdits(et_first_name,et_last_name,et_email,et_mobile,
-                        et_city_date,et_amount,et_name_of_bank,et_present_addr,et_city,
-                        et_state,et_zip_code,et_country,et_qualification,et_last_institute)) {
+                        et_city_date,et_amount,et_present_addr,et_city,
+                        et_state,et_zip_code,et_country,et_qualification)) {
 
                     if(applicationFormResultPOJO==null){
                         addApplicationForm(true);
@@ -158,11 +158,12 @@ public class AddApplicationFormActivity extends AppCompatActivity implements Web
         ArrayList<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
         nameValuePairs.add(new BasicNameValuePair("a_c_id", studentCourseResultPOJO.getScCid()));
         nameValuePairs.add(new BasicNameValuePair("a_s_id", studentCourseResultPOJO.getScSid()));
-        nameValuePairs.add(new BasicNameValuePair("a_course", spinner_items[spinner_course.getSelectedItemPosition()]));
+        nameValuePairs.add(new BasicNameValuePair("a_course", courcesResultPOJO.getC_comt()));
         nameValuePairs.add(new BasicNameValuePair("a_first_name", et_first_name.getText().toString()));
         nameValuePairs.add(new BasicNameValuePair("a_middle_name", et_middle_name.getText().toString()));
         nameValuePairs.add(new BasicNameValuePair("a_last_name", et_last_name.getText().toString()));
         nameValuePairs.add(new BasicNameValuePair("a_email", et_email.getText().toString()));
+        nameValuePairs.add(new BasicNameValuePair("a_mobile", et_mobile.getText().toString()));
         nameValuePairs.add(new BasicNameValuePair("a_city_date", et_city_date.getText().toString()));
         nameValuePairs.add(new BasicNameValuePair("a_transtionid", et_trans_id.getText().toString()));
         nameValuePairs.add(new BasicNameValuePair("a_amount", et_amount.getText().toString()));
@@ -225,6 +226,7 @@ public class AddApplicationFormActivity extends AppCompatActivity implements Web
 
     public void parseUdateApplicationFormData(String response){
         Log.d(TagUtils.getTag(),"update form data:-"+response);
+        finish();
     }
 
     public void parseApplicationFormdata(String response){

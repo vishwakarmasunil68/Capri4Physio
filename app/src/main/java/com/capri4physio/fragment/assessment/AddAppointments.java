@@ -408,18 +408,18 @@ int status;
             });
 
 
-//                SavePreferences(KEY_SAVED_RADIO_BUTTON_INDEX, pos);
+//                SavePreferences(KEY_SAVED_RADIO_BUTTON_INDEX, therapist_id);
 
-               /* switch (pos) {
+               /* switch (therapist_id) {
 
                     case 0:
                          selection = (String) rb_firstvisit.getText();
-String radiobutton1=String.valueOf(pos);
+String radiobutton1=String.valueOf(therapist_id);
                         Toast.makeText(getApplicationContext(),selection,Toast.LENGTH_LONG).show();
                         break;
                     case 1:
                         selection = (String) rb_followup.getText();
-                        String radiobutton2=String.valueOf(pos);
+                        String radiobutton2=String.valueOf(therapist_id);
                         Toast.makeText(getApplicationContext(),selectionfol1,Toast.LENGTH_LONG).show();
 
                         break;

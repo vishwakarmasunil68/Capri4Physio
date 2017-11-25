@@ -34,7 +34,7 @@ import java.util.Map;
  * Created by Emobi-Android-002 on 7/13/2016.
  */
 public class ViewAppoinmentsPatientFragment extends BaseFragment{
-    String JsonURL = "http://oldmaker.com/fijiyo/index.php/users/getappointmentlist";
+    String JsonURL = "http://caprispine.in/fijiyo/index.php/users/getappointmentlist";
     public static final String KEY_PATIENTID = "patient_id";
     public static Viewpatientinlist viewpatientinlist;
     public static ArrayList<InfoApps1> contactDetails1;

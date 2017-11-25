@@ -2,6 +2,8 @@ package com.capri4physio.fragment.assessment;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -88,6 +90,14 @@ public class AddPhysicalExamFragment extends BaseFragment implements HttpUrlList
             assessmentType = getArguments().getString(KEY_TYPE);
         }
 
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        AppCompatActivity activity = (AppCompatActivity) getActivity();
+        ActionBar actionBar = activity.getSupportActionBar();
+        actionBar.setTitle("Physical Exam");
     }
 
     @Override

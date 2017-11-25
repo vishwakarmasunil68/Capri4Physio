@@ -178,10 +178,7 @@ public class MyClinicFragment extends BaseFragment implements HttpUrlListener {
 
             default:
                 AppLog.e("Capri4Physio", "UNKNOW RESPONSE - " + id);
-
         }
-
-
     }
 
     @Override

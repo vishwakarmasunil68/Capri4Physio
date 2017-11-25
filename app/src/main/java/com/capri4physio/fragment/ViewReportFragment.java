@@ -3,7 +3,6 @@ package com.capri4physio.fragment;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -17,11 +16,11 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.capri4physio.R;
-import com.capri4physio.fragment.assessment.HttpULRConnect;
+import com.capri4physio.activity.NotesPrintActivity;
+import com.capri4physio.activity.ViewCaseReportActivity;
+import com.capri4physio.activity.ViewPatientWalletReportActivity;
 import com.capri4physio.net.ApiConfig;
 import com.capri4physio.util.AppPreferences;
-
-import org.json.JSONObject;
 
 import viewreport.ViewIncomeTreatmentwiseReport;
 
@@ -53,14 +52,16 @@ public class ViewReportFragment extends BaseFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-       /* mList = new ArrayList<>();
-        mAdapter =new UsersAdapter(getActivity(), mList, this);*/
-        if (AppPreferences.getInstance(getActivity().getApplicationContext()).getUserType().equals("1")) {
-            IteamList = new String[]{"Case Report"};
+        if (AppPreferences.getInstance(getActivity().getApplicationContext()).getUserType().equals("4")) {
+            IteamList = new String[]{"Case Report", "Income Statement", "Income (Treatment Wise)","Income (Therapist Wise)","Income (Patient Wise)", "Expense Report", "Patient Wallet Report","Case Notes Report","Progress Report","Remark Report"};
+//            IteamList = new String[]{"Case Report", "Income Statement", "Income(Treatment Wise)","Income(Therapist Wise)","Income(Patient Wise)", "Expense Report", "Balance Sheet", "Productivity(From Invoice)"};
         } else {
-            IteamList = new String[]{"Case Report", "Income Statement", "Income(Treatment Wise)", "Expense Report ", "Balance Sheet", "Productivity(From Invoice)", "Staff Productivity(Session Wise)"};
+            if (AppPreferences.getInstance(getActivity().getApplicationContext()).getUserType().equals("2")) {
+                IteamList = new String[]{"Case Report","Income","Income (Patient Wise)"};
+            } else {
+                IteamList = new String[]{"Case Report","Income Statement", "Income (Treatment Wise)","Income (Therapist Wise)","Income (Patient Wise)", "Expense Report","Patient Wallet Report","Case Notes Report","Progress Report","Remark Report"};
+            }
         }
-
 
     }
 
@@ -103,59 +104,101 @@ public class ViewReportFragment extends BaseFragment {
             convertView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    int click = (Integer) v.getId();
-                    if (position == 0) {
-                        startActivity(new Intent(getActivity(), ViewCaseReport.class));
-                    } else if (position == 1) {
-                        startActivity(new Intent(getActivity(), ViewIncomeReport.class));
-                    } else if (position == 2) {
-                        startActivity(new Intent(getActivity(), ViewIncomeTreatmentwiseReport.class));
-                    } else if (position == 3) {
-                        startActivity(new Intent(getActivity(), ViewExpenseReport.class));
-                    } else if (position == 4) {
-                        startActivity(new Intent(getActivity(), ViewBalanceReport.class));
-                    }
-                    if (position == 5) {
-                        startActivity(new Intent(getActivity(), ViewStaff_Pro_InvoReport.class));
-                    }
-                    if (position == 6) {
-                        startActivity(new Intent(getActivity(), ViewIncomeSessionwiseReport.class));
-                    }
+                    openScreens(position);
                 }
             });
             return convertView;
         }
     }
 
-    private class CatagoryViewAsynTask extends AsyncTask<String, String, String> {
-        String id, catagoryName;
+    public void openScreens(int position) {
+//        if(AppPreferences.getInstance(getActivity().getApplicationContext()).equals("4")||
+//                AppPreferences.getInstance(getActivity().getApplicationContext()).equals("1")) {
+        Intent intent;
+        if (AppPreferences.getInstance(getActivity().getApplicationContext()).getUserType().equals("4")) {
+            if (position == 0) {
+//                startActivity(new Intent(getActivity(), WebCaseReport.class));
+                startActivity(new Intent(getActivity(), ViewCaseReportActivity.class));
+            } else if (position == 1) {
+                startActivity(new Intent(getActivity(), ViewIncomeReport.class));
+            } else if (position == 2) {
+                startActivity(new Intent(getActivity(), ViewIncomeTreatmentwiseReport.class));
+            } else if(position==3){
+                startActivity(new Intent(getActivity(), ViewIncomeTherapistWise.class));
+            }else if(position==4){
+                startActivity(new Intent(getActivity(), IncomePatientWise.class));
+            }else if (position == 5) {
+                startActivity(new Intent(getActivity(), ViewExpenseReport.class));
+            }
+//            else if (position == 6) {
+//                startActivity(new Intent(getActivity(), ViewStaff_Pro_InvoReport.class));
+//            }
+            else if(position==6){
+                startActivity(new Intent(getActivity(),ViewPatientWalletReportActivity.class));
+            }else if(position==7){
+                intent=new Intent(getActivity(), NotesPrintActivity.class);
+                intent.putExtra("notetype","CASE");
+                startActivity(intent);
+            }else if(position==8){
+                intent=new Intent(getActivity(), NotesPrintActivity.class);
+                intent.putExtra("notetype","PROGRESS");
+                startActivity(intent);
+            }else if(position==9){
+                intent=new Intent(getActivity(), NotesPrintActivity.class);
+                intent.putExtra("notetype","REMARK");
+                startActivity(intent);
+            }
 
-
-        @Override
-        protected String doInBackground(String... params) {
-//            URL url = new URL("23.22.9.33/SongApi/singer.php?action_type=Latest");
-                /*String json = Holder.CATAGOARY_URL;
-                String cont = Html.fromHtml(json).toString();*/
-            String content = HttpULRConnect.getData(GetURL);
-            Log.e("DoInBackGround ---->", String.valueOf(content));
-            return content;
-        }
-
-        @Override
-        protected void onPostExecute(String s) {
-
-            try {
-                Log.e("DoInBackGroundtr", String.valueOf(s));
-                ///     pDialog.dismiss();
-//                Log.e("Post Method Call  here ....", "Method ...");
-                JSONObject jsonobject = new JSONObject(s);
-                String status_msg = jsonobject.getString("status");
-                status = status_msg;
-            } catch (Exception e) {
-                Log.e("error", e.toString());
+        } else {
+            if (AppPreferences.getInstance(getActivity().getApplicationContext()).getUserType().equals("2")) {
+                if (position == 0) {
+                    startActivity(new Intent(getActivity(), ViewCaseReportActivity.class));
+                } else if (position == 1) {
+                    startActivity(new Intent(getActivity(), ViewIncomeTherapistWise.class));
+                } else if (position == 2) {
+                    startActivity(new Intent(getActivity(), IncomePatientWise.class));
+                }
+//                else if(position==3){
+//                    startActivity(new Intent(getActivity(), ViewStaff_Pro_InvoReport.class));
+//                }
+            } else {
+                if (position == 0) {
+                    startActivity(new Intent(getActivity(), ViewCaseReportActivity.class));
+                } else if (position == 1) {
+                    startActivity(new Intent(getActivity(), ViewIncomeReport.class));
+                } else if (position == 2) {
+                    startActivity(new Intent(getActivity(), ViewIncomeTreatmentwiseReport.class));
+                } else if (position == 3) {
+                    startActivity(new Intent(getActivity(), ViewIncomeTherapistWise.class));
+                }else if (position == 4) {
+                    startActivity(new Intent(getActivity(), IncomePatientWise.class));
+                }else if (position == 5) {
+                    startActivity(new Intent(getActivity(), ViewExpenseReport.class));
+                }
+//                else if (position == 6) {
+//                    startActivity(new Intent(getActivity(), ViewStaff_Pro_InvoReport.class));
+//                }
+                else if(position==6){
+                    startActivity(new Intent(getActivity(),ViewPatientWalletReportActivity.class));
+                }else if(position==7){
+                    intent=new Intent(getActivity(), NotesPrintActivity.class);
+                    intent.putExtra("notetype","CASE");
+                    startActivity(intent);
+                }else if(position==8){
+                    intent=new Intent(getActivity(), NotesPrintActivity.class);
+                    intent.putExtra("notetype","PROGRESS");
+                    startActivity(intent);
+                }else if(position==9){
+                    intent=new Intent(getActivity(), NotesPrintActivity.class);
+                    intent.putExtra("notetype","REMARK");
+                    startActivity(intent);
+                }
 
             }
         }
+//            if (position == 6) {
+//                startActivity(new Intent(getActivity(), ViewIncomeSessionwiseReport.class));
+//            }
     }
 
     @Override

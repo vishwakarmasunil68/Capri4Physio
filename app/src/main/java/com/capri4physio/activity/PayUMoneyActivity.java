@@ -139,7 +139,18 @@ public class PayUMoneyActivity extends AppCompatActivity implements WebServicesC
             seat_rem=seat_rem-1;
             nameValuePairs.add(new BasicNameValuePair("c_rem_seat", String.valueOf(seat_rem)));
             int showing_seat=Integer.parseInt(courcesResultPOJO.getC_showing_sheet());
-            showing_seat=showing_seat-1;
+
+            if(showing_seat>1) {
+                showing_seat = showing_seat - 1;
+            }else{
+                if(showing_seat==1){
+                    if(seat_rem>2){
+                        showing_seat=3;
+                    }else{
+                        showing_seat=seat_rem;
+                    }
+                }
+            }
             nameValuePairs.add(new BasicNameValuePair("c_showing_sheet", String.valueOf(showing_seat)));
             nameValuePairs.add(new BasicNameValuePair("c_reg_fees", courcesResultPOJO.getC_reg_fees()));
             nameValuePairs.add(new BasicNameValuePair("c_rem_fees", courcesResultPOJO.getC_rem_fees()));
@@ -147,9 +158,16 @@ public class PayUMoneyActivity extends AppCompatActivity implements WebServicesC
             nameValuePairs.add(new BasicNameValuePair("c_pno", courcesResultPOJO.getC_pno()));
             nameValuePairs.add(new BasicNameValuePair("c_id", courcesResultPOJO.getC_id()));
             new WebServiceBase(nameValuePairs, PayUMoneyActivity.this, UPDATE_COURCE).execute(ApiConfig.update_course_api);
+            sendNotification(studentCourseResultPOJO.getScSid(),courcesResultPOJO.getC_name());
         }catch (Exception e){
             e.printStackTrace();
         }
+    }
+    public void sendNotification(String student_id,String course_name){
+        ArrayList<NameValuePair> arrayList=new ArrayList<>();
+        arrayList.add(new BasicNameValuePair("student_id",student_id));
+        arrayList.add(new BasicNameValuePair("course_name",course_name));
+        new WebServiceBase(arrayList,this,"send_notification").execute(ApiConfig.SEND_NOTIFICATION);
     }
 
     public class AppWebViewClients extends WebViewClient {

@@ -24,13 +24,20 @@ import com.capri4physio.util.ImageUtil;
 import com.capri4physio.util.TagUtils;
 import com.capri4physio.util.Utils;
 
+import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicNameValuePair;
+
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+
+import viewreport.Services.WebServiceBase;
+import viewreport.Services.WebServiceCallBack;
 
 /**
  * Created by emobi5 on 7/2/2016.
  */
-public class MotorActivity1 extends Activity{
+public class MotorActivity1 extends Activity implements WebServiceCallBack{
     EditText ed1,ed2,ed3;
     Button save;
     ProgressDialog pDialog;
@@ -52,10 +59,11 @@ public class MotorActivity1 extends Activity{
                 takeScreenShots(scroll_combined_spine);
                 String main_base64= ImageUtil.encodeTobase64(bitmap);
                 initProgressDialog("Please wait..");
-                addMotorAPi(main_base64);
+                addMotorApi1(main_base64);
             }
         });
         patient_id =getIntent().getStringExtra("patient_id");
+        setTitle("");
     }
 
     public Bitmap takeScreenShots(ScrollView scrollView) {
@@ -80,6 +88,21 @@ public class MotorActivity1 extends Activity{
         else{
             return edit.getText().toString().trim();
         }
+    }
+
+    private void addMotorApi1(final String main_base64){
+        final String name =ValidateEdit(ed1);
+        final String lastName =ValidateEdit(ed2);
+        final String dob =ValidateEdit(ed3);
+        ArrayList<NameValuePair> nameValuePairs=new ArrayList<>();
+        nameValuePairs.add(new BasicNameValuePair("moter_exam_date", Utils.getCurrentDate()));
+        nameValuePairs.add(new BasicNameValuePair("patient_id",patient_id));
+        nameValuePairs.add(new BasicNameValuePair("moter_exam_data",name));
+        nameValuePairs.add(new BasicNameValuePair("moter_exam_data1",lastName));
+        nameValuePairs.add(new BasicNameValuePair("moter_exam_data2",dob));
+        nameValuePairs.add(new BasicNameValuePair("moterexams_images",main_base64));
+
+        new WebServiceBase(nameValuePairs,this,"cervical_api").execute(ApiConfig.SIGNIN_URL);
     }
     private void addMotorAPi(final String main_base64){
         final String name =ValidateEdit(ed1);
@@ -136,5 +159,25 @@ public class MotorActivity1 extends Activity{
         pDialog.setMessage(loading);
         pDialog.setCancelable(false);
         pDialog.show();
+    }
+
+    @Override
+    public void onGetMsg(String[] msg) {
+        String response=msg[1];
+        try {
+            try{
+                pDialog.dismiss();
+            }
+            catch (Exception e){
+                e.toString();
+            }
+            Log.e("result",response);
+            Toast.makeText(MotorActivity1.this,"successfully added", Toast.LENGTH_LONG).show();
+            finish();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        Log.e("Postdat", "" + response.toString());
     }
 }

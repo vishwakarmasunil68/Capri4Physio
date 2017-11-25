@@ -43,6 +43,7 @@ import com.capri4physio.util.Utils;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 
@@ -104,6 +105,7 @@ public class PhysiotheraputicFragment extends BaseFragment implements HttpUrlLis
         }
 
         mList = new ArrayList<>();
+        Collections.reverse(mList);
         mAdapter = new PhysiotheraputicAdapter(getActivity(), mList, this);
     }
 
@@ -161,7 +163,7 @@ public class PhysiotheraputicFragment extends BaseFragment implements HttpUrlLis
             @Override
             public void onClick(View v) {
                 getFragmentManager().popBackStack();
-                HandlerConstant.POP_BACK_HANDLER.sendMessage(HandlerConstant.POP_BACK_HANDLER.obtainMessage(0,"9"));
+                HandlerConstant.POP_BACK_HANDLER.sendMessage(HandlerConstant.POP_BACK_HANDLER.obtainMessage(0,"11"));
             }
         });
         HandlerConstant.POP_INNER_BACK_HANDLER= new Handler(new Handler.Callback() {
@@ -243,18 +245,18 @@ public class PhysiotheraputicFragment extends BaseFragment implements HttpUrlLis
 
     @Override
     public void onPause() {
-        super.onStart();
+        super.onPause();
         Log.e("start","onStart");
         AppCompatActivity activity = (AppCompatActivity) getActivity();
         ActionBar actionBar = activity.getSupportActionBar();
-        actionBar.setTitle("Physiotheraputic Exam");
+        actionBar.setTitle("Assesment");
     }
     @Override
     public void onStart() {
         super.onStart();
         AppCompatActivity activity = (AppCompatActivity) getActivity();
         ActionBar actionBar = activity.getSupportActionBar();
-        actionBar.setTitle("Physiotheraputic Exam");
+        actionBar.setTitle("Physiotherapeutic Diagnosis");
     }
     @Override
     public void onViewItemClick(PhysiotheraputicItem physiotheraputicItem, int position, int actionId) {

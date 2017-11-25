@@ -1,6 +1,8 @@
 package com.capri4physio.activity;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -85,7 +87,8 @@ public class AddAppointmentActivity extends AppCompatActivity implements WebServ
     List<String> arraytime;
     List<Integer> list_removed_position = new ArrayList<>();
     private final String GET_ALL_PATIENTS = "get_all_patients";
-    String branch_code="";
+    String branch_code = "";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -106,7 +109,7 @@ public class AddAppointmentActivity extends AppCompatActivity implements WebServ
 
             }
         });
-        branch_code=AppPreferences.getInstance(getApplicationContext()).getUSER_BRANCH_CODE();
+        branch_code = AppPreferences.getInstance(getApplicationContext()).getUSER_BRANCH_CODE();
         tv_appointment_date.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -145,12 +148,12 @@ public class AddAppointmentActivity extends AppCompatActivity implements WebServ
     @Override
     protected void onResume() {
         super.onResume();
-        Log.d(TagUtils.getTag(),"user id:-"+AppPreferences.getInstance(getApplicationContext()).getUserType());
-        if(AppPreferences.getInstance(getApplicationContext()).getUserType().equals("4")){
+        Log.d(TagUtils.getTag(), "user id:-" + AppPreferences.getInstance(getApplicationContext()).getUserType());
+        if (AppPreferences.getInstance(getApplicationContext()).getUserType().equals("4")) {
             getAllBranches();
             spinner_branch.setVisibility(View.VISIBLE);
             rl_branch.setVisibility(View.VISIBLE);
-        }else{
+        } else {
             spinner_branch.setVisibility(View.GONE);
             rl_branch.setVisibility(View.GONE);
         }
@@ -159,7 +162,7 @@ public class AddAppointmentActivity extends AppCompatActivity implements WebServ
 
     }
 
-    public void getAllBranches(){
+    public void getAllBranches() {
         new GetWebServices(this, GET_ALL_BRANCHES).execute(ApiConfig.GetURL);
     }
 
@@ -168,7 +171,7 @@ public class AddAppointmentActivity extends AppCompatActivity implements WebServ
 //        ArrayList<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
 //        nameValuePairs.add(new BasicNameValuePair("branch_code", branch_code));
 //        new WebServiceBase(nameValuePairs, this, GET_ALL_PATIENTS).execute(ApiConfig.get_all_patients);
-        new GetWebServices(this,GET_ALL_PATIENTS).execute(ApiConfig.get_all_patients);
+        new GetWebServices(this, GET_ALL_PATIENTS).execute(ApiConfig.get_all_patients);
     }
 
     @Override
@@ -200,31 +203,33 @@ public class AddAppointmentActivity extends AppCompatActivity implements WebServ
                 break;
         }
     }
+
     List<BranchPOJO> list_branches;
-    public void getAllBranches(String response){
-        try{
-            JSONArray jsonArray=new JSONArray(response);
-            list_branches=new ArrayList<>();
-            final List<String> branchLists=new ArrayList<>();
-            for(int i=0;i<jsonArray.length();i++){
-                JSONObject jsonObject=jsonArray.optJSONObject(i);
-                BranchPOJO branch_pojo=new BranchPOJO(jsonObject.optString("branch_id"),
+
+    public void getAllBranches(String response) {
+        try {
+            JSONArray jsonArray = new JSONArray(response);
+            list_branches = new ArrayList<>();
+            final List<String> branchLists = new ArrayList<>();
+            for (int i = 0; i < jsonArray.length(); i++) {
+                JSONObject jsonObject = jsonArray.optJSONObject(i);
+                BranchPOJO branch_pojo = new BranchPOJO(jsonObject.optString("branch_id"),
                         jsonObject.optString("branch_name"),
                         jsonObject.optString("branch_code"),
                         jsonObject.optString("branch_status"));
-                branchLists.add(branch_pojo.getBranch_name()+" ("+branch_pojo.getBranch_code()+")");
+                branchLists.add(branch_pojo.getBranch_name() + " (" + branch_pojo.getBranch_code() + ")");
                 list_branches.add(branch_pojo);
             }
-            if(branchLists.size()>0) {
+            if (branchLists.size() > 0) {
                 ArrayAdapter aa = new ArrayAdapter(this, android.R.layout.simple_spinner_item, branchLists);
                 aa.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                 //Setting the ArrayAdapter data on the Spinner
                 spinner_branch.setAdapter(aa);
-                branch_code=list_branches.get(0).getBranch_code();
+                branch_code = list_branches.get(0).getBranch_code();
                 spinner_branch.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                     @Override
                     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                        branch_code=list_branches.get(position).getBranch_code();
+                        branch_code = list_branches.get(position).getBranch_code();
                     }
 
                     @Override
@@ -233,27 +238,29 @@ public class AddAppointmentActivity extends AppCompatActivity implements WebServ
                     }
                 });
             }
-            if(branchLists.size()>0) {
+            if (branchLists.size() > 0) {
                 getAllPatients(list_branches.get(0).getBranch_code());
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
-    public void parseAddAppointments(String response){
-        Log.d(TagUtils.getTag(),"add response:-"+response);
-        try{
+
+    public void parseAddAppointments(String response) {
+        Log.d(TagUtils.getTag(), "add response:-" + response);
+        try {
             JSONObject jsonObject = new JSONObject(response);
 
-            if(jsonObject.optString("success").equals("true")){
+            if (jsonObject.optString("success").equals("true")) {
                 ll_time.setClickable(false);
                 tv_time.setTextColor(Color.RED);
                 Toast.makeText(getApplicationContext(), "Appointment Successfully Added", Toast.LENGTH_LONG).show();
-            }else{
+                finish();
+            } else {
                 Utils.showError(getApplicationContext(), getResources().getString(R.string.error), getResources().getString(R.string.err_clinic));
             }
 
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -329,10 +336,10 @@ public class AddAppointmentActivity extends AppCompatActivity implements WebServ
 
     @Override
     public void onDateSet(DatePickerDialog view, int year, int monthOfYear, int dayOfMonth) {
-        String date="";
-        if((monthOfYear+1)<10){
+        String date = "";
+        if ((monthOfYear + 1) < 10) {
             date = dayOfMonth + "-0" + (monthOfYear + 1) + "-" + year;
-        }else{
+        } else {
             date = dayOfMonth + "-" + (monthOfYear + 1) + "-" + year;
         }
 
@@ -398,7 +405,7 @@ public class AddAppointmentActivity extends AppCompatActivity implements WebServ
                             if (branch_code.equals("")) {
                                 Toast.makeText(activity, "No clinic Branch added by you", Toast.LENGTH_LONG).show();
                             } else {
-                                addAppointment(horizontalList.get(position),branch_code,holder.ll_time,holder.tv_time);
+                                addAppointment(horizontalList.get(position), branch_code, holder.ll_time, holder.tv_time);
                             }
                         } else {
                             Toast.makeText(activity.getApplicationContext(), "Please add reason for appointments first", Toast.LENGTH_LONG).show();
@@ -418,24 +425,68 @@ public class AddAppointmentActivity extends AppCompatActivity implements WebServ
             return horizontalList.size();
         }
     }
+
     LinearLayout ll_time;
     TextView tv_time;
-    public void addAppointment(String time,String branch_code,LinearLayout ll_time,TextView tv_time){
-        ArrayList<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
-        String visit_type="";
-        if(rg_visit_type.getCheckedRadioButtonId()==R.id.rb_first_visit){
-            visit_type="First Visit";
-        }else{
-            visit_type="Follow Up";
+
+    public void addAppointment(String time, String branch_code, LinearLayout ll_time, TextView tv_time) {
+
+        String date = tv_appointment_date.getText().toString();
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm");
+        try {
+            Date booking_date = simpleDateFormat.parse(date + " " + time);
+            if (booking_date.before(new Date())) {
+                ToastClass.showShortToast(getApplicationContext(), "You have selected passed date and time");
+            } else {
+                showAlertForBooking(time, branch_code, ll_time, tv_time);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            ToastClass.showShortToast(getApplicationContext(), "Date and time formats are wrong");
         }
-        this.ll_time=ll_time;
-        this.tv_time=tv_time;
+    }
+
+    public void showAlertForBooking(final String time, final String branch_code, final LinearLayout ll_time, final TextView tv_time) {
+        AlertDialog.Builder builder1 = new AlertDialog.Builder(this);
+        builder1.setMessage("Do you want to book appointment at "+time+" ?");
+        builder1.setCancelable(true);
+
+        builder1.setPositiveButton(
+                "Yes",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.cancel();
+                        bookAppointment(time,branch_code,ll_time,tv_time);
+                    }
+                });
+
+        builder1.setNegativeButton(
+                "No",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.cancel();
+                    }
+                });
+
+        AlertDialog alert11 = builder1.create();
+        alert11.show();
+    }
+    public void bookAppointment(String time, String branch_code, LinearLayout ll_time, TextView tv_time){
+        ArrayList<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
+        String visit_type = "";
+        if (rg_visit_type.getCheckedRadioButtonId() == R.id.rb_first_visit) {
+            visit_type = "First Visit";
+        } else {
+            visit_type = "Follow Up";
+        }
+        this.ll_time = ll_time;
+        this.tv_time = tv_time;
 
         nameValuePairs.add(new BasicNameValuePair("patient_id", userPOJOList.get(spinner_patients.getSelectedItemPosition()).getId()));
-        String user_id=AppPreferences.getInstance(getApplicationContext()).getUserID();
-        if(user_id.equals("1")||user_id.equals("2")||user_id.equals("3")){
+        String user_id = AppPreferences.getInstance(getApplicationContext()).getUserID();
+        if (user_id.equals("1") || user_id.equals("2") || user_id.equals("3")) {
             nameValuePairs.add(new BasicNameValuePair("doctor_id", user_id));
-        }else {
+        } else {
             nameValuePairs.add(new BasicNameValuePair("doctor_id", "138"));
         }
         nameValuePairs.add(new BasicNameValuePair("booking_date", tv_appointment_date.getText().toString()));

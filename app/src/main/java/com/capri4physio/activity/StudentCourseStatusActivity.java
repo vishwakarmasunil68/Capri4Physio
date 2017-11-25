@@ -18,6 +18,7 @@ import android.provider.MediaStore;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.Html;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -63,7 +64,7 @@ import java.util.Date;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class StudentCourseStatusActivity extends AppCompatActivity implements WebServicesCallBack,View.OnClickListener {
+public class StudentCourseStatusActivity extends AppCompatActivity implements WebServicesCallBack, View.OnClickListener {
     private static final String PHOTO_UPLOAD_API = "photo_upload_api";
     private static final String APPLY_COURSE_API = "apply_course_api";
     private static final String GET_APPLICATION_FORM_DATA = "get_application_form_data";
@@ -105,6 +106,8 @@ public class StudentCourseStatusActivity extends AppCompatActivity implements We
     TextView tv_remaining_fees;
     @BindView(R.id.tv_full_fees)
     TextView tv_full_fees;
+    @BindView(R.id.tv_id_card)
+    TextView tv_id_card;
 
     public final static int PHOTO_TYPE = 0;
     public final static int CERTIFICATE_TYPE = 1;
@@ -136,9 +139,9 @@ public class StudentCourseStatusActivity extends AppCompatActivity implements We
         tv_registration_fees.setOnClickListener(this);
         tv_remaining_fees.setOnClickListener(this);
         tv_full_fees.setOnClickListener(this);
+        tv_id_card.setOnClickListener(this);
 
     }
-
 
 
     public void checkStatus() {
@@ -219,11 +222,11 @@ public class StudentCourseStatusActivity extends AppCompatActivity implements We
                 }
             }
 
-            if(studentCourseResultPOJO.getScRemFees().length()>0&&studentCourseResultPOJO.getScRegFees().length()>0
-                    &&studentCourseResultPOJO.getAdminRegFees().equals("true")&&studentCourseResultPOJO.getSc_admin_rem_fees().equals("true")){
+            if (studentCourseResultPOJO.getScRemFees().length() > 0 && studentCourseResultPOJO.getScRegFees().length() > 0
+                    && studentCourseResultPOJO.getAdminRegFees().equals("true") && studentCourseResultPOJO.getSc_admin_rem_fees().equals("true")) {
                 iv_full_fees.setImageResource(R.drawable.ic_approved);
-            }else{
-                if(studentCourseResultPOJO.getScRemFees().length()>0&&studentCourseResultPOJO.getScRegFees().length()>0){
+            } else {
+                if (studentCourseResultPOJO.getScRemFees().length() > 0 && studentCourseResultPOJO.getScRegFees().length() > 0) {
                     iv_full_fees.setImageResource(R.drawable.ic_filled);
                 }
             }
@@ -289,6 +292,7 @@ public class StudentCourseStatusActivity extends AppCompatActivity implements We
                 ApplicationFormResultPOJO applicationFormResultPOJO = new Gson().fromJson(jsonObject.optJSONArray("Result").optJSONObject(0).toString(), ApplicationFormResultPOJO.class);
                 Intent intent = new Intent(StudentCourseStatusActivity.this, AddApplicationFormActivity.class);
                 intent.putExtra("studentcourseresultpojo", studentCourseResultPOJO);
+                intent.putExtra("coursepojo", courcesResultPOJO);
                 intent.putExtra("applicationform", applicationFormResultPOJO);
                 startActivityForResult(intent, APPLICATION_FORM_ACIVITY_RESULT);
             } else {
@@ -437,11 +441,10 @@ public class StudentCourseStatusActivity extends AppCompatActivity implements We
             @Override
             public void onClick(View v) {
                 dialog1.dismiss();
-                if(studentCourseResultPOJO.getScRegFees().length()>0) {
+                if (studentCourseResultPOJO.getScRegFees().length() > 0) {
                     showFeesDialog("rem");
-                }
-                else{
-                    ToastClass.showShortToast(getApplicationContext(),"Please Submit Registration Fees First");
+                } else {
+                    ToastClass.showShortToast(getApplicationContext(), "Please Submit Registration Fees First");
                     showFeesDialog("reg");
                 }
             }
@@ -454,9 +457,10 @@ public class StudentCourseStatusActivity extends AppCompatActivity implements We
             }
         });
     }
+
     @Override
     public void onClick(View v) {
-        switch (v.getId()){
+        switch (v.getId()) {
             case R.id.tv_application_form:
                 checkApplicationFormStatus();
                 break;
@@ -466,15 +470,17 @@ public class StudentCourseStatusActivity extends AppCompatActivity implements We
             case R.id.tv_certificate:
                 showUploadSelectDialog(CERTIFICATE_TYPE);
                 break;
+            case R.id.tv_id_card:
+                showUploadSelectDialog(ID_CARD_TYPE);
+                break;
             case R.id.tv_registration_fees:
                 showFeesDialog("reg");
                 break;
             case R.id.tv_remaining_fees:
-                if(studentCourseResultPOJO.getScRegFees().length()>0) {
+                if (studentCourseResultPOJO.getScRegFees().length() > 0) {
                     showFeesDialog("rem");
-                }
-                else{
-                    ToastClass.showShortToast(getApplicationContext(),"Please Submit Registration Fees First");
+                } else {
+                    ToastClass.showShortToast(getApplicationContext(), "Please Submit Registration Fees First");
                     showFeesDialog("reg");
                 }
                 break;
@@ -499,7 +505,10 @@ public class StudentCourseStatusActivity extends AppCompatActivity implements We
         Button btn_pay_online = (Button) dialog1.findViewById(R.id.btn_pay_online);
         Button btn_cancel = (Button) dialog1.findViewById(R.id.btn_cancel);
         TextView tv_fees = (TextView) dialog1.findViewById(R.id.tv_fees);
+        TextView tv_disclaimer1 = (TextView) dialog1.findViewById(R.id.tv_disclaimer1);
 
+        String disclaimer1="<span><p style='color:#FF0000'>Pay by Cheque/Cash/internet banking(IMPS/NEFT/RTGS) in favor of:</p><p> Capri Institute of Manual Therapy, A/c no: 033005500869 RTGS/NEFT/IFSC code: ICIC0000330. Bank: ICICI bank, Branch: Anand Vihar, Delhi 92(No 3rd partly Charges apply).</p><span><div><span><p style='color:#FF0000'>OR Pay using Credit/Debit Card at the link below through </p><p style='color:#558139'> PayUMoney</p><p>(in addition to fee, 3rd party charges Approx. Rs 800/- apply).</p></span></div>";
+        tv_disclaimer1.setText(Html.fromHtml(disclaimer1));
         switch (type) {
             case "reg":
                 tv_fees.setText("Registration Fees :- " + courcesResultPOJO.getC_reg_fees());
@@ -549,16 +558,16 @@ public class StudentCourseStatusActivity extends AppCompatActivity implements We
                         amount = courcesResultPOJO.getC_rem_fees();
                         break;
                     case "full":
-                        amount=courcesResultPOJO.getC_fees();
+                        amount = courcesResultPOJO.getC_fees();
                         break;
                 }
 
-                String url="http://oldmaker.com/fijiyo/payumoney/PayUMoney_form.php?amount="+amount+
-                        "&name="+name+"&email="+email+"&phone="+phone+"&productinfo="+product;
-                intent.putExtra("url",url);
-                intent.putExtra("studentcourseresultpojo",studentCourseResultPOJO);
-                intent.putExtra("courseresultpojo",courcesResultPOJO);
-                startActivityForResult(intent,105);
+                String url = "http://caprispine.in/payumoney/PayUMoney_form.php?amount=" + amount +
+                        "&name=" + name + "&email=" + email + "&phone=" + phone + "&productinfo=" + product;
+                intent.putExtra("url", url);
+                intent.putExtra("studentcourseresultpojo", studentCourseResultPOJO);
+                intent.putExtra("courseresultpojo", courcesResultPOJO);
+                startActivityForResult(intent, 105);
 
             }
         });
@@ -618,9 +627,9 @@ public class StudentCourseStatusActivity extends AppCompatActivity implements We
 
     public void callApplicationFormApi() {
         ArrayList<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
-        nameValuePairs.add(new BasicNameValuePair("application_id", studentCourseResultPOJO.getScCid()));
+        nameValuePairs.add(new BasicNameValuePair("application_id", studentCourseResultPOJO.getScSapplicationformFill()));
         nameValuePairs.add(new BasicNameValuePair("application_student_id", studentCourseResultPOJO.getScSid()));
-        nameValuePairs.add(new BasicNameValuePair("application_course_id", studentCourseResultPOJO.getScSapplicationformFill()));
+        nameValuePairs.add(new BasicNameValuePair("application_course_id", studentCourseResultPOJO.getScCid()));
         new WebServiceBase(nameValuePairs, this, GET_APPLICATION_FORM_DATA).execute(ApiConfig.get_application_form_api);
     }
 
@@ -757,9 +766,9 @@ public class StudentCourseStatusActivity extends AppCompatActivity implements We
         }
 
         if (requestCode == 105) {
-            if(resultCode == Activity.RESULT_OK){
+            if (resultCode == Activity.RESULT_OK) {
 //                String result=data.getStringExtra("result");
-                this.studentCourseResultPOJO= (StudentCourseResultPOJO) data.getSerializableExtra("result");
+                this.studentCourseResultPOJO = (StudentCourseResultPOJO) data.getSerializableExtra("result");
                 checkStatus();
             }
             if (resultCode == Activity.RESULT_CANCELED) {

@@ -4,13 +4,16 @@
     <group android:checkableBehavior="single">
         <item
             android:id="@+id/nav_camera"
-            android:title="Invite Friends" />
+            android:title="Invite Friends"
+            android:visible="false"/>
         <item
             android:id="@+id/nav_gallery"
-            android:title="Reminder" />
+            android:title="Reminder"
+            android:visible="false"/>
         <item
             android:id="@+id/nav_slideshow"
-            android:title="Feedback" />
+            android:title="Feedback"
+            android:visible="false"/>
         <item
             android:id="@+id/nav_logout"
             android:title="Logout" />

@@ -15,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -59,6 +60,7 @@ public class Patient_listAdapter extends RecyclerView.Adapter<Patient_listAdapte
         ImageView edit,medication,prescription;
         private ImageView mImgLogo, mImgOption,mImgOption_of_cancel;
         private RelativeLayout layout_row;
+        private LinearLayout ll_patient;
         Button status;
         public MyViewHolder(View view) {
             super(view);
@@ -68,6 +70,7 @@ public class Patient_listAdapter extends RecyclerView.Adapter<Patient_listAdapte
             mImgOption = (ImageView)itemView.findViewById(R.id.img_option);
             mImgOption_of_cancel = (ImageView)itemView.findViewById(R.id.img_option_of_cancel);
             layout_row= (RelativeLayout) itemView.findViewById(R.id.layout_row);
+            ll_patient= (LinearLayout) itemView.findViewById(R.id.ll_patient);
 
             options = new DisplayImageOptions.Builder()
                     .showImageOnLoading(R.drawable.ic_action_person)
@@ -104,12 +107,9 @@ public class Patient_listAdapter extends RecyclerView.Adapter<Patient_listAdapte
         final UserItem movie = moviesList.get(position);
 //        String date=movie.getNumber();
 //http://caprispine.in/app/webroot/upload/
-        ImageLoader.getInstance().displayImage(movie.getProfilePic(), holder.mImgLogo, options);
+        ImageLoader.getInstance().displayImage(ApiConfig.PROFILE_PIC_BASE_URL+movie.getProfilePic(), holder.mImgLogo, options);
         holder.title.setText(movie.getName());
-//        Log.d("sunil",""+movie.getData());
         holder.genre.setText(movie.getEmail());
-
-
 
         holder.mImgOption_of_cancel.setOnClickListener(new View.OnClickListener() {
          @Override
@@ -133,19 +133,18 @@ public class Patient_listAdapter extends RecyclerView.Adapter<Patient_listAdapte
 
            }
           });
+        holder.ll_patient.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                p_id=Integer.parseInt(moviesList.get(position).getId());
+                mCallback.onViewItemClick(moviesList.get(position), position, p_id);
+            }
+        });
         holder.mImgOption.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 p_id=Integer.parseInt(moviesList.get(position).getId());
                 mCallback.onViewItemClick(moviesList.get(position), position, p_id);
-                /*String clinicId = AppPreferences.getInstance(ctx).getClinicId();
-                MyClinicPatientFragment fragment = MyClinicPatientFragment.newInstance(clinicId, userItem.getId());
-                FragmentTransaction ft = ctx.getFragmentManager().beginTransaction();
-                ft.add(R.id.fragment_container, fragment);
-                ft.addToBackStack(null);
-                ft.commit();*/
-                Log.d("sunil","clicked");
-//                Toast.makeText(ctx.getApplicationContext(),"clicked",Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -153,8 +152,6 @@ public class Patient_listAdapter extends RecyclerView.Adapter<Patient_listAdapte
         if( AppPreferences.getInstance(ctx).getUserType().equals("3")||AppPreferences.getInstance(ctx).getUserType().equals("1")){
             holder.mImgOption_of_cancel.setVisibility(View.GONE);
         }
-
-
     }
 
 

@@ -3,6 +3,7 @@ package com.capri4physio.model.assessment;
 import com.capri4physio.model.BaseModel;
 import com.google.gson.annotations.SerializedName;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,7 +15,7 @@ import java.util.List;
  * @version 1.0
  * @since 12/24/15.
  */
-public class PainModel extends BaseModel {
+public class PainModel extends BaseModel implements Serializable{
 
     @SerializedName("result")
     public List<PainItem> result = new ArrayList<PainItem>();

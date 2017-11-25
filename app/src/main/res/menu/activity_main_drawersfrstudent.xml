@@ -4,21 +4,28 @@
     <group android:checkableBehavior="single">
         <item
             android:id="@+id/nav_camera"
-            android:title="Reg. details" />
+            android:title="Reg. details"
+            android:visible="false"/>
         <item
             android:id="@+id/nav_gallery"
-            android:title="Payments" />
+            android:title="Payments"
+            android:visible="false"/>
         <item
             android:id="@+id/nav_sMessagelideshow"
-            android:title="Message" />
+            android:title="Message"
+            android:visible="false"/>
         <item
             android:id="@+id/nav_slideshChatow"
-            android:title="Chat"/>
+            android:title="Chat"
+            android:visible="false"/>
         <item
             android:id="@+id/Search"
-            android:title="Search" /><item
+            android:title="Search"
+            android:visible="false"/>
+        <item
             android:id="@+id/Upload"
-            android:title="Upload" />
+            android:title="Upload"
+            android:visible="false"/>
         <item
             android:id="@+id/nav_logout"
             android:title="Logout" />

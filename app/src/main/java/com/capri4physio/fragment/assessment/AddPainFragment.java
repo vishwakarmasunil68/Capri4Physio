@@ -2,6 +2,8 @@ package com.capri4physio.fragment.assessment;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -62,6 +64,14 @@ public class AddPainFragment extends BaseFragment implements HttpUrlListener {
     }
 
     @Override
+    public void onStart() {
+        super.onStart();
+        AppCompatActivity activity = (AppCompatActivity) getActivity();
+        ActionBar actionBar = activity.getSupportActionBar();
+        actionBar.setTitle("Pain Examination");
+    }
+
+    @Override
     public void onPostError(String errMsg, int id) {
 
     }
@@ -95,13 +105,28 @@ public class AddPainFragment extends BaseFragment implements HttpUrlListener {
         }
 
     }
-
+    View rootView;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_add_pain, container, false);
+        this.rootView=rootView;
         initView(rootView);
         setListener();
         return rootView;
+    }
+
+    public String getSpinnerValue(Spinner spinner){
+        try{
+            if(spinner.getSelectedItemPosition()==0){
+                return "";
+            }else {
+                return spinner.getSelectedItem().toString();
+            }
+        }
+        catch (Exception e){
+            e.printStackTrace();
+            return "";
+        }
     }
 
     @Override
@@ -180,6 +205,10 @@ public class AddPainFragment extends BaseFragment implements HttpUrlListener {
         });
     }
 
+    public String getEditValue(EditText editText){
+        return editText.getText().toString();
+    }
+
     private void addApiCall() {
 
         if (Utils.isNetworkAvailable(getActivity())) {
@@ -187,19 +216,20 @@ public class AddPainFragment extends BaseFragment implements HttpUrlListener {
             try {
                 JSONObject params = new JSONObject();
                 params.put(ApiConfig.PATIENT_ID, patientId);
-                params.put(ApiConfig.ASSESSMENT_TYPE, assessmentType);
+                params.put(ApiConfig.ASSESSMENT_TYPE, "Pain");
                 params.put(ApiConfig.DATE, Utils.getCurrentDate());
-                params.put(ApiConfig.PAIN_SIDE, mPain_Site.getText().toString());
-                params.put(ApiConfig.PAIN_DURATION, mPain_Duration.getText().toString());
-                params.put(ApiConfig.TRIGGER_POINT, mTrigger_Point.getText().toString());
-                params.put(ApiConfig.PAIN_LOCATION, mSide_Location.getText().toString());
-                params.put(ApiConfig.SEVERITY_PAIN, severity_pain);
-                params.put(ApiConfig.PRESURE_PAIN, threshold_pain);
-                params.put(ApiConfig.PAIN_NATURE, mPain_Nature.getText().toString());
-                params.put(ApiConfig.PAIN_ONSET, mPain_Onset.getText().toString());
-                params.put(ApiConfig.DIURNAL_VARIATION, dinural_variation);
-                params.put(ApiConfig.AGGRAVATING_FACTORS, mAggravative_Factors.getText().toString());
-                params.put(ApiConfig.RELIEVING_FACTORS, mReliving_Factors.getText().toString());
+                params.put(ApiConfig.PAIN_SIDE, getEditValue((EditText) rootView.findViewById(R.id.edtxt_painsite)));
+                params.put(ApiConfig.SEVERITY_PAIN, getSpinnerValue((Spinner) rootView.findViewById(R.id.spinersvierity_pain)));
+                params.put(ApiConfig.PRESURE_PAIN, "");
+                params.put(ApiConfig.THRESHOLD_SITE, getSpinnerValue((Spinner) rootView.findViewById(R.id.presure_pain)));
+                params.put(ApiConfig.PAIN_NATURE, getEditValue((EditText) rootView.findViewById(R.id.edtxt_painnature)));
+                params.put(ApiConfig.PAIN_ONSET, getEditValue((EditText) rootView.findViewById(R.id.edtxt_painonset)));
+                params.put(ApiConfig.PAIN_DURATION, getEditValue((EditText) rootView.findViewById(R.id.edtxt_painduration)));
+                params.put(ApiConfig.PAIN_LOCATION, getEditValue((EditText) rootView.findViewById(R.id.edtxt_painside)));
+                params.put(ApiConfig.DIURNAL_VARIATION, ((Spinner)rootView.findViewById(R.id.spinnervariation)).getSelectedItem().toString());
+                params.put(ApiConfig.TRIGGER_POINT, getEditValue((EditText) rootView.findViewById(R.id.edtxt_trigger)));
+                params.put(ApiConfig.AGGRAVATING_FACTORS, getEditValue((EditText) rootView.findViewById(R.id.edtxt_aggravating)));
+                params.put(ApiConfig.RELIEVING_FACTORS,getEditValue((EditText) rootView.findViewById(R.id.edtxt_relieving)));
 
 
                 new UrlConnectionTask(getActivity(), ApiConfig.ADD_ASSESSMENT_URL, ApiConfig.ID1, true, params, BaseModel.class, this).execute("");

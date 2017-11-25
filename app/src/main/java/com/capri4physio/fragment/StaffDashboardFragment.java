@@ -17,19 +17,20 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
 import com.capri4physio.R;
 import com.capri4physio.Services.LocationService;
+import com.capri4physio.activity.AddPatientWalletAmount;
 import com.capri4physio.activity.ChatUserActivity;
 import com.capri4physio.activity.CourseActivity;
 import com.capri4physio.activity.ManageAppointmentActivity;
 import com.capri4physio.activity.ScheduleActivity;
 import com.capri4physio.activity.TherapistActivity;
 import com.capri4physio.activity.TreatmentActivity;
-import com.capri4physio.addbranch.AddBranchHeadGFragment;
+import com.capri4physio.addbranch.BranchListFragment;
 import com.capri4physio.listener.FragmentListener;
 import com.capri4physio.util.AppPreferences;
 import com.capri4physio.util.TagUtils;
@@ -49,8 +50,9 @@ public class StaffDashboardFragment extends BaseFragment {
     private View Report;
     private View Billing;
     private View rl_course;
+    private View rl_amount;
     ProgressDialog pDialog;
-    private View Expense,rl_therapist;
+    private View Expense, rl_therapist;
     ImageView img_chat;
 
     /**
@@ -99,15 +101,15 @@ public class StaffDashboardFragment extends BaseFragment {
                 }
             }
         } else {
-            if(AppPreferences.getInstance(getActivity().getApplicationContext()).getUserType().equals("2")){
+            if (AppPreferences.getInstance(getActivity().getApplicationContext()).getUserType().equals("2")) {
                 rootView = inflater.inflate(R.layout.fragment_doctor_dashboard, container, false);
-                if(!isMyServiceRunning(LocationService.class)){
+                if (!isMyServiceRunning(LocationService.class)) {
                     getActivity().startService(new Intent(getActivity(), LocationService.class));
                 }
 
-                Log.d(TagUtils.getTag(),"device token:-"+AppPreferences.GetDeviceToken(getActivity().getApplicationContext()));
+                Log.d(TagUtils.getTag(), "device token:-" + AppPreferences.GetDeviceToken(getActivity().getApplicationContext()));
 
-            }else{
+            } else {
                 rootView = inflater.inflate(R.layout.fragment_staff_dashboard, container, false);
             }
 
@@ -121,6 +123,7 @@ public class StaffDashboardFragment extends BaseFragment {
         setHasOptionsMenu(true);
         return rootView;
     }
+
     private boolean isMyServiceRunning(Class<?> serviceClass) {
         ActivityManager manager = (ActivityManager) getActivity().getSystemService(Context.ACTIVITY_SERVICE);
         for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
@@ -147,37 +150,37 @@ public class StaffDashboardFragment extends BaseFragment {
         rl_therapist = (View) view.findViewById(R.id.rl_therapist);
         addbranch = (RelativeLayout) view.findViewById(R.id.addbranch);
         rl_course = (RelativeLayout) view.findViewById(R.id.rl_course);
+        rl_amount = (RelativeLayout) view.findViewById(R.id.rl_amount);
 
-        try{
-            View rl_appointment=view.findViewById(R.id.rl_appointment);
+        try {
+            View rl_appointment = view.findViewById(R.id.rl_appointment);
             rl_appointment.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     startActivity(new Intent(getActivity(), ManageAppointmentActivity.class));
                 }
             });
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
-        try{
-            View rl_treatment=view.findViewById(R.id.rl_treatment);
+        try {
+            View rl_treatment = view.findViewById(R.id.rl_treatment);
             rl_treatment.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     startActivity(new Intent(getActivity(), TreatmentActivity.class));
                 }
             });
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
         if (AppPreferences.getInstance(getActivity()).getUserType().equals("4")) {
-            message.setVisibility(View.VISIBLE);
+//            message.setVisibility(View.VISIBLE);
 
             addbranch.setVisibility(View.VISIBLE);
         }
-        if(img_chat1!=null) {
+        if (img_chat1 != null) {
             img_chat1.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -186,7 +189,7 @@ public class StaffDashboardFragment extends BaseFragment {
                     startActivity(intent);
                 }
             });
-        }else{
+        } else {
             img_chat.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -210,8 +213,17 @@ public class StaffDashboardFragment extends BaseFragment {
                     startActivity(new Intent(getActivity(), TherapistActivity.class));
                 }
             });
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        catch (Exception e){
+        try {
+            rl_amount.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    startActivity(new Intent(getActivity(), AddPatientWalletAmount.class));
+                }
+            });
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -234,13 +246,12 @@ public class StaffDashboardFragment extends BaseFragment {
 
                 //setting custom layout to dialog
                 dialog.setContentView(R.layout.cusotm_dialogopt);
-                dialog.setTitle("Select -type");
-                LinearLayout OPD = (LinearLayout) dialog.findViewById(R.id.OPD);
+                dialog.setTitle("Select Pateints");
                 dialog.setCancelable(true);
-                LinearLayout Homevisit = (LinearLayout) dialog.findViewById(R.id.hvisit);
+                Button btn_opd= (Button) dialog.findViewById(R.id.btn_opd);
+                Button btn_hv= (Button) dialog.findViewById(R.id.btn_hv);
 
-
-                Homevisit.setOnClickListener(new View.OnClickListener() {
+                btn_hv.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         indexing = false;
@@ -249,7 +260,7 @@ public class StaffDashboardFragment extends BaseFragment {
                     }
                 });
 
-                OPD.setOnClickListener(new View.OnClickListener() {
+                btn_opd.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         indexing = true;
@@ -284,25 +295,16 @@ public class StaffDashboardFragment extends BaseFragment {
                     viewclinic();
                 }
             });
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         schedule.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-//                createDevice("");
                 startActivity(new Intent(getActivity(), ScheduleActivity.class));
             }
         });
 
-//        img_chat.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                initProgressDialog("Please wait...");
-//                registerApiCall();
-//            }
-//        });
 
         Report.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -427,7 +429,12 @@ public class StaffDashboardFragment extends BaseFragment {
     }
 
     private void addbranch() {
-        AddBranchHeadGFragment fragment = AddBranchHeadGFragment.newInstance();
+//        AddBranchHeadGFragment fragment = AddBranchHeadGFragment.newInstance();
+//        FragmentTransaction ft = getFragmentManager()     .beginTransaction();
+//        ft.replace(R.id.fragment_container, fragment);
+//        ft.addToBackStack(null);
+//        ft.commit();
+        BranchListFragment fragment = new BranchListFragment();
         FragmentTransaction ft = getFragmentManager().beginTransaction();
         ft.replace(R.id.fragment_container, fragment);
         ft.addToBackStack(null);
@@ -456,6 +463,8 @@ public class StaffDashboardFragment extends BaseFragment {
 //        super.onBackPressed();
         exit();
     }
+
+
 
     private void exit() {
 

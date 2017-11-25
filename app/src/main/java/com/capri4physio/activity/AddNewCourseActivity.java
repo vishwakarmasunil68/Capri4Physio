@@ -175,12 +175,21 @@ public class AddNewCourseActivity extends AppCompatActivity implements WebServic
 
     @Override
     public void onDateSet(DatePickerDialog view, int year, int monthOfYear, int dayOfMonth) {
-        String date="";
+
+        String day="";
+        String month="";
+
         if((monthOfYear+1)<10){
-            date = dayOfMonth + "-0" + (monthOfYear + 1) + "-" + year;
+            month="0" + (monthOfYear + 1);
         }else{
-            date = dayOfMonth + "-" + (monthOfYear + 1) + "-" + year;
+            month=String.valueOf((monthOfYear + 1));
         }
+        if(dayOfMonth<10){
+            day="0" + dayOfMonth;
+        }else{
+            day=String.valueOf(dayOfMonth);
+        }
+        String date=day+"-"+month+"-"+year;
         if (is_from_date) {
             et_from_date.setText(date);
         } else {

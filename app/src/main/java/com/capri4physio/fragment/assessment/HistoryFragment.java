@@ -28,6 +28,7 @@ import android.widget.Button;
 import com.capri4physio.R;
 import com.capri4physio.adapter.assessment.HistoryAdapter;
 import com.capri4physio.fragment.BaseFragment;
+import com.capri4physio.fragment.UpdateHistoryFragment;
 import com.capri4physio.listener.HttpUrlListener;
 import com.capri4physio.listener.ViewItemClickListener;
 import com.capri4physio.model.BaseModel;
@@ -99,14 +100,14 @@ public class HistoryFragment extends BaseFragment implements HttpUrlListener, Vi
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        setHasOptionsMenu(true);
         if (getArguments() != null) {
             patientId = getArguments().getString(KEY_PATIENT_ID);
             assessmentType = getArguments().getString(KEY_TYPE);
         }
 
         mList = new ArrayList<>();
-        mAdapter = new HistoryAdapter(getActivity(), mList, this);
+        mAdapter = new HistoryAdapter(getActivity(),this, mList, this);
     }
 
     @Override
@@ -178,7 +179,13 @@ public class HistoryFragment extends BaseFragment implements HttpUrlListener, Vi
         ft.addToBackStack(null);
         ft.commit();
     }
-
+    public void callHistoryEdit(HistoryItem historyItem){
+        FragmentTransaction ft = getFragmentManager().beginTransaction();
+        UpdateHistoryFragment addHistoryFragment = UpdateHistoryFragment.newInstance(patientId, assessmentType,historyItem);
+        ft.replace(R.id.fragment_container, addHistoryFragment);
+        ft.addToBackStack(null);
+        ft.commit();
+    }
 
     /**
      * @return none
@@ -289,10 +296,9 @@ public class HistoryFragment extends BaseFragment implements HttpUrlListener, Vi
     @Override
     public void onPause() {
         super.onPause();
-        Log.e("start", "onStart");
         AppCompatActivity activity = (AppCompatActivity) getActivity();
         ActionBar actionBar = activity.getSupportActionBar();
-        actionBar.setTitle("History Exam");
+        actionBar.setTitle("Assessment");
     }
 
     @Override
@@ -315,7 +321,7 @@ public class HistoryFragment extends BaseFragment implements HttpUrlListener, Vi
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
-        getActivity().getMenuInflater().inflate(R.menu.main, menu);
+//        getActivity().getMenuInflater().inflate(R.menu.main, menu);
     }
 
     /**

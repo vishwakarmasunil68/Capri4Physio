@@ -125,11 +125,16 @@ public class AddTherapistActivity extends AppCompatActivity implements WebServic
     Button btn_from_select;
     @BindView(R.id.btn_to_time)
     Button btn_to_time;
+    @BindView(R.id.btn_dob)
+    Button btn_dob;
+    @BindView(R.id.btn_doj)
+    Button btn_doj;
 
 
     List<BranchPOJO> branchPOJOList = new ArrayList<>();
 
     boolean from_select = true;
+    boolean is_dob = true;
 
     DoctorResultPOJO doctorResultPOJO;
 
@@ -144,12 +149,14 @@ public class AddTherapistActivity extends AppCompatActivity implements WebServic
         getSupportActionBar().setHomeButtonEnabled(true);
 
         doctorResultPOJO = (DoctorResultPOJO) getIntent().getSerializableExtra("doctor");
-
+        if (doctorResultPOJO != null) {
+            et_password.setVisibility(View.GONE);
+        }
 
         btn_save.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (checkEditValidation(et_first_name, et_last_name, et_email, et_password, et_age, et_dob, et_date_of_joining, et_date_of_contract, et_address, et_city, et_pin_code, et_degree, et_institute, et_university, et_average, et_organization, et_designation, et_experience_duration, et_height, et_weight, et_to_time, et_from_time)) {
+                if (checkEditValidation(et_first_name, et_last_name, et_email, et_password, et_age, et_dob, et_date_of_joining, et_to_time, et_from_time)) {
                     callAddTherapistAPI();
                 } else {
                     ToastClass.showShortToast(getApplicationContext(), "Please fill all fields properly");
@@ -176,6 +183,35 @@ public class AddTherapistActivity extends AppCompatActivity implements WebServic
                         .newInstance(AddTherapistActivity.this, Calendar.HOUR_OF_DAY, Calendar.MINUTE, true);
 
                 tpd.show(getFragmentManager(), "To Time Picker");
+            }
+        });
+
+        btn_dob.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                is_dob = true;
+                Calendar now = Calendar.getInstance();
+                DatePickerDialog dpd = DatePickerDialog.newInstance(
+                        AddTherapistActivity.this,
+                        now.get(Calendar.YEAR),
+                        now.get(Calendar.MONTH),
+                        now.get(Calendar.DAY_OF_MONTH)
+                );
+                dpd.show(getFragmentManager(), "Date of Birth");
+            }
+        });
+        btn_doj.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                is_dob = false;
+                Calendar now = Calendar.getInstance();
+                DatePickerDialog dpd = DatePickerDialog.newInstance(
+                        AddTherapistActivity.this,
+                        now.get(Calendar.YEAR),
+                        now.get(Calendar.MONTH),
+                        now.get(Calendar.DAY_OF_MONTH)
+                );
+                dpd.show(getFragmentManager(), "Date of Joining");
             }
         });
 
@@ -287,22 +323,22 @@ public class AddTherapistActivity extends AppCompatActivity implements WebServic
         }
     }
 
-    public void parseUpdateTherapist(String response){
-        Log.d(TagUtils.getTag(),"update therapist response:-"+response);
-        try{
-            JSONObject jsonObject=new JSONObject(response);
-            if(jsonObject.optString("Success").equals("true")){
-                ToastClass.showShortToast(getApplicationContext(),"Therapist Updated Successfully");
+    public void parseUpdateTherapist(String response) {
+        Log.d(TagUtils.getTag(), "update therapist response:-" + response);
+        try {
+            JSONObject jsonObject = new JSONObject(response);
+            if (jsonObject.optString("Success").equals("true")) {
+                ToastClass.showShortToast(getApplicationContext(), "Therapist Updated Successfully");
                 Intent returnIntent = new Intent();
-                returnIntent.putExtra("result","ok");
-                setResult(Activity.RESULT_OK,returnIntent);
+                returnIntent.putExtra("result", "ok");
+                setResult(Activity.RESULT_OK, returnIntent);
                 finish();
-            }else{
-                ToastClass.showShortToast(getApplicationContext(),"Updation Failed");
+            } else {
+                ToastClass.showShortToast(getApplicationContext(), "Updation Failed");
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
-            ToastClass.showShortToast(getApplicationContext(),"Something went wrong");
+            ToastClass.showShortToast(getApplicationContext(), "Something went wrong");
         }
 
     }
@@ -392,22 +428,24 @@ public class AddTherapistActivity extends AppCompatActivity implements WebServic
 
         btn_save.setText("Update");
     }
+
     DatabaseReference root = FirebaseDatabase.getInstance().getReference().getRoot();
+
     public void parseAddTherapistApi(String response) {
         Log.d(TagUtils.getTag(), "response:-" + response);
         try {
-            JSONObject jsonObject=new JSONObject(response);
+            JSONObject jsonObject = new JSONObject(response);
             if (jsonObject.optString("Success").equals("true")) {
                 ToastClass.showShortToast(getApplicationContext(), "Therapist Added Successfully");
-                JSONObject resultObj=jsonObject.optJSONObject("Result");
-                String id=resultObj.optString("id");
-                String name=resultObj.optString("first_name")+" "+resultObj.optString("last_name");
-                String email=resultObj.optString("email");
-                String address=resultObj.optString("address");
-                String device_token=resultObj.optString("device_token");
-                String branch=resultObj.optString("bracch_code");
+                JSONObject resultObj = jsonObject.optJSONObject("Result");
+                String id = resultObj.optString("id");
+                String name = resultObj.optString("first_name") + " " + resultObj.optString("last_name");
+                String email = resultObj.optString("email");
+                String address = resultObj.optString("address");
+                String device_token = resultObj.optString("device_token");
+                String branch = resultObj.optString("bracch_code");
 
-                TherapistPOJO therapistPOJO=new TherapistPOJO(id,name,email,address,device_token,branch);
+                TherapistPOJO therapistPOJO = new TherapistPOJO(id, name, email, address, device_token, branch);
                 root.child("therapist").child(therapistPOJO.getId()).setValue(therapistPOJO);
 
                 finish();
@@ -422,13 +460,24 @@ public class AddTherapistActivity extends AppCompatActivity implements WebServic
 
     @Override
     public void onDateSet(DatePickerDialog view, int year, int monthOfYear, int dayOfMonth) {
-        String date = "";
-        if ((monthOfYear + 1) > 9) {
-            date = dayOfMonth + "-" + (monthOfYear + 1) + "-" + year;
-        } else {
-            date = dayOfMonth + "-0" + (monthOfYear + 1) + "-" + year;
+        String day = "";
+        String month = "";
+        if(dayOfMonth>9){
+            day=String.valueOf(dayOfMonth);
+        }else{
+            day="0"+dayOfMonth;
         }
-
+        if ((monthOfYear + 1) > 9) {
+            month=String.valueOf(monthOfYear+1);
+        } else {
+            month="0"+(monthOfYear+1);
+        }
+        String date=day+"-"+month+"-"+year;
+        if(is_dob){
+            et_dob.setText(date);
+        }else{
+            et_date_of_joining.setText(date);
+        }
     }
 
     @Override

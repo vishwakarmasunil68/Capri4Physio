@@ -32,6 +32,7 @@ import com.android.volley.toolbox.Volley;
 import com.capri4physio.R;
 import com.capri4physio.net.ApiConfig;
 import com.capri4physio.util.ImageUtil;
+import com.capri4physio.util.TagUtils;
 import com.capri4physio.util.Utils;
 
 import java.io.File;
@@ -48,8 +49,8 @@ public class FragementActi3 extends AppCompatActivity {
 	private ViewPager viewPager;
 	Button savebtn;
 	ProgressDialog pDialog;
-	Android frag_left;
-	Windows frag_right;
+	AnkleFragment frag_left;
+	AnkleFragment frag_right;
 	Ios frag_parameters;
 	public static String patient_id,Anklelt1,Anklelt2,Anklelt3,Anklelt4,Anklelt5,Anklelp1,Anklelp2,Anklelp3,Anklelp4,Anklelp5,Anklelr1,Anklelr2,Anklelr3,Anklelr4,Anklelr5,Anklert1,Anklert2,Anklert3,Anklert4,Anklert5,Anklerp1,Anklerp2,Anklerp3,
 			Anklerp4,Anklerp5,Anklerr1,Anklerr2,Anklerr3,Anklerr4,Anklerr5;
@@ -82,6 +83,7 @@ public class FragementActi3 extends AppCompatActivity {
 
 		patient_id =getIntent().getStringExtra("patient_id");
 		viewPager.setOffscreenPageLimit(2);
+		getSupportActionBar().setTitle("Ankle Exam");
     }
 
 
@@ -228,36 +230,36 @@ public class FragementActi3 extends AppCompatActivity {
 		}
 	}
 	private void addMotorAPi(final String base_string){
-		Anklelt1 = Android.spinner1.getSelectedItem().toString().trim();
-		Anklelt2 = Android.spinner2.getSelectedItem().toString().trim();
-		Anklelt3  = Android.spinner3.getSelectedItem().toString().trim();
-		Anklelt4  = Android.spinner4.getSelectedItem().toString().trim();
-		Anklelt5=Android.spinner5.getSelectedItem().toString().trim();
-		Anklelp1 = Android.spinner8.getSelectedItem().toString().trim();
-		Anklelp2 = Android.spinner9.getSelectedItem().toString().trim();
-		Anklelp3 = Android.spinner10.getSelectedItem().toString().trim();
-		Anklelp4 = Android.spinner11.getSelectedItem().toString().trim();
-		Anklelp5=Android.spinner12.getSelectedItem().toString().trim();
-		Anklelr1 =ValidateEdit(Android.editText1);
-		Anklelr2 =ValidateEdit(Android.editText2);
-		Anklelr3 =ValidateEdit(Android.editText3);
-		Anklelr4 =ValidateEdit(Android.editText4);
-		Anklelr5 =ValidateEdit(Android.editText5);
-		Anklert1=	ValidateSpinner(Windows.spinner1);
-		Anklert2 =ValidateSpinner(Windows.spinner2);
-		Anklert3= ValidateSpinner(Windows.spinner3);
-		Anklert4 = ValidateSpinner(Windows.spinner4);
-		Anklert5 =ValidateSpinner(Windows.spinner5);
-		Anklerp1 = ValidateSpinner(Windows.spinner8);
-		Anklerp2 = ValidateSpinner(Windows.spinner9);
-		Anklerp3 = ValidateSpinner(Windows.spinner10);
-		Anklerp4 =ValidateSpinner(Windows.spinner11);
-		Anklerp5=ValidateSpinner(Windows.spinner12);
-		Anklerr1=ValidateEdit(Windows.editText1);
-		Anklerr2=ValidateEdit(Windows.editText2);
-		Anklerr3=ValidateEdit(Windows.editText3);
-		Anklerr4=ValidateEdit(Windows.editText4);
-		Anklerr5=ValidateEdit(Windows.editText5);
+//		Anklelt1 = Android.spinner1.getSelectedItem().toString().trim();
+//		Anklelt2 = Android.spinner2.getSelectedItem().toString().trim();
+//		Anklelt3  = Android.spinner3.getSelectedItem().toString().trim();
+//		Anklelt4  = Android.spinner4.getSelectedItem().toString().trim();
+//		Anklelt5=Android.spinner5.getSelectedItem().toString().trim();
+//		Anklelp1 = Android.spinner8.getSelectedItem().toString().trim();
+//		Anklelp2 = Android.spinner9.getSelectedItem().toString().trim();
+//		Anklelp3 = Android.spinner10.getSelectedItem().toString().trim();
+//		Anklelp4 = Android.spinner11.getSelectedItem().toString().trim();
+//		Anklelp5=Android.spinner12.getSelectedItem().toString().trim();
+//		Anklelr1 =ValidateEdit(Android.editText1);
+//		Anklelr2 =ValidateEdit(Android.editText2);
+//		Anklelr3 =ValidateEdit(Android.editText3);
+//		Anklelr4 =ValidateEdit(Android.editText4);
+//		Anklelr5 =ValidateEdit(Android.editText5);
+//		Anklert1=	ValidateSpinner(Windows.spinner1);
+//		Anklert2 =ValidateSpinner(Windows.spinner2);
+//		Anklert3= ValidateSpinner(Windows.spinner3);
+//		Anklert4 = ValidateSpinner(Windows.spinner4);
+//		Anklert5 =ValidateSpinner(Windows.spinner5);
+//		Anklerp1 = ValidateSpinner(Windows.spinner8);
+//		Anklerp2 = ValidateSpinner(Windows.spinner9);
+//		Anklerp3 = ValidateSpinner(Windows.spinner10);
+//		Anklerp4 =ValidateSpinner(Windows.spinner11);
+//		Anklerp5=ValidateSpinner(Windows.spinner12);
+//		Anklerr1=ValidateEdit(Windows.editText1);
+//		Anklerr2=ValidateEdit(Windows.editText2);
+//		Anklerr3=ValidateEdit(Windows.editText3);
+//		Anklerr4=ValidateEdit(Windows.editText4);
+//		Anklerr5=ValidateEdit(Windows.editText5);
         /*Log.e("date",date);
         Log.e("time",time);
         Log.e("reason",reason);*/
@@ -291,38 +293,32 @@ public class FragementActi3 extends AppCompatActivity {
 				Map<String,String> params = new HashMap<String, String>();
 				params.put("moter_exam_date", Utils.getCurrentDate());
 				params.put("patient_id", patient_id);
-				params.put("moter_examankle_left_tone1", Anklelt1);
-				params.put("moter_examankle_left_tone2", Anklelt2);
-				params.put("moter_examankle_left_tone3", Anklelt3);
-				params.put("moter_examankle_left_tone4",Anklelt4);
-				params.put("moter_examankle_left_tone5",Anklelt5);
-				params.put("moter_examankle_left_power1",Anklelp1);
-				params.put("moter_examankle_left_power2", Anklelp2);
-				params.put("moter_examankle_left_power3", Anklelp3);
-				params.put("moter_examankle_left_power4", Anklelp4);
-				params.put("moter_examankle_left_power5", Anklelp5);
-				params.put("moter_examankle_left_rom1", Anklelr1);
-				params.put("moter_examankle_left_rom2",Anklelr2);
-				params.put("moter_examankle_left_rom3",Anklelr3);
-				params.put("moter_examankle_left_rom4",Anklelr4);
-				params.put("moter_examankle_left_rom5", Anklelr5);
-				params.put("moter_examankle_right_tone1",Anklert1);
-				params.put("moter_examankle_right_tone2", Anklert2);
-				params.put("moter_examankle_right_tone3", Anklert3);
-				params.put("moter_examankle_right_tone4", Anklert4);
-				params.put("moter_examankle_right_tone5",Anklert5);
-				params.put("moter_examankle_right_power1", Anklerp1);
-				params.put("moter_examankle_right_power2", Anklerp2);
-				params.put("moter_examankle_right_power3", Anklerp3);
-				params.put("moter_examankle_right_power4", Anklerp4);
-				params.put("moter_examankle_right_power5", Anklerp5);
-				params.put("moter_examankle_right_rom1", Anklerr1);
-				params.put("moter_examankle_right_rom2", Anklerr2);
-				params.put("moter_examankle_right_rom3", Anklerr3);
-				params.put("moter_examankle_right_rom4", Anklerr4);
-				params.put("moter_examankle_right_rom5", Anklerr5);
+				params.put("moter_examankle_left_tone1", Utils.getToneSpinnerData(getApplicationContext(),frag_left.getSpinner1().getSelectedItemPosition()));
+				params.put("moter_examankle_left_tone2", Utils.getToneSpinnerData(getApplicationContext(),frag_left.getSpinner2().getSelectedItemPosition()));
+				params.put("moter_examankle_left_tone3", Utils.getToneSpinnerData(getApplicationContext(),frag_left.getSpinner3().getSelectedItemPosition()));
+				params.put("moter_examankle_left_tone4",Utils.getToneSpinnerData(getApplicationContext(),frag_left.getSpinner4().getSelectedItemPosition()));
+				params.put("moter_examankle_left_power1",Utils.getPowerSpinnerData(getApplicationContext(),frag_left.getSpinner8().getSelectedItemPosition()));
+				params.put("moter_examankle_left_power2", Utils.getPowerSpinnerData(getApplicationContext(),frag_left.getSpinner9().getSelectedItemPosition()));
+				params.put("moter_examankle_left_power3", Utils.getPowerSpinnerData(getApplicationContext(),frag_left.getSpinner10().getSelectedItemPosition()));
+				params.put("moter_examankle_left_power4", Utils.getPowerSpinnerData(getApplicationContext(),frag_left.getSpinner11().getSelectedItemPosition()));
+				params.put("moter_examankle_left_rom1", Utils.getEdittextData(frag_left.getEdtxt_1()));
+				params.put("moter_examankle_left_rom2",Utils.getEdittextData(frag_left.getEdtxt_1()));
+				params.put("moter_examankle_left_rom3",Utils.getEdittextData(frag_left.getEdtxt_1()));
+				params.put("moter_examankle_left_rom4",Utils.getEdittextData(frag_left.getEdtxt_1()));
+				params.put("moter_examankle_right_tone1",Utils.getToneSpinnerData(getApplicationContext(),frag_right.getSpinner1().getSelectedItemPosition()));
+				params.put("moter_examankle_right_tone2", Utils.getToneSpinnerData(getApplicationContext(),frag_right.getSpinner2().getSelectedItemPosition()));
+				params.put("moter_examankle_right_tone3", Utils.getToneSpinnerData(getApplicationContext(),frag_right.getSpinner3().getSelectedItemPosition()));
+				params.put("moter_examankle_right_tone4", Utils.getToneSpinnerData(getApplicationContext(),frag_right.getSpinner4().getSelectedItemPosition()));
+				params.put("moter_examankle_right_power1", Utils.getPowerSpinnerData(getApplicationContext(),frag_right.getSpinner8().getSelectedItemPosition()));
+				params.put("moter_examankle_right_power2", Utils.getPowerSpinnerData(getApplicationContext(),frag_right.getSpinner9().getSelectedItemPosition()));
+				params.put("moter_examankle_right_power3", Utils.getPowerSpinnerData(getApplicationContext(),frag_right.getSpinner10().getSelectedItemPosition()));
+				params.put("moter_examankle_right_power4", Utils.getPowerSpinnerData(getApplicationContext(),frag_right.getSpinner11().getSelectedItemPosition()));
+				params.put("moter_examankle_right_rom1", Utils.getEdittextData(frag_right.getEdtxt_1()));
+				params.put("moter_examankle_right_rom2", Utils.getEdittextData(frag_right.getEdtxt_1()));
+				params.put("moter_examankle_right_rom3", Utils.getEdittextData(frag_right.getEdtxt_1()));
+				params.put("moter_examankle_right_rom4", Utils.getEdittextData(frag_right.getEdtxt_1()));
 				params.put("moterexamsankle_image", base_string);
-
+				Log.d(TagUtils.getTag(),"ankle params:-"+params.toString());
 				return params;
 			}
 
@@ -333,8 +329,8 @@ public class FragementActi3 extends AppCompatActivity {
 	}
 
 	private void setupViewPager(ViewPager viewPager) {
-		frag_left=new Android();
-		frag_right=new Windows();
+		frag_left=new AnkleFragment();
+		frag_right=new AnkleFragment();
 //		frag_parameters=new Ios();
 		ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
 		adapter.addFrag(frag_left, "Left");

@@ -34,7 +34,6 @@ import java.net.URLConnection;
 import java.util.ArrayList;
 
 public class WebServices {
-    public static final String GET_ALL_INFO_URL = "http://www.funhabits.co/aaha/login.php";
     public static final String ADD_STAFF_URL = ApiConfig.BASE_URL+"users/addstaff";
 
 

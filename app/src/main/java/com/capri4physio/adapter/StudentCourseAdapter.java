@@ -72,7 +72,7 @@ public class StudentCourseAdapter extends RecyclerView.Adapter<StudentCourseAdap
     public void onBindViewHolder(final MyViewHolder holder, final int position) {
 
         holder.tv_cource_name.setText(horizontalList.get(position).getC_name());
-        holder.tv_seat_available.setText(horizontalList.get(position).getC_rem_seat() + " seats available");
+        holder.tv_seat_available.setText(horizontalList.get(position).getC_showing_sheet() + " seats available");
         holder.tv_dates.setText(horizontalList.get(position).getC_from_date() + " - " + horizontalList.get(position).getC_to_date());
         holder.tv_place.setText(horizontalList.get(position).getC_place());
         holder.ll_cource.setOnClickListener(new View.OnClickListener() {
@@ -90,7 +90,7 @@ public class StudentCourseAdapter extends RecyclerView.Adapter<StudentCourseAdap
                             SelectCourseActivity selectCourseActivity = (SelectCourseActivity) activity;
                             selectCourseActivity.checkAppliedCourse(horizontalList.get(position));
                         } else {
-                            ToastClass.showShortToast(activity.getApplicationContext(), "No Seat available");
+                            ToastClass.showShortToast(activity.getApplicationContext(), "No Seat Available you may apply for waiting list please contact 9063121212");
                         }
                     } catch (Exception e) {
                         e.printStackTrace();

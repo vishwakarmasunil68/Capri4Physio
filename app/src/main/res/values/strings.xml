@@ -208,15 +208,17 @@
         <!--<item>Examination</item>-->
         <item>Chief Complaint</item>
         <item>History</item>
-        <item>Pain</item>
+        <item>Pain Examination</item>
         <item>Physical Examination</item>
         <item>Motor Examination</item>
         <item>Sensory Examination</item>
+        <item>Neurological Examination</item>
+        <item>NDT,NTP Examination</item>
+        <item>Special &amp; ADL Examination</item>
         <item>Investigation</item>
-        <item>Neuro Examination</item>
-        <item>Physiotheraputic diagnosis</item>
-        <item>Medical diagnosis</item>
-        <item>Treatment advice</item>
+        <item>Physiotherapeutic Diagnosis</item>
+        <item>Medical Diagnosis</item>
+        <item>Treatment Plan</item>
         <item>Treatment Given</item>
         <item>Case Notes</item>
         <item>Progress Notes</item>
@@ -297,7 +299,7 @@
     </string-array>
 
     <string-array name="severity_of_pain">
-        <item>Severity of pain</item>
+        <item>Severity of Pain</item>
         <item>0</item>
         <item>1</item>
         <item>2</item>
@@ -311,7 +313,7 @@
         <item>10</item>
     </string-array>
     <string-array name="pressure_pain_threshold">
-        <item>Pressure pain Threshold(Algometry)Site</item>
+        <item>Pain Threshold (Pressure)</item>
         <item>0</item>
         <item>1</item>
         <item>2</item>
@@ -367,7 +369,34 @@
         <item>4</item>
         <item>5</item>
     </string-array>
+    <string-array name="neuro_glass_eye">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+    </string-array>
+    <string-array name="neuro_glass_verbal">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+    </string-array>
+    <string-array name="neuro_glass_motor">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+    </string-array>
     <string name="country_prompt">Choose a country</string>
+
+    <string-array name="visit_type">
+        <item>Opd</item>
+        <item>Home Patient</item>
+    </string-array>
+
     <string name="album_view">Multiple Select photos</string>
     <string-array name="Time_Pickersheet">
         <item>8:00</item>

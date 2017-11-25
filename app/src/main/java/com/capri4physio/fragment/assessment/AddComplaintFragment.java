@@ -6,6 +6,8 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioButton;
@@ -17,9 +19,20 @@ import com.capri4physio.model.BaseModel;
 import com.capri4physio.net.ApiConfig;
 import com.capri4physio.task.UrlConnectionTask;
 import com.capri4physio.util.AppLog;
+import com.capri4physio.util.TagUtils;
 import com.capri4physio.util.Utils;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 
 /**
@@ -33,7 +46,7 @@ public class AddComplaintFragment extends AppCompatActivity implements HttpUrlLi
 
     private Button mBtnSave;
     private RadioGroup mRadioGroup;
-    private EditText mEdtxtProblem;
+    private AutoCompleteTextView mEdtxtProblem;
     private EditText mEdtxtProblemDuration;
 
     private static final String KEY_PATIENT_ID = "patient_id";
@@ -41,7 +54,7 @@ public class AddComplaintFragment extends AppCompatActivity implements HttpUrlLi
     private String patientId = "";
     private String assessmentType = "";
     private String hadProblemBefore = "NO";
-
+    private DatabaseReference root;
 
     /**
      * Use this factory method to create a new instance of
@@ -58,32 +71,31 @@ public class AddComplaintFragment extends AppCompatActivity implements HttpUrlLi
         fragment.setArguments(bundle);
         return fragment;
     }*/
-
     public AddComplaintFragment() {
         // Required empty public constructor
     }
 
-
+    ArrayAdapter<String> arrayAdapter;
+    List<String> list_doses = new ArrayList<>();
+    Set<String> set_doses= new HashSet<>();
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-setContentView(R.layout.fragment_add_complaint);
+        setContentView(R.layout.fragment_add_complaint);
+        root = FirebaseDatabase.getInstance().getReference().getRoot();
         mBtnSave = (Button) findViewById(R.id.btn_save);
         mRadioGroup = (RadioGroup) findViewById(R.id.radio_group);
-        mEdtxtProblem = (EditText) findViewById(R.id.edtxt_problem);
+        mEdtxtProblem = (AutoCompleteTextView) findViewById(R.id.edtxt_problem);
         mEdtxtProblemDuration = (EditText) findViewById(R.id.edtxt_how_long);
-            patientId = getIntent().getStringExtra(KEY_PATIENT_ID);
-            assessmentType = getIntent().getStringExtra(KEY_TYPE);
-        Log.e("getreult",patientId +" "+assessmentType);
+        patientId = getIntent().getStringExtra(KEY_PATIENT_ID);
+        assessmentType = getIntent().getStringExtra(KEY_TYPE);
+        Log.e("getreult", patientId + " " + assessmentType);
 
-
-
-
-
+        getSupportActionBar().setTitle("Chief Complaint");
         mBtnSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-               addApiCall();
+                addApiCall();
             }
         });
 
@@ -99,9 +111,34 @@ setContentView(R.layout.fragment_add_complaint);
                 }
             }
         });
+
+        arrayAdapter = new ArrayAdapter<String>(this,
+                android.R.layout.select_dialog_item, list_doses);
+        //Used to specify minimum number of
+        //characters the user has to type in order to display the drop down hint.
+        mEdtxtProblem.setThreshold(1);
+        //Setting adapter
+        mEdtxtProblem.setAdapter(arrayAdapter);
+
+        root.child("chiefcomplaint").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                list_doses.clear();
+                set_doses.clear();
+                for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
+                    Log.d(TagUtils.getTag(), "doses datashapshot:-" + postSnapshot.getValue());
+                    set_doses.add(postSnapshot.getValue().toString());
+                }
+                list_doses.addAll(set_doses);
+                arrayAdapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.e(TagUtils.getTag(), "Failed to read app title value.", databaseError.toException());
+            }
+        });
     }
-
-
 
 
     private void addApiCall() {
@@ -121,6 +158,9 @@ setContentView(R.layout.fragment_add_complaint);
 
                 new UrlConnectionTask(AddComplaintFragment.this, ApiConfig.ADD_ASSESSMENT_URL, ApiConfig.ID1, true, params, BaseModel.class, this).execute("");
 
+                String mGroupId = root.push().getKey();
+                root.child("chiefcomplaint").child(mGroupId).setValue(mEdtxtProblem.getText().toString());
+
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -139,8 +179,8 @@ setContentView(R.layout.fragment_add_complaint);
                 BaseModel baseModel = (BaseModel) response;
                 AppLog.i("Capri4Physio", "Patient Response : " + baseModel.getStatus());
                 Intent returnIntent = new Intent();
-                returnIntent.putExtra("result","2");
-                setResult(Activity.RESULT_OK,returnIntent);
+                returnIntent.putExtra("result", "2");
+                setResult(Activity.RESULT_OK, returnIntent);
                 finish();
 //                getFragmentManager().popBackStack();
 
@@ -153,8 +193,6 @@ setContentView(R.layout.fragment_add_complaint);
     public void onPostError(String errMsg, int id) {
 
     }
-
-
 
 
     /**

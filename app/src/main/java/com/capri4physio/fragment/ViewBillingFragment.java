@@ -19,6 +19,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -28,8 +29,9 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import com.capri4physio.Invoice.ViewInvoice;
 import com.capri4physio.R;
+import com.capri4physio.activity.CreateInvoiceActivity;
+import com.capri4physio.activity.ViewInvoiceActivity;
 import com.capri4physio.adapter.UsersAdapter;
 import com.capri4physio.fragment.assessment.HttpULRConnect;
 import com.capri4physio.fragment.assessment.InfoApps;
@@ -86,7 +88,7 @@ public class ViewBillingFragment extends BaseFragment {
     private int itemPosition;
     public static ArrayList<String> staffid ;
     public static ArrayList<InfoApps> staffarray,patientspinneraray;
-
+    RelativeLayout rl_create_invoice,rl_view_invoice;
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
@@ -122,7 +124,9 @@ public class ViewBillingFragment extends BaseFragment {
         add = (TextView) rootView.findViewById(R.id.addnew);
         manage = (TextView) rootView.findViewById(R.id.viewnew);
         view = (ImageView) rootView.findViewById(R.id.viewgst);
+        rl_view_invoice = (RelativeLayout) rootView.findViewById(R.id.rl_view_invoice);
         edit_gst = (ImageView) rootView.findViewById(R.id.edit_gst);
+        rl_create_invoice = (RelativeLayout) rootView.findViewById(R.id.rl_create_invoice);
         patientspinneraray = new ArrayList<InfoApps>();
         staffarray = new ArrayList<InfoApps>();
         patientidarray = new ArrayList<>();
@@ -131,20 +135,20 @@ public class ViewBillingFragment extends BaseFragment {
         new CatagoryUrlAsynTask2().execute();
         new CatagoryUrlAsynTask().execute();
         new CatagoryUrlAsynTask1().execute();
-        add.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-//                viewbilling();
-                startActivity(new Intent(getActivity(), BillingActivity.class));
-            }
-        });
-        manage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent i = new Intent(getActivity(), ViewInvoice.class);
-                startActivity(i);
-            }
-        });
+//        add.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+////                viewbilling();
+//                startActivity(new Intent(getActivity(), BillingActivity.class));
+//            }
+//        });
+//        manage.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                Intent i = new Intent(getActivity(), ViewInvoice.class);
+//                startActivity(i);
+//            }
+//        });
 
 
         view.setOnClickListener(new View.OnClickListener() {
@@ -202,6 +206,19 @@ public class ViewBillingFragment extends BaseFragment {
                     }
                 });
                 dialog.show();
+            }
+        });
+
+        rl_create_invoice.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(getActivity(), CreateInvoiceActivity.class));
+            }
+        });
+        rl_view_invoice.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(getActivity(), ViewInvoiceActivity.class));
             }
         });
 

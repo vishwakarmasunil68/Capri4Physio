@@ -20,7 +20,6 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.capri4physio.Invoice.InfoApps1;
 import com.capri4physio.R;
-import com.capri4physio.fragment.ViewIncomeReport;
 import com.capri4physio.fragment.assessment.HttpULRConnect;
 import com.capri4physio.net.ApiConfig;
 
@@ -59,8 +58,8 @@ public class ViewIncomeStatemntReport extends AppCompatActivity {
         LinearLayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         mRecyclerView.setLayoutManager(layoutManager);
-        fromdate= ViewIncomeReport.ed1.getText().toString();
-        to_date=ViewIncomeReport.ed2.getText().toString();
+//        fromdate= ViewIncomeReport.ed1.getText().toString();
+//        to_date=ViewIncomeReport.ed2.getText().toString();
         txt_total = (TextView) findViewById(R.id.txt_total);
         report8();
     }
@@ -151,7 +150,7 @@ public class ViewIncomeStatemntReport extends AppCompatActivity {
                 Map<String,String> params = new HashMap<String, String>();
                 params.put("invo_start_date", fromdate);
                 params.put("invo_end_date", to_date);
-                params.put("branch_code", ViewIncomeReport.item);
+//                params.put("branch_code", ViewIncomeReport.item);
 //                Toast.makeText(UserStatement.this, username +"success", Toast.LENGTH_LONG).show();
 //                Toast.makeText(UserStatement.this, ema +"success", Toast.LENGTH_LONG).show();
                 return params;

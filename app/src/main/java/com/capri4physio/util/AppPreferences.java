@@ -50,6 +50,9 @@ public class AppPreferences {
     private final String USER_CLINIC_ID = "clincId";
     private final String USER_DETAILS = "userDetails";
     private final String OTP_VERIFIED = "otpverified";
+    private final String START_TIME = "start_time";
+    private final String END_TIME = "end_time";
+    private final String TREATMENT_TYPE = "treatment_type";
 
     private AppPreferences(Context ctx) {
         sPreferences = ctx.getSharedPreferences(JOBSWOLF_PREFERENCES, MODE_PRIVATE);
@@ -141,7 +144,12 @@ public class AppPreferences {
     public String getFirstName() {
         return sPreferences.getString(FIRST_NAME, "");
     }
-
+    public String getSTART_TIME() {
+        return sPreferences.getString(START_TIME, "");
+    }
+    public String getEND_TIME() {
+        return sPreferences.getString(END_TIME, "");
+    }
     public void setFirstName(String firstName) {
         sEditor.putString(FIRST_NAME, firstName);
         sEditor.commit();
@@ -305,6 +313,10 @@ public String getaddress() {
         return sPreferences.getString(USER_DETAILS, "");
     }
 
+    public String getTREATMENT_TYPE() {
+        return sPreferences.getString(TREATMENT_TYPE, "");
+    }
+
     public void setUserDetails(String userDetails) {
         sEditor.putString(USER_DETAILS, userDetails);
         sEditor.commit();
@@ -318,6 +330,18 @@ public String getaddress() {
 
     public void setOTPVerified(boolean isverified){
         sEditor.putBoolean(OTP_VERIFIED, isverified);
+        sEditor.commit();
+    }
+    public void setStartTime(String startTime){
+        sEditor.putString(START_TIME, startTime);
+        sEditor.commit();
+    }
+    public void setEND_TIME(String end_time){
+        sEditor.putString(END_TIME, end_time);
+        sEditor.commit();
+    }
+    public void setTreatmentType(String treatmentType){
+        sEditor.putString(TREATMENT_TYPE, treatmentType);
         sEditor.commit();
     }
 

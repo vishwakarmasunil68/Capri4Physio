@@ -2,10 +2,12 @@ package com.capri4physio.model.assessment;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.io.Serializable;
+
 /**
  * Created by prabhunathyadav on 05/06/16.
  */
-public class PainItem {
+public class PainItem implements Serializable{
 
     @SerializedName("id")
     public String id;
@@ -97,5 +99,26 @@ public class PainItem {
 
     public String getDate() {
         return date;
+    }
+
+    @Override
+    public String toString() {
+        return "PainItem{" +
+                "id='" + id + '\'' +
+                ", patientId='" + patientId + '\'' +
+                ", painSide='" + painSide + '\'' +
+                ", severityPain='" + severityPain + '\'' +
+                ", pressurePain='" + pressurePain + '\'' +
+                ", thresholdSite='" + thresholdSite + '\'' +
+                ", painNature='" + painNature + '\'' +
+                ", painOnset='" + painOnset + '\'' +
+                ", painDuration='" + painDuration + '\'' +
+                ", location='" + location + '\'' +
+                ", diurnalVariations='" + diurnalVariations + '\'' +
+                ", triggerPoint='" + triggerPoint + '\'' +
+                ", aggravatingFactors='" + aggravatingFactors + '\'' +
+                ", relievingFactors='" + relievingFactors + '\'' +
+                ", date='" + date + '\'' +
+                '}';
     }
 }

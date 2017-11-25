@@ -2,38 +2,35 @@ package com.capri4physio.addbranch;
 
 import android.app.Activity;
 import android.app.Fragment;
-import android.app.FragmentTransaction;
 import android.app.ProgressDialog;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
-import android.widget.Toast;
 
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
 import com.capri4physio.R;
+import com.capri4physio.Services.WebServiceBaseFragment;
+import com.capri4physio.Services.WebServicesCallBack;
 import com.capri4physio.fragment.BaseFragment;
-import com.capri4physio.fragment.StaffDashboardFragment;
 import com.capri4physio.net.ApiConfig;
-import com.capri4physio.util.Utils;
+import com.capri4physio.util.TagUtils;
+import com.capri4physio.util.ToastClass;
 
+import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONObject;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
 
 
 /**
@@ -41,25 +38,48 @@ import java.util.Map;
  * Use the {@link AddBranchHeadGFragment#newInstance} factory method to
  * create an instance of this fragment.
  *
- * @author  prabhunathy
+ * @author prabhunathy
  * @version 1.0
- * @since   2016-03-31
+ * @since 2016-03-31
  */
-public class AddBranchHeadGFragment extends BaseFragment {
-    String GetURL= ApiConfig.BASE_URL+"users/getuserlist";
-    private EditText edtxt_name;
-    private EditText edtxt_branchcode;
-    private EditText edtxt_mail;
-    private EditText edtxt_password;
-    private Button mSave;
+public class AddBranchHeadGFragment extends BaseFragment implements WebServicesCallBack{
+    private static final String CALL_BRANCH_ADD_API = "call_add_branch_api";
+    String GetURL = ApiConfig.BASE_URL + "users/getuserlist";
+
+    @BindView(R.id.btn_save)
+    Button btn_save;
+    @BindView(R.id.et_name)
+    EditText et_name;
+    @BindView(R.id.et_code)
+    EditText et_code;
+    @BindView(R.id.et_mobile)
+    EditText et_mobile;
+    @BindView(R.id.et_phone)
+    EditText et_phone;
+    @BindView(R.id.et_email)
+    EditText et_email;
+    @BindView(R.id.et_address)
+    EditText et_address;
+    @BindView(R.id.et_city)
+    EditText et_city;
+    @BindView(R.id.et_state)
+    EditText et_state;
+    @BindView(R.id.et_country)
+    EditText et_country;
+    @BindView(R.id.et_pincode)
+    EditText et_pincode;
+    @BindView(R.id.et_website)
+    EditText et_website;
+
+
     Spinner spinnerbranchloca;
     private ProgressDialog pDialog;
-
 
 
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
+     *
      * @return A new instance of fragment LoginFragment.
      */
     public static AddBranchHeadGFragment newInstance() {
@@ -71,83 +91,72 @@ public class AddBranchHeadGFragment extends BaseFragment {
         // Required empty public constructor
     }
 
-    String[] location ={"Gurgaon","Sant Parmanand Hospital","Greater Kailash 1","Karkarduma"};
+    String[] location = {"Gurgaon", "Sant Parmanand Hospital", "Greater Kailash 1", "Karkarduma"};
+
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
     }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-       /* mList = new ArrayList<>();
-        mAdapter =new UsersAdapter(getActivity(), mList, this);*/
-
-
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.add_cbranhc, container, false);
-        edtxt_name= (EditText) rootView.findViewById(R.id.edtxt_name);
-        edtxt_mail= (EditText) rootView.findViewById(R.id.edtxt_mail);
-        edtxt_branchcode= (EditText) rootView.findViewById(R.id.edtxt_branchcode);
-        edtxt_password= (EditText) rootView.findViewById(R.id.edtxt_password);
-        mSave= (Button) rootView.findViewById(R.id.btn_save);
-        spinnerbranchloca= (Spinner) rootView.findViewById(R.id.spinnerbranchloca);
-
-        mSave.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (!isValid()) {
-
-                    return;
-                } else {
-                    if (Utils.isNetworkAvailable(getActivity())) {
-                        initProgressDialog("Please wait..");
-                        addExpenseApiCall();
-                    } else {
-                        Utils.showMessage(getActivity(), getResources().getString(R.string.err_network));
-                    }
-                }
-            }
-        });
-
-        ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<String>(
-                getActivity(), android.R.layout.simple_dropdown_item_1line, location);
-        spinnerbranchloca.setAdapter(spinnerArrayAdapter);
-        spinnerbranchloca.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-              switch (position){
-                  case 0:
-                      edtxt_branchcode.setText("GGN");
-                break;
-
-                  case 1:
-                      edtxt_branchcode.setText("SPH");
-                      break;
-
-                  case 2:
-                      edtxt_branchcode.setText("GK1");
-                      break;
-
-                  case 3:
-                      edtxt_branchcode.setText("KKD");
-                      break;
-              }
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
-        });
+        ButterKnife.bind(this, rootView);
         return rootView;
     }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+    }
+
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        btn_save.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(ValidateEdits(et_address,et_city,et_code,et_country,et_email,et_state,et_mobile,et_name,et_phone,et_pincode,et_website)){
+                    if(et_code.getText().length()==6) {
+                        callAddBranchAPI();
+                    }else{
+                        ToastClass.showShortToast(getActivity().getApplicationContext(),"Branch code length must be of 6 characters");
+                    }
+                }else{
+                    ToastClass.showShortToast(getActivity().getApplicationContext(),"Please Enter All Fields Properly");
+                }
+            }
+        });
+    }
+
+    public void callAddBranchAPI(){
+        ArrayList<NameValuePair> nameValuePairArrayList=new ArrayList<>();
+        nameValuePairArrayList.add(new BasicNameValuePair("branch_name",et_name.getText().toString()));
+        nameValuePairArrayList.add(new BasicNameValuePair("branch_code",et_code.getText().toString()));
+        nameValuePairArrayList.add(new BasicNameValuePair("mobile",et_mobile.getText().toString()));
+        nameValuePairArrayList.add(new BasicNameValuePair("phone",et_phone.getText().toString()));
+        nameValuePairArrayList.add(new BasicNameValuePair("email",et_email.getText().toString()));
+        nameValuePairArrayList.add(new BasicNameValuePair("address",et_address.getText().toString()));
+        nameValuePairArrayList.add(new BasicNameValuePair("city",et_city.getText().toString()));
+        nameValuePairArrayList.add(new BasicNameValuePair("state",et_state.getText().toString()));
+        nameValuePairArrayList.add(new BasicNameValuePair("country",et_country.getText().toString()));
+        nameValuePairArrayList.add(new BasicNameValuePair("pincode",et_pincode.getText().toString()));
+        nameValuePairArrayList.add(new BasicNameValuePair("website",et_website.getText().toString()));
+        new WebServiceBaseFragment(nameValuePairArrayList,getActivity(),this,CALL_BRANCH_ADD_API).execute(ApiConfig.ADD_BRANCH_HEAD);
+    }
+
+    public boolean ValidateEdits(EditText... editTexts){
+        for(EditText editText:editTexts){
+            if(editText.getText().length()==0){
+                return false;
+            }
+        }
+        return true;
     }
 
     @Override
@@ -162,102 +171,7 @@ public class AddBranchHeadGFragment extends BaseFragment {
 
     }
 
-    private void addExpenseApiCall(){
 
-        String  input = edtxt_branchcode.getText().toString();
-
-        final String  input1 = input.replace(" ", "");
-
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, ApiConfig.ADD_BRANCH_HEAD,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        try {
-
-                            pDialog.hide();
-
-                            JSONObject jsonObject = new JSONObject(response);
-                            String branch_status = jsonObject.getString("branch_status");
-                            if (branch_status.equals("success")) {
-                                Toast.makeText(getActivity(), "Record Successfully Added", Toast.LENGTH_LONG).show();
-//                        getActivity().finish();
-                                viewStaff();
-                                Log.e("response", "" + response);
-                            }
-                        else {
-                                Toast.makeText(getActivity(),"Branch code already exist",Toast.LENGTH_LONG).show();
-                            }
-                        }
-                        catch(Exception e){
-                            Log.e("error",e.toString());
-
-                        }
-                    }
-
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-//                        Toast.makeText(StmtActivity.this,error.toString(),Toast.LENGTH_LONG).show();
-                        Log.w("Postdat", "" + error);
-                    }
-                }){
-            @Override
-            protected Map<String,String> getParams(){
-                Map<String,String> params = new HashMap<String, String>();
-//                params.put("first_name", edtxt_name.getText().toString());
-//                params.put("last_name", edtxt_name.getText().toString());
-                params.put("branch_name", edtxt_name.getText().toString());
-                params.put("branch_code", input1.toString());
-                return params;
-            }
-
-        };
-
-        RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
-        requestQueue.add(stringRequest);
-    }
-    private boolean isValid() {
-
-        String cName = edtxt_name.getText().toString().trim();
-        String location = spinnerbranchloca.getSelectedItem().toString().trim();
-        String email =edtxt_mail.getText().toString().trim();
-        String password =edtxt_branchcode.getText().toString().trim();
-
-        if (cName.isEmpty()) {
-            edtxt_name.requestFocus();
-            Utils.showError(getActivity(), getResources().getString(R.string.error), getResources().getString(R.string.b_name));
-            return false;
-        }
-
-
-
-        else if (password.isEmpty()) {
-            edtxt_password.requestFocus();
-            Utils.showError(getActivity(), getResources().getString(R.string.error),
-                    getResources().getString(R.string.err_bc));
-            return false;
-        }
-
-        return true;
-    }
-
-
-
-    private void viewStaff() {
-        getFragmentManager().popBackStack();
-        StaffDashboardFragment fragment = StaffDashboardFragment.newInstance();
-        FragmentTransaction ft = getFragmentManager().beginTransaction();
-        ft.add(R.id.fragment_container, fragment);
-        ft.addToBackStack(null);
-        ft.commit();
-    }
-    private void initProgressDialog(String loading) {
-        pDialog = new ProgressDialog(getActivity());
-        pDialog.setMessage(loading);
-        pDialog.setCancelable(false);
-        pDialog.show();
-    }
     @Override
     public void onPause() {
         super.onPause();
@@ -265,11 +179,37 @@ public class AddBranchHeadGFragment extends BaseFragment {
         ActionBar actionBar = activity.getSupportActionBar();
         actionBar.setTitle("Dashboard");
     }
+
     @Override
     public void onResume() {
         super.onResume();
         AppCompatActivity activity = (AppCompatActivity) getActivity();
         ActionBar actionBar = activity.getSupportActionBar();
         actionBar.setTitle("Add Branch");
+    }
+
+    @Override
+    public void onGetMsg(String[] msg) {
+        String apicall=msg[0];
+        String response=msg[1];
+        switch (apicall){
+            case CALL_BRANCH_ADD_API:
+                parseBranchAResponse(response);
+                break;
+        }
+    }
+    public void parseBranchAResponse(String response){
+        Log.d(TagUtils.getTag(),"response:-"+response);
+        try{
+            if(new JSONObject(response).optString("success").equals("true")){
+                ToastClass.showShortToast(getActivity().getApplicationContext(),"Branch Added");
+                getFragmentManager().popBackStack();
+            }else{
+                ToastClass.showShortToast(getActivity().getApplicationContext(),"Failed to add branch");
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+            ToastClass.showShortToast(getActivity().getApplicationContext(),"Failed to add branch");
+        }
     }
 }

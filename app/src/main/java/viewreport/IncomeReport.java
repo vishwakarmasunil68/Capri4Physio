@@ -13,7 +13,6 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.capri4physio.R;
-import com.capri4physio.fragment.ViewIncomeReport;
 import com.capri4physio.net.ApiConfig;
 
 import org.json.JSONArray;
@@ -32,8 +31,8 @@ public class IncomeReport extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.viewincomerepo);
 
-        fromdate=ViewIncomeReport.ed1.getText().toString();
-        to_date=ViewIncomeReport.ed2.getText().toString();
+//        fromdate=ViewIncomeReport.ed1.getText().toString();
+//        to_date=ViewIncomeReport.ed2.getText().toString();
         report8();
     }
 

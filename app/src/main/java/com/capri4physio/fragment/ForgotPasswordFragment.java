@@ -3,34 +3,42 @@ package com.capri4physio.fragment;
 import android.app.Activity;
 import android.app.Fragment;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 
-
 import com.capri4physio.R;
+import com.capri4physio.Services.WebServiceBaseFragment;
 import com.capri4physio.activity.SplashActivity;
 import com.capri4physio.listener.HttpUrlListener;
 import com.capri4physio.net.ApiConfig;
+import com.capri4physio.util.TagUtils;
+import com.capri4physio.util.ToastClass;
 import com.capri4physio.util.Utils;
 
+import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import viewreport.Services.WebServiceCallBack;
 
 /**
  * A simple {@link Fragment} subclass.
  * Use the {@link ForgotPasswordFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class ForgotPasswordFragment extends BaseFragment {
+public class ForgotPasswordFragment extends BaseFragment implements WebServiceCallBack{
 
+    private static final String CALL_FORGOT_API = "call_forgot_api";
     private EditText mEdtxtEmail;
     private Button mBtnForgotPassword;
-
 
     private HttpUrlListener mListener;
 
@@ -99,15 +107,19 @@ public class ForgotPasswordFragment extends BaseFragment {
 
         if (Utils.isNetworkAvailable(getActivity())) {
 
-            try {
-                JSONObject params = new JSONObject();
-                params.put(ApiConfig.EMAIL, mEdtxtEmail.getText().toString().trim());
+//            try {
+//                JSONObject params = new JSONObject();
+//                params.put(ApiConfig.EMAIL, mEdtxtEmail.getText().toString().trim());
+//
+//                new UrlConnectionTask(getActivity(), ApiConfig.FORGOT_PASSWORD_URL, ApiConfig.ID2, true, params, BaseModel.class, mListener).execute("");
+//
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            }
 
-                //new UrlConnectionTask(getActivity(), ApiConfig.FORGOT_PASSWORD_URL, ApiConfig.ID2, true, params, BaseModel.class, mListener).execute("");
-
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            ArrayList<NameValuePair> nameValuePairs=new ArrayList<>();
+            nameValuePairs.add(new BasicNameValuePair("email",mEdtxtEmail.getText().toString()));
+            new WebServiceBaseFragment(nameValuePairs,getActivity(),this,CALL_FORGOT_API).execute(ApiConfig.FORGOT_PASSWORD_URL);
 
 
         } else {
@@ -142,5 +154,30 @@ public class ForgotPasswordFragment extends BaseFragment {
         }
 
         return true;
+    }
+
+    @Override
+    public void onGetMsg(String[] msg) {
+        String apicall=msg[0];
+        String response=msg[1];
+        switch (apicall){
+            case CALL_FORGOT_API:
+                parseForgotPasswordAPI(response);
+                break;
+        }
+    }
+
+    public void parseForgotPasswordAPI(String response){
+        Log.d(TagUtils.getTag(),"forgot response:-"+response);
+        try{
+            JSONObject jsonObject=new JSONObject(response);
+            if(jsonObject.optString("success").equals("true")){
+                ToastClass.showShortToast(getActivity().getApplicationContext(),jsonObject.optString("message"));
+            }else{
+                ToastClass.showShortToast(getActivity().getApplicationContext(),"Email Not Found");
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 }

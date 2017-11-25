@@ -2,6 +2,8 @@ package com.capri4physio.fragment.assessment;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -49,27 +51,6 @@ public class AddHistoryFragment extends BaseFragment implements HttpUrlListener 
     private static final String KEY_TYPE = "type";
     private String patientId = "";
     private String assessmentType = "";
-//    private String rate1 = "NO";
-//    private String rate2 = "NO";
-//    private String rate3 = "NO";
-//    private String rate4 = "NO";
-//    private String rate5 = "NO";
-//    private String rate6 = "NO";
-//    private String rate7 = "NO";
-//    private String rate8 = "NO";
-//    private String rate9 = "NO";
-//    private String rate10 = "NO";
-//    private String rate11 = "NO";
-//    private String rate12 = "NO";
-//    private String rate13 = "NO";
-//    private String rate14 = "NO";
-//    private String rate15 = "NO";
-//    private String rate16 = "NO";
-//    private String rate17 = "NO";
-//    private String rate18 = "NO";
-//    private String rate19 = "NO";
-//    private String rate20 = "Normal";
-
 
     private String rate1 = "";
     private String rate2 = "";
@@ -129,10 +110,11 @@ public class AddHistoryFragment extends BaseFragment implements HttpUrlListener 
         }
 
     }
-
+    View rootview;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_add_history, container, false);
+        this.rootview=rootView;
         initView(rootView);
         setListener();
         return rootView;
@@ -197,9 +179,9 @@ public class AddHistoryFragment extends BaseFragment implements HttpUrlListener 
                     rate1 = rb.getText().toString();
                 }
             }
-//                dataMovement.timeText.setText(String.valueOf(pos));
+//                dataMovement.timeText.setText(String.valueOf(therapist_id));
 //                dataMovement.timeText.setText("You have selected for blocking time for 10 seconds");
-//                Toast.makeText(getBaseContext(), "Method 1 ID = "+String.valueOf(pos),
+//                Toast.makeText(getBaseContext(), "Method 1 ID = "+String.valueOf(therapist_id),
 //                        Toast.LENGTH_SHORT).show();
 
                 //Method 2 For Getting Index of RadioButton
@@ -221,17 +203,6 @@ public class AddHistoryFragment extends BaseFragment implements HttpUrlListener 
                 if (null != rb && checkedId > -1) {
                     rate2 = rb.getText().toString();
                 }
-//                dataMovement.timeText.setText(String.valueOf(pos));
-//                dataMovement.timeText.setText("You have selected for blocking time for 10 seconds");
-//                Toast.makeText(getBaseContext(), "Method 1 ID = "+String.valueOf(pos),
-//                        Toast.LENGTH_SHORT).show();
-
-                //Method 2 For Getting Index of RadioButton
-//                pos1=rgroup.indexOfChild(findViewById(rgroup.getCheckedRadioButtonId()));
-
-//                Toast.makeText(getBaseContext(), "Method 2 ID = "+String.valueOf(pos1),
-//                        Toast.LENGTH_SHORT).show();
-
             }
         });
         rg3.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
@@ -246,9 +217,9 @@ public class AddHistoryFragment extends BaseFragment implements HttpUrlListener 
                 if (null != rb && checkedId > -1) {
                     rate3 = rb.getText().toString();
                 }
-//                dataMovement.timeText.setText(String.valueOf(pos));
+//                dataMovement.timeText.setText(String.valueOf(therapist_id));
 //                dataMovement.timeText.setText("You have selected for blocking time for 10 seconds");
-//                Toast.makeText(getBaseContext(), "Method 1 ID = "+String.valueOf(pos),
+//                Toast.makeText(getBaseContext(), "Method 1 ID = "+String.valueOf(therapist_id),
 //                        Toast.LENGTH_SHORT).show();
 
                 //Method 2 For Getting Index of RadioButton
@@ -271,9 +242,9 @@ public class AddHistoryFragment extends BaseFragment implements HttpUrlListener 
                 if (null != rb && checkedId > -1) {
                     rate20 = rb.getText().toString();
                 }
-//                dataMovement.timeText.setText(String.valueOf(pos));
+//                dataMovement.timeText.setText(String.valueOf(therapist_id));
 //                dataMovement.timeText.setText("You have selected for blocking time for 10 seconds");
-//                Toast.makeText(getBaseContext(), "Method 1 ID = "+String.valueOf(pos),
+//                Toast.makeText(getBaseContext(), "Method 1 ID = "+String.valueOf(therapist_id),
 //                        Toast.LENGTH_SHORT).show();
 
                 //Method 2 For Getting Index of RadioButton
@@ -296,9 +267,9 @@ public class AddHistoryFragment extends BaseFragment implements HttpUrlListener 
                 if (null != rb && checkedId > -1) {
                     rate4 = rb.getText().toString();
                 }
-//                dataMovement.timeText.setText(String.valueOf(pos));
+//                dataMovement.timeText.setText(String.valueOf(therapist_id));
 //                dataMovement.timeText.setText("You have selected for blocking time for 10 seconds");
-//                Toast.makeText(getBaseContext(), "Method 1 ID = "+String.valueOf(pos),
+//                Toast.makeText(getBaseContext(), "Method 1 ID = "+String.valueOf(therapist_id),
 //                        Toast.LENGTH_SHORT).show();
 
                 //Method 2 For Getting Index of RadioButton
@@ -518,6 +489,21 @@ public class AddHistoryFragment extends BaseFragment implements HttpUrlListener 
 
     }
 
+    public String getselectedRadioText(RadioGroup radioGroup){
+        try {
+            int selectedId = radioGroup.getCheckedRadioButtonId();
+
+            // find the radiobutton by returned id
+            RadioButton radioButton = (RadioButton) rootview.findViewById(selectedId);
+
+            return radioButton.getText().toString();
+        }
+        catch (Exception e){
+            e.printStackTrace();
+            return "";
+        }
+    }
+
 
     private void addApiCall() {
 //        if (!isValid())
@@ -536,29 +522,30 @@ public class AddHistoryFragment extends BaseFragment implements HttpUrlListener 
                 params.put("present_illness", et_present_illness_history.getText().toString().trim());
                 params.put("past_illness", et_past_illness_history.getText().toString().trim());
                 params.put(ApiConfig.DATE, Utils.getCurrentDate());
-                params.put("diabetes", rate1);
-                params.put("blood_pressure", "normal");
+                params.put("diabetes", getselectedRadioText((RadioGroup) rootview.findViewById(R.id.radio_group1)));
+                params.put("blood_pressure", getselectedRadioText((RadioGroup) rootview.findViewById(R.id.radio_groupblood_pressure)));
                 params.put("bp", rate20);
-                params.put("smoking", rate2);
+                params.put("smoking", getselectedRadioText((RadioGroup) rootview.findViewById(R.id.radio_group2)));
+                params.put("pregnancy", getselectedRadioText((RadioGroup) rootview.findViewById(R.id.radio_group3)));
 //                params.put("blood_pressure", rate3);
                 params.put("fever_and_chill", rate4);
-                params.put("heart_diseases", rate5);
-                params.put("bleeding_disorder", rate6);
-                params.put("recent_infection", rate7);
-                params.put("pregnancy", rate8);
-                params.put("htn", rate9);
-                params.put("tb", rate10);
-                params.put("cancer", rate11);
-                params.put("hiv_aids", rate12);
-                params.put("past_surgery", rate13);
-                params.put("allergies", rate14);
-                params.put("osteoporotic", rate15);
-//                params.put("osteoporotic", hadProblemBefore14);
-                params.put("depression", rate16);
-                params.put("hepatitis", rate17);
-                params.put("any_implants", rate18);
-                params.put("hereditary_disease", rate19);
+                params.put("heart_diseases", getselectedRadioText((RadioGroup) rootview.findViewById(R.id.radio_group5)));
+                params.put("bleeding_disorder", getselectedRadioText((RadioGroup) rootview.findViewById(R.id.radio_group6)));
+                params.put("recent_infection", getselectedRadioText((RadioGroup) rootview.findViewById(R.id.radio_group7)));
 
+                params.put("htn", rate9);
+                params.put("tb", getselectedRadioText((RadioGroup) rootview.findViewById(R.id.radio_group10)));
+                params.put("cancer", getselectedRadioText((RadioGroup) rootview.findViewById(R.id.radio_group11)));
+                params.put("hiv_aids", getselectedRadioText((RadioGroup) rootview.findViewById(R.id.radio_group12)));
+                params.put("past_surgery", rate13);
+                params.put("allergies", getselectedRadioText((RadioGroup) rootview.findViewById(R.id.radio_group14)));
+                params.put("osteoporotic", getselectedRadioText((RadioGroup) rootview.findViewById(R.id.radio_group15)));
+//                params.put("osteoporotic", hadProblemBefore14);
+//
+                params.put("hepatitis", rate17);
+                params.put("any_implants", getselectedRadioText((RadioGroup) rootview.findViewById(R.id.radio_group18)));
+                params.put("hereditary_disease", getselectedRadioText((RadioGroup) rootview.findViewById(R.id.radio_group19)));
+                params.put("depression", ((EditText)rootview.findViewById(R.id.et_remark)).getText().toString());
 
 
                 new UrlConnectionTask(getActivity(), ApiConfig.ADD_ASSESSMENT_URL, ApiConfig.ID1, true, params, BaseModel.class, this).execute("");
@@ -581,6 +568,7 @@ public class AddHistoryFragment extends BaseFragment implements HttpUrlListener 
                 BaseModel baseModel = (BaseModel) response;
                 Log.d(TagUtils.getTag(),"response:-"+baseModel.getMessage());
                 AppLog.i("Capri4Physio", "Patient Response : " + baseModel.getStatus());
+                getFragmentManager().popBackStack();
                 HandlerConstant.POP_INNER_BACK_HANDLER.sendMessage(HandlerConstant.POP_INNER_BACK_HANDLER.obtainMessage(0, ""));
                 break;
         }
@@ -588,10 +576,25 @@ public class AddHistoryFragment extends BaseFragment implements HttpUrlListener 
     }
 
     @Override
+    public void onStart() {
+        super.onStart();
+        AppCompatActivity activity = (AppCompatActivity) getActivity();
+        ActionBar actionBar = activity.getSupportActionBar();
+        actionBar.setTitle("History Exam");
+    }
+
+    @Override
     public void onPostError(String errMsg, int id) {
 
     }
 
+    @Override
+    public void onPause() {
+        super.onPause();
+        AppCompatActivity activity = (AppCompatActivity) getActivity();
+        ActionBar actionBar = activity.getSupportActionBar();
+        actionBar.setTitle("Assesment");
+    }
 
     /**
      * Validation to check user inputs

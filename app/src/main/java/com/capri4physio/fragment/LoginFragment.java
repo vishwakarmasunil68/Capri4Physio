@@ -44,8 +44,6 @@ public class LoginFragment extends BaseFragment {
     private String[] arUserType = null;
     private HttpUrlListener mListener;
     private String priorityValue = "";
-
-
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
@@ -132,6 +130,7 @@ public class LoginFragment extends BaseFragment {
                 ft.commit();
             }
         });
+
 
     }
 

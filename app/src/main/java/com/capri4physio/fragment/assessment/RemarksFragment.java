@@ -307,11 +307,11 @@ public class RemarksFragment extends BaseFragment implements HttpUrlListener, Vi
     }
     @Override
     public void onPause() {
-        super.onStart();
+        super.onPause();
         Log.e("start","onStart");
         AppCompatActivity activity = (AppCompatActivity) getActivity();
         ActionBar actionBar = activity.getSupportActionBar();
-        actionBar.setTitle("Remarks");
+        actionBar.setTitle("Assesment");
     }
     @Override
     public void onStart() {

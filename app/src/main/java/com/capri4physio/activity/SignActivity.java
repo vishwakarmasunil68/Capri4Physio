@@ -144,8 +144,6 @@ public class SignActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.txt_blue:
                 mSignaturePad.setPenColor(Color.BLUE);
                 break;
-
-
             default:
                 break;
         }

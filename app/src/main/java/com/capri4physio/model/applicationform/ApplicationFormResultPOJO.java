@@ -25,6 +25,8 @@ public class ApplicationFormResultPOJO implements Serializable{
     private String aLastName;
     @SerializedName("a_email")
     private String aEmail;
+    @SerializedName("a_mobile")
+    private String aMobile;
     @SerializedName("a_city_date")
     private String aCityDate;
     @SerializedName("a_transtionid")
@@ -267,5 +269,13 @@ public class ApplicationFormResultPOJO implements Serializable{
                 ", aComment='" + aComment + '\'' +
                 ", aCertificate='" + aCertificate + '\'' +
                 '}';
+    }
+
+    public String getaMobile() {
+        return aMobile;
+    }
+
+    public void setaMobile(String aMobile) {
+        this.aMobile = aMobile;
     }
 }

@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -82,6 +83,7 @@ public class UsersAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         private ImageView mImgLogo, mImgOption,mImgOption_of_cancel;
         private TextView mTxtTitle,mTxtEmail;
         private RelativeLayout llViewItem;
+        private LinearLayout ll_patient;
 
         public UserViewHolder(View itemView) {
             super(itemView);
@@ -91,6 +93,7 @@ public class UsersAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             mImgOption_of_cancel = (ImageView)itemView.findViewById(img_option_of_cancel);
             mTxtTitle = (TextView)itemView.findViewById(R.id.txt_title);
             mTxtEmail = (TextView)itemView.findViewById(R.id.txt_email);
+            ll_patient = (LinearLayout) itemView.findViewById(R.id.ll_patient);
         }
     }
 
@@ -114,8 +117,14 @@ public class UsersAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
             }
         });
+        holder.ll_patient.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mCallback.onViewItemClick(mList.get(position), position, Constants.ClickIDConst.ID_VIEW_CLICK);
+            }
+        });
 
-        ImageLoader.getInstance().displayImage(ApiConfig.BASE_URL+"app/webroot/upload/"+mList.get(position).getProfilePic(), holder.mImgLogo, options);
+        ImageLoader.getInstance().displayImage(ApiConfig.PROFILE_PIC_BASE_URL+mList.get(position).getProfilePic(), holder.mImgLogo, options);
 
         Log.d("sunil","inopd");
         Log.d("sunil","id:-"+AppPreferences.getInstance(context).getUserType());

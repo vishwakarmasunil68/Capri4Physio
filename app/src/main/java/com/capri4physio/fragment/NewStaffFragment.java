@@ -12,11 +12,14 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.v4.content.FileProvider;
 import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -36,6 +39,8 @@ import android.widget.Toast;
 
 import com.capri4physio.Invoice.InfoApps1;
 import com.capri4physio.R;
+import com.capri4physio.Services.WebServiceUploadFragment;
+import com.capri4physio.Services.WebServicesCallBack;
 import com.capri4physio.activity.CropActivity;
 import com.capri4physio.activity.SplashActivity;
 import com.capri4physio.fragment.assessment.HttpULRConnect;
@@ -47,9 +52,15 @@ import com.capri4physio.task.UrlConnectionAuthTask;
 import com.capri4physio.util.AppLog;
 import com.capri4physio.util.AppPreferences;
 import com.capri4physio.util.Constants;
+import com.capri4physio.util.TagUtils;
+import com.capri4physio.util.ToastClass;
 import com.capri4physio.util.Utils;
 import com.capri4physio.view.CircleImageView;
 
+import org.apache.http.entity.mime.HttpMultipartMode;
+import org.apache.http.entity.mime.MultipartEntity;
+import org.apache.http.entity.mime.content.FileBody;
+import org.apache.http.entity.mime.content.StringBody;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -61,12 +72,16 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import static com.capri4physio.R.id.radio_marital;
 
 
 /**
@@ -74,21 +89,23 @@ import java.util.regex.Pattern;
  * Use the {@link NewStaffFragment#newInstance} factory method to
  * create an instance of this fragment.
  *
- * @author  prabhunathy
+ * @author prabhunathy
  * @version 1.0
- * @since   2014-03-31
+ * @since 2014-03-31
  */
-public class NewStaffFragment extends BaseFragment implements HttpUrlListener{
+public class NewStaffFragment extends BaseFragment implements HttpUrlListener, WebServicesCallBack {
 
+    private static final String CALL_PATIENT_ADD_API = "call_patient_api";
+    private static final String ADD_NEW_PATIENT = "ADD_NEW_PATIENT";
     private EditText mEdtxtFname;
     private RadioGroup mRadioGroupFoodHabit;
     private ImageView mImgDatePicker;
     private RadioGroup mRadioGroupGender;
     private RadioGroup mRadioGroupMarital;
     private EditText mEdtxtLname;
-    private static EditText mEdtxtEmail,mEdtxtAge;
+    private static EditText mEdtxtEmail, mEdtxtAge;
     private EditText mEdtxtPhone;
-    private EditText mEdtxtHeight,aadharid,address,city,Pincode,ContactPerson,ContactPersonMobile,Referralsource;
+    private EditText mEdtxtHeight, aadharid, address, city, Pincode, ContactPerson, ContactPersonMobile, Referralsource;
     private EditText mEdtxtWeight;
     private EditText mEdtxtPassword;
     private CircleImageView mImgProfile;
@@ -105,22 +122,23 @@ public class NewStaffFragment extends BaseFragment implements HttpUrlListener{
     Boolean indexing;
     private static String strAge;
     private String stMarital = "Opd";
-    private String stGender= "";
+    private String stGender = "";
     private String mImgBase64;
-    private String stFoodhabit= "Veg";
+    private String stFoodhabit = "Veg";
     String branch_code;
     Spinner spinnerbranchloca;
     TextView tv_contact_info;
     InfoApps1 detailApps;
     ArrayList<String> arrayList;
-
-    String[] location ={"Gurgaon","Sant Parmanand Hospital","Greater Kailash 1","Karkarduma"};
+    RadioButton radio_single;
+    String[] location = {"Gurgaon", "Sant Parmanand Hospital", "Greater Kailash 1", "Karkarduma"};
     String bmi;
 
 
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
+     *
      * @return A new instance of fragment LoginFragment.
      */
     public static NewStaffFragment newInstance() {
@@ -136,6 +154,7 @@ public class NewStaffFragment extends BaseFragment implements HttpUrlListener{
     public void onAttach(Activity activity) {
         super.onAttach(activity);
     }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -160,7 +179,7 @@ public class NewStaffFragment extends BaseFragment implements HttpUrlListener{
     protected void initView(View view) {
         super.initView(view);
         mEdtxtFname = (EditText) view.findViewById(R.id.edtxt_fname);
-        mRadioGroupMarital = (RadioGroup) view.findViewById(R.id.radio_marital);
+        mRadioGroupMarital = (RadioGroup) view.findViewById(radio_marital);
         mRadioGroupGender = (RadioGroup) view.findViewById(R.id.rg_gender);
         mRadioGroupFoodHabit = (RadioGroup) view.findViewById(R.id.rg_fh);
         mImgDatePicker = (ImageView) view.findViewById(R.id.img_date_picker);
@@ -180,7 +199,8 @@ public class NewStaffFragment extends BaseFragment implements HttpUrlListener{
         mEdtxtPassword = (EditText) view.findViewById(R.id.edtxt_password);
         mImgProfile = (CircleImageView) view.findViewById(R.id.img_profile);
         mBtnRegister = (Button) view.findViewById(R.id.btn_submit);
-        spinnerbranchloca= (Spinner) view.findViewById(R.id.spinnerbranchloca);
+        spinnerbranchloca = (Spinner) view.findViewById(R.id.spinnerbranchloca);
+        radio_single = (RadioButton) view.findViewById(R.id.radio_single);
     }
 
     @Override
@@ -199,37 +219,33 @@ public class NewStaffFragment extends BaseFragment implements HttpUrlListener{
             public void onClick(View view) {
                 try {
                     final String Height = mEdtxtHeight.getText().toString();
-                    final float hght = Float.parseFloat(Height);
-                    float hhh = (hght * 2);
-//            final String image = selectedImagePath;
                     final String weight = mEdtxtWeight.getText().toString().trim();
-                    final float wght = Integer.parseInt(weight);
-                    float wwww = wght;
-                    float finalvaluee = (wght / hhh);
-                    final Double bmiresult = Double.valueOf(finalvaluee);
-                    bmi = String.format("%.2f", bmiresult);
-                    Log.e("bmoi", wght + "," + Height + "," + bmi);
-                    newStaffApiCall();
-                }catch (Exception e){
-                    Toast.makeText(getActivity(),"Please enter the all value",Toast.LENGTH_SHORT).show();
+
+                    double height_cal = Double.parseDouble(Height);
+                    double weight_cal = Double.parseDouble(weight);
+                    height_cal = height_cal / 100;
+
+                    bmi = getConvertedPrice(String.valueOf(weight_cal / (height_cal * height_cal)));
+                    callAddNewPatient();
+                } catch (Exception e) {
+                    Toast.makeText(getActivity(), "Please Enter Proper Value", Toast.LENGTH_SHORT).show();
                 }
             }
         });
 
-        if (AppPreferences.getInstance(getActivity()).getUserType().equals("4")){
+        if (AppPreferences.getInstance(getActivity()).getUserType().equals("4")) {
             spinnerbranchloca.setVisibility(View.VISIBLE);
-        }
-        else{
-            branch_code =  AppPreferences.getInstance(getActivity()).getUSER_BRANCH_CODE();
+        } else {
+            branch_code = AppPreferences.getInstance(getActivity()).getUSER_BRANCH_CODE();
         }
         spinnerbranchloca.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 String address = spinnerbranchloca.getSelectedItem().toString();
 
-                String ad[]=address.split("\\(");
+                String ad[] = address.split("\\(");
                 String newaddress = ad[1];
-                branch_code =newaddress.replace(")", "");
+                branch_code = newaddress.replace(")", "");
 
             }
 
@@ -281,9 +297,28 @@ public class NewStaffFragment extends BaseFragment implements HttpUrlListener{
                 if (null != rb && checkedId > -1) {
                     stMarital = rb.getText().toString();
                 }
+
+                if (checkedId == R.id.radio_single) {
+                    treatment_type = "Opd";
+                } else {
+                    treatment_type = "Home Patient";
+                }
             }
         });
     }
+
+    public String getConvertedPrice(String price) {
+        try {
+            double val = Double.parseDouble(price);
+            DecimalFormat f = new DecimalFormat("##.##");
+            return String.valueOf(f.format(val));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return price;
+        }
+    }
+
+    String treatment_type = "Opd";
 
     private class CatagoryUrlAsynTask1 extends AsyncTask<String, String, String> {
         String id, catagoryName;
@@ -307,7 +342,7 @@ public class NewStaffFragment extends BaseFragment implements HttpUrlListener{
                 ///     pDialog.dismiss();
 //                Log.e("Post Method Call  here ....", "Method ...");
                 JSONArray jsonArray = new JSONArray(s);
-                for (int i =0; i < jsonArray.length(); i++) {
+                for (int i = 0; i < jsonArray.length(); i++) {
                     JSONObject jsonObject2 = jsonArray.optJSONObject(i);
                     Log.e("2", jsonObject2.toString());
                     String branch_name = jsonObject2.getString("branch_name");
@@ -318,23 +353,27 @@ public class NewStaffFragment extends BaseFragment implements HttpUrlListener{
                     detailApps = new InfoApps1();
                     detailApps.setName(branch_name);
                     detailApps.setId(bracch_code);
-                    arrayList.add(detailApps.getName() + "  "+ "(" + detailApps.getId()+ ")");
+                    arrayList.add(detailApps.getName() + "  " + "(" + detailApps.getId() + ")");
                     ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<String>(
                             getActivity(), R.layout.dropsimpledown, arrayList);
                     spinnerbranchloca.setAdapter(spinnerArrayAdapter);
 
                 }
 
-            }catch(Exception e){
-                Log.e("error",e.toString());
+            } catch (Exception e) {
+                Log.e("error", e.toString());
 
             }
         }
     }
+
     private void showDatePickerDialog() {
         DialogFragment newFragment = new DatePickerFragment();
         newFragment.show(getFragmentManager(), "datePicker");
     }
+
+    String main_image_url = "";
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
 
@@ -345,10 +384,11 @@ public class NewStaffFragment extends BaseFragment implements HttpUrlListener{
 
         switch (requestCode) {
             case PICK_FROM_CAMERA:
-                intent = new Intent(getActivity(), CropActivity.class);
-                intent.putExtra("url", SplashActivity.mImageCaptureUri.getPath());
-                startActivityForResult(intent, PIC_CROP);
-
+//                intent = new Intent(getActivity(), CropActivity.class);
+//                intent.putExtra("url", SplashActivity.mImageCaptureUri.getPath());
+//                startActivityForResult(intent, PIC_CROP);
+                main_image_url = SplashActivity.mImageCaptureUri.getPath();
+                mImgProfile.setImageBitmap(BitmapFactory.decodeFile(main_image_url));
                 break;
             case PICK_FROM_FILE:
                 Uri selectedImage = data.getData();
@@ -379,10 +419,11 @@ public class NewStaffFragment extends BaseFragment implements HttpUrlListener{
                 }
 
 
-                intent = new Intent(getActivity(), CropActivity.class);
-                intent.putExtra("url", picturePath);
-                startActivityForResult(intent, PIC_CROP);
-
+//                intent = new Intent(getActivity(), CropActivity.class);
+//                intent.putExtra("url", picturePath);
+//                startActivityForResult(intent, PIC_CROP);
+                main_image_url = picturePath;
+                mImgProfile.setImageBitmap(BitmapFactory.decodeFile(main_image_url));
                 break;
 
             case PIC_CROP:
@@ -469,9 +510,81 @@ public class NewStaffFragment extends BaseFragment implements HttpUrlListener{
 
 
     /**
-     * @description Login web service API calling
      * @return none
+     * @description Login web service API calling
      */
+
+    public void callAddNewPatient() {
+        if (!isValid())
+            return;
+
+        if (Utils.isNetworkAvailable(getActivity())) {
+            String regis_As;
+            try {
+//            if (register_As.contains(null)){
+
+                regis_As = register_As;
+            } catch (Exception e) {
+                e.printStackTrace();
+                regis_As = "Opd";
+            }
+
+
+            try {
+                MultipartEntity reqEntity = new MultipartEntity(HttpMultipartMode.BROWSER_COMPATIBLE);
+                reqEntity.addPart("added_by", new StringBody(branch_code));
+                reqEntity.addPart("first_name", new StringBody(mEdtxtFname.getText().toString().trim()));
+                reqEntity.addPart("last_name", new StringBody(mEdtxtLname.getText().toString().trim()));
+                reqEntity.addPart("mobile", new StringBody(mEdtxtPhone.getText().toString()));
+                reqEntity.addPart("email", new StringBody(mEdtxtEmail.getText().toString()));
+                reqEntity.addPart("password", new StringBody(mEdtxtPassword.getText().toString()));
+                reqEntity.addPart("address", new StringBody(address.getText().toString()));
+                reqEntity.addPart("user_type", new StringBody("0"));
+                reqEntity.addPart("device_type", new StringBody("android"));
+                reqEntity.addPart("device_token", new StringBody(""));
+                reqEntity.addPart("status", new StringBody("1"));
+                reqEntity.addPart("patient_treament_type", new StringBody(treatment_type));
+                reqEntity.addPart("status", new StringBody("1"));
+                reqEntity.addPart("show_password", new StringBody(mEdtxtPassword.getText().toString()));
+                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-MM-yyyy");
+                reqEntity.addPart("created", new StringBody(simpleDateFormat.format(new Date())));
+                reqEntity.addPart("modified", new StringBody(simpleDateFormat.format(new Date())));
+                reqEntity.addPart("treatment_type", new StringBody(treatment_type));
+                reqEntity.addPart("dob", new StringBody(strDateOfBirth));
+                reqEntity.addPart("gender", new StringBody(stGender.trim()));
+                reqEntity.addPart("age", new StringBody(mEdtxtAge.getText().toString()));
+                reqEntity.addPart("bmi", new StringBody(bmi.trim()));
+                reqEntity.addPart("food_habit", new StringBody(stFoodhabit.trim()));
+                reqEntity.addPart("ref_source", new StringBody(Referralsource.getText().toString()));
+                reqEntity.addPart("contact_person", new StringBody(ContactPerson.getText().toString()));
+                reqEntity.addPart("contact_person_mob", new StringBody(ContactPersonMobile.getText().toString()));
+                reqEntity.addPart("height", new StringBody(mEdtxtHeight.getText().toString()));
+                reqEntity.addPart("weight", new StringBody(mEdtxtWeight.getText().toString()));
+                reqEntity.addPart("aadhar_id", new StringBody(aadharid.getText().toString()));
+                reqEntity.addPart("city", new StringBody(city.getText().toString()));
+                reqEntity.addPart("pincode", new StringBody(Pincode.getText().toString()));
+                reqEntity.addPart("bracch_code", new StringBody(branch_code));
+                if (main_image_url.length() > 0) {
+                    FileBody bin1 = new FileBody(new File(main_image_url));
+                    reqEntity.addPart("photo", bin1);
+                } else {
+                    reqEntity.addPart("photo", new StringBody(""));
+                }
+                reqEntity.addPart("otp_status", new StringBody("true"));
+
+//                    Log.d(TagUtils.getTag(),"add patient params:-"+reqEntity.getContent().toString());
+                new WebServiceUploadFragment(reqEntity, getActivity(), this, ADD_NEW_PATIENT).execute(ApiConfig.ADD_NEW_PATIENT);
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+        } else {
+            Toast.makeText(getActivity(), "Please select patient register type", Toast.LENGTH_LONG).show();
+        }
+    }
+
+
     private void newStaffApiCall() {
         if (!isValid())
             return;
@@ -479,14 +592,13 @@ public class NewStaffFragment extends BaseFragment implements HttpUrlListener{
 
         if (Utils.isNetworkAvailable(getActivity())) {
             String regis_As;
-            try{
+            try {
 //            if (register_As.contains(null)){
 
-                regis_As =register_As;
-            }
-            catch (Exception e) {
+                regis_As = register_As;
+            } catch (Exception e) {
                 e.printStackTrace();
-                regis_As= "Opd";
+                regis_As = "Opd";
             }
             try {
                 JSONObject params = new JSONObject();
@@ -509,7 +621,7 @@ public class NewStaffFragment extends BaseFragment implements HttpUrlListener{
                 params.put("weight", mEdtxtWeight.getText().toString().trim());
                 params.put("aadhar_id", aadharid.getText().toString().trim());
                 params.put("address2", address.getText().toString().trim());
-                params.put("pincode",  Pincode.getText().toString().trim());
+                params.put("pincode", Pincode.getText().toString().trim());
                 params.put("city", city.getText().toString().trim());
                 params.put("gender", stGender.trim());
                 params.put("food_habit", stFoodhabit.trim());
@@ -534,11 +646,9 @@ public class NewStaffFragment extends BaseFragment implements HttpUrlListener{
                 params.put("contact_person_mob", ContactPersonMobile.getText().toString().trim());*/
 
 
-
-
-                if(mImgBase64 != null && !mImgBase64.equals("")){
+                if (mImgBase64 != null && !mImgBase64.equals("")) {
                     params.put(ApiConfig.PROFILE_PIC, mImgBase64);
-                }else {
+                } else {
                     params.put(ApiConfig.PROFILE_PIC, "");
                 }
 
@@ -574,7 +684,18 @@ public class NewStaffFragment extends BaseFragment implements HttpUrlListener{
             }
             if (photoFile != null) {
                 SplashActivity.mImageCaptureUri = Uri.fromFile(photoFile);
-                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, SplashActivity.mImageCaptureUri);
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                    takePictureIntent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                    Uri contentUri = FileProvider.getUriForFile(getActivity().getApplicationContext(), "com.capri4physio.fileProvider", photoFile);
+                    takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, contentUri);
+
+                } else {
+                    takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, SplashActivity.mImageCaptureUri);
+
+                }
+
+//                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, SplashActivity.mImageCaptureUri);
                 //takePictureIntent.putExtra("android.intent.extras.CAMERA_FACING", 1);
                 takePictureIntent.putExtra("return-data", true);
                 startActivityForResult(takePictureIntent, PICK_FROM_CAMERA);
@@ -616,19 +737,18 @@ public class NewStaffFragment extends BaseFragment implements HttpUrlListener{
     }
 
 
-
-
     /**
      * Validation to check user inputs
+     *
      * @return none
      */
-    private boolean isValid(){
+    private boolean isValid() {
 
-        String fname=mEdtxtFname.getText().toString().trim();
-        String lname=mEdtxtLname.getText().toString().trim();
-        String email=mEdtxtEmail.getText().toString().trim();
-        String phone=mEdtxtPhone.getText().toString().trim();
-        String pass=mEdtxtPassword.getText().toString().trim();
+        String fname = mEdtxtFname.getText().toString().trim();
+        String lname = mEdtxtLname.getText().toString().trim();
+        String email = mEdtxtEmail.getText().toString().trim();
+        String phone = mEdtxtPhone.getText().toString().trim();
+        String pass = mEdtxtPassword.getText().toString().trim();
         String stAge = mEdtxtAge.getText().toString().trim();
         String stheight = mEdtxtHeight.getText().toString().trim();
         String stweight = mEdtxtWeight.getText().toString().trim();
@@ -690,18 +810,52 @@ public class NewStaffFragment extends BaseFragment implements HttpUrlListener{
         return true;
     }
 
+    @Override
+    public void onGetMsg(String[] msg) {
+        String apicall = msg[0];
+        String response = msg[1];
+        switch (apicall) {
+            case CALL_PATIENT_ADD_API:
+                parseAddPatientResponse(response);
+                break;
+            case ADD_NEW_PATIENT:
+                parseNewPatient(response);
+                break;
+        }
+    }
+
+    public void parseNewPatient(String response) {
+        Log.d(TagUtils.getTag(), "new patient response:-" + response);
+        try {
+            JSONObject jsonObject = new JSONObject(response);
+            if (jsonObject.optString("success").equals("true")) {
+                ToastClass.showShortToast(getActivity().getApplicationContext(), "New Patient added");
+                viewStaff();
+            } else {
+                ToastClass.showShortToast(getActivity().getApplicationContext(), "Failed to add patient");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            ToastClass.showShortToast(getActivity().getApplicationContext(), "Something went wrong");
+        }
+    }
+
+    public void parseAddPatientResponse(String response) {
+        Log.d(TagUtils.getTag(), "register response:-" + response);
+        ToastClass.showLongToast(getActivity().getApplicationContext(), "Patient Successfully Added");
+        viewStaff();
+    }
 
     @Override
     public void onPostSuccess(Object response, int id) {
 
         {
-
             switch (id) {
                 case ApiConfig.ID1:
                     BaseModel baseModel = (BaseModel) response;
                     if (baseModel.getStatus() == 1) {
                         AppLog.i("Capri4Physio", "New Staff added Response : " + baseModel.getMessage());
-                        Toast.makeText(getActivity(),"Record Successfully Added",Toast.LENGTH_LONG).show();
+                        Toast.makeText(getActivity(), "Record Successfully Added", Toast.LENGTH_LONG).show();
 //                        getActivity().finish();
                         viewStaff();
 

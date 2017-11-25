@@ -137,8 +137,8 @@ public class UpdateCourceActivity extends AppCompatActivity implements WebServic
                     nameValuePairs.add(new BasicNameValuePair("c_sheet_available", et_seat_available.getText().toString()));
                     nameValuePairs.add(new BasicNameValuePair("c_rem_seat", courcesResultPOJO.getC_rem_seat()));
                     nameValuePairs.add(new BasicNameValuePair("c_showing_sheet", et_showing_seat.getText().toString()));
-                    nameValuePairs.add(new BasicNameValuePair("c_reg_fees", et_showing_seat.getText().toString()));
-                    nameValuePairs.add(new BasicNameValuePair("c_rem_fees", et_showing_seat.getText().toString()));
+                    nameValuePairs.add(new BasicNameValuePair("c_reg_fees", et_reg_fees.getText().toString()));
+                    nameValuePairs.add(new BasicNameValuePair("c_rem_fees", et_rem_fees.getText().toString()));
                     nameValuePairs.add(new BasicNameValuePair("c_fees", et_fees.getText().toString()));
                     nameValuePairs.add(new BasicNameValuePair("c_pno", et_phone.getText().toString()));
                     nameValuePairs.add(new BasicNameValuePair("c_id", courcesResultPOJO.getC_id()));

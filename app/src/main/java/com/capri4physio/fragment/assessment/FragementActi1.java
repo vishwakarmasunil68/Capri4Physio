@@ -35,6 +35,7 @@ import com.capri4physio.R;
 import com.capri4physio.net.ApiConfig;
 import com.capri4physio.util.ImageUtil;
 import com.capri4physio.util.TagUtils;
+import com.capri4physio.util.Utils;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -52,8 +53,8 @@ public class FragementActi1 extends AppCompatActivity {
     private ViewPager viewPager;
     Button savebtn;
     ProgressDialog pDialog;
-    Android frag_left;
-    Windows frag_right;
+    HipFragment frag_left;
+    HipFragment frag_right;
     Ios frag_parameters;
     public static String Hiplt1 = "", patient_id = "", Hiplt2 = "", Hiplt3 = "", Hiplt4 = "", Hiplt5 = "", Hiplt6 = "", Hiplt7 = "", Hiplt8 = "", Hiplt9 = "", Hiplp1 = "", Hiplp2 = "", Hiplp3 = "", Hiplp4 = "", Hiplp5 = "", Hiplp6 = "", Hiplp7 = "", Hiplp8 = "", Hiplp9 = "", Hiplr1 = "", Hiplr2 = "", Hiplr3 = "", Hiplr4 = "", Hiplr5 = "", Hiplr6 = "", Hiplr7 = "", Hiplr8 = "", Hiplr9 = "", Hiprt1 = "", Hiprt2 = "", Hiprt3 = "", Hiprt4 = "", Hiprt5 = "", Hiprt6 = "", Hiprt7 = "", Hiprt8 = "", Hiprt9 = "", Hiprp1 = "", Hiprp2 = "", Hiprp3 = "",
             Hiprp4 = "", Hiprp5 = "", Hiprp6 = "", Hiprp7 = "", Hiprp8 = "", Hiprp9 = "", Hiprr1 = "", Hiprr2 = "", Hiprr3 = "", Hiprr4 = "", Hiprr5 = "", Hiprr6 = "", Hiprr7 = "", Hiprr8 = "", Hiprr9 = "";
@@ -89,6 +90,7 @@ public class FragementActi1 extends AppCompatActivity {
         patient_id = getIntent().getStringExtra("patient_id");
         Log.d(TagUtils.getTag(), "patient_id:-" + patient_id);
         viewPager.setOffscreenPageLimit(2);
+        getSupportActionBar().setTitle("Hip Examination");
     }
 
     //	private final String TAG=getClass().getName();
@@ -103,7 +105,6 @@ public class FragementActi1 extends AppCompatActivity {
 //		SaveBitmap(right_bitmap);
 
         ShowDialog(left_bitmap, right_bitmap);
-
 
         Toast.makeText(getApplicationContext(), "bitmap saved", Toast.LENGTH_SHORT).show();
     }
@@ -226,68 +227,7 @@ public class FragementActi1 extends AppCompatActivity {
         }
     }
 
-    public void addMototAPi(final String base_string) {
-
-    }
-
     private void addMotorAPi(final String base_string) {
-        Hiplt1 = Android.spinner1.getSelectedItem().toString().trim();
-        Hiplt2 = Android.spinner2.getSelectedItem().toString().trim();
-        Hiplt3 = Android.spinner3.getSelectedItem().toString().trim();
-        Hiplt4 = Android.spinner4.getSelectedItem().toString().trim();
-        Hiplt5 = Android.spinner5.getSelectedItem().toString().trim();
-        Hiplt6 = Android.spinner6.getSelectedItem().toString().trim();
-        Hiplt7 = Android.spinner7.getSelectedItem().toString().trim();
-//		Hiplt8=Android.spinner1_1.getSelectedItem().toString().trim();
-//		Hiplt9=Android.spinner1_2.getSelectedItem().toString().trim();
-        Hiplp1 = Android.spinner8.getSelectedItem().toString().trim();
-        Hiplp2 = Android.spinner9.getSelectedItem().toString().trim();
-        Hiplp3 = Android.spinner10.getSelectedItem().toString().trim();
-        Hiplp4 = Android.spinner11.getSelectedItem().toString().trim();
-        Hiplp5 = Android.spinner12.getSelectedItem().toString().trim();
-        Hiplp6 = Android.spinner13.getSelectedItem().toString().trim();
-//		Hiplp7=Android.spinner14.getSelectedItem().toString().trim();
-//		Hiplp8=Android.spinner15.getSelectedItem().toString().trim();
-//		Hiplp9=Android.spinner16.getSelectedItem().toString().trim();
-        Hiplr1 = ValidateEdit(Android.editText1);
-        Hiplr2 = ValidateEdit(Android.editText2);
-        Hiplr3 = ValidateEdit(Android.editText3);
-        Hiplr4 = ValidateEdit(Android.editText4);
-        Hiplr5 = ValidateEdit(Android.editText5);
-        Hiplr6 = ValidateEdit(Android.editText6);
-//		Hiplr7 =ValidateEdit(Android.editText7);
-//		Hiplr8 =ValidateEdit(Android.editText8);
-//		Hiplr9 =ValidateEdit(Android.editText9);
-        Hiprt1 = ValidateSpinner(Windows.spinner1);
-        Hiprt2 = ValidateSpinner(Windows.spinner2);
-        Hiprt3 = ValidateSpinner(Windows.spinner3);
-        Hiprt4 = ValidateSpinner(Windows.spinner4);
-        Hiprt5 = ValidateSpinner(Windows.spinner5);
-        Hiprt6 = ValidateSpinner(Windows.spinner6);
-        Hiprt7 = ValidateSpinner(Windows.spinner7);
-//		Hiprt8 =ValidateSpinner(Windows.spinner1_1);
-//		Hiprt9 =ValidateSpinner(Windows.spinner1_2);
-        Hiprp1 = ValidateSpinner(Windows.spinner8);
-        Hiprp2 = ValidateSpinner(Windows.spinner9);
-        Hiprp3 = ValidateSpinner(Windows.spinner10);
-        Hiprp4 = ValidateSpinner(Windows.spinner11);
-        Hiprp5 = ValidateSpinner(Windows.spinner12);
-        Hiprp6 = ValidateSpinner(Windows.spinner13);
-        Hiprp7 = ValidateSpinner(Windows.spinner14);
-        Hiprp8 = ValidateSpinner(Windows.spinner15);
-        Hiprp9 = ValidateSpinner(Windows.spinner16);
-        Hiprr1 = ValidateEdit(Windows.editText1);
-        Hiprr2 = ValidateEdit(Windows.editText2);
-        Hiprr3 = ValidateEdit(Windows.editText3);
-        Hiprr4 = ValidateEdit(Windows.editText4);
-        Hiprr5 = ValidateEdit(Windows.editText5);
-        Hiprr6 = ValidateEdit(Windows.editText6);
-//		Hiprr7=ValidateEdit(Windows.editText7);
-        Hiprr8 = ValidateEdit(Windows.editText8);
-        Hiprr9 = ValidateEdit(Windows.editText9);
-        /*Log.e("date",date);
-        Log.e("time",time);
-        Log.e("reason",reason);*/
         StringRequest stringRequest = new StringRequest(Request.Method.POST, ApiConfig.MOTOR_HIP_URL,
                 new Response.Listener<String>() {
                     @Override
@@ -322,61 +262,43 @@ public class FragementActi1 extends AppCompatActivity {
                 params.put("moter_exam_date", new SimpleDateFormat("yyyy-MM-dd").format(new Date()));
                 params.put("patient_id", patient_id);
                 Log.d(TagUtils.getTag(), "LOG_patient_id:-" + patient_id);
-                params.put("moter_examhip_left_tone1", Hiplt1);
-                params.put("moter_examhip_left_tone2", Hiplt2);
-                params.put("moter_examhip_left_tone3", Hiplt3);
-                params.put("moter_examhip_left_tone4", Hiplt4);
-                params.put("moter_examhip_left_tone5", Hiplt5);
-                params.put("moter_examhip_left_tone6", Hiplt6);
-                params.put("moter_examhip_left_tone7", Hiplt7);
-                params.put("moter_examhip_left_tone8 ", Hiplt8);
-                params.put("moter_examhip_left_tone9 ", Hiplt9);
-                params.put("moter_examhip_left_power1", Hiplp1);
-                params.put("moter_examhip_left_power2", Hiplp2);
-                params.put("moter_examhip_left_power3", Hiplp3);
-                params.put("moter_examhip_left_power4", Hiplp4);
-                params.put("moter_examhip_left_power5", Hiplp5);
-                params.put("moter_examhip_left_power6", Hiplp6);
-                params.put("moter_examhip_left_power7", Hiplp7);
-                params.put("moter_examhip_left_power8", Hiplp8);
-                params.put("moter_examhip_left_power9", Hiplp9);
-                params.put("moter_examhip_left_rom1", Hiplr1);
-                params.put("moter_examhip_left_rom2", Hiplr2);
-                params.put("moter_examhip_left_rom3", Hiplr3);
-                params.put("moter_examhip_left_rom4", Hiplr4);
-                params.put("moter_examhip_left_rom5", Hiplr5);
-                params.put("moter_examhip_left_rom6", Hiplr6);
-                params.put("moter_examhip_left_rom7", Hiplr7);
-                params.put("moter_examhip_left_rom8", Hiplr8);
-                params.put("moter_examhip_left_rom9", Hiplr9);
-                params.put("moter_examhip_right_tone1", Hiprt1);
-                params.put("moter_examhip_right_tone2", Hiprt2);
-                params.put("moter_examhip_right_tone3", Hiprt3);
-                params.put("moter_examhip_right_tone4", Hiprt4);
-                params.put("moter_examhip_right_tone5", Hiprt5);
-                params.put("moter_examhip_right_tone6", Hiprt6);
-                params.put("moter_examhip_right_tone7", Hiprt7);
-                params.put("moter_examhip_right_tone8", Hiprt8);
-                params.put("moter_examhip_right_tone9", Hiprt9);
-                params.put("moter_examhip_right_power1", Hiprp1);
-                params.put("moter_examhip_right_power2", Hiprp2);
-                params.put("moter_examhip_right_power3", Hiprp3);
-                params.put("moter_examhip_right_power4", Hiprp4);
-                params.put("moter_examhip_right_power5", Hiprp5);
-                params.put("moter_examhip_right_power6", Hiprp6);
-                params.put("moter_examhip_right_power7", Hiprp7);
-                params.put("moter_examhip_right_power8", Hiprp8);
-                params.put("moter_examhip_right_power9", Hiprp9);
-                params.put("moter_examhip_right_rom1", Hiprr1);
-                params.put("moter_examhip_right_rom2", Hiprr2);
-                params.put("moter_examhip_right_rom3", Hiprr3);
-                params.put("moter_examhip_right_rom4", Hiprr4);
-                params.put("moter_examhip_right_rom5", Hiprr5);
-                params.put("moter_examhip_right_rom6", Hiprr6);
-                params.put("moter_examhip_right_rom7", Hiprr7);
-                params.put("moter_examhip_right_rom8", Hiprr8);
-                params.put("moter_examhip_right_rom9", Hiprr9);
-                params.put("moterexamship_image", base_string);
+                params.put("moter_examhip_left_tone1", Utils.getToneSpinnerData(getApplicationContext(),frag_left.getSpinner1().getSelectedItemPosition()));
+                params.put("moter_examhip_left_tone2", Utils.getToneSpinnerData(getApplicationContext(),frag_left.getSpinner2().getSelectedItemPosition()));
+                params.put("moter_examhip_left_tone3", Utils.getToneSpinnerData(getApplicationContext(),frag_left.getSpinner3().getSelectedItemPosition()));
+                params.put("moter_examhip_left_tone4", Utils.getToneSpinnerData(getApplicationContext(),frag_left.getSpinner4().getSelectedItemPosition()));
+                params.put("moter_examhip_left_tone5", Utils.getToneSpinnerData(getApplicationContext(),frag_left.getSpinner5().getSelectedItemPosition()));
+                params.put("moter_examhip_left_tone6", Utils.getToneSpinnerData(getApplicationContext(),frag_left.getSpinner6().getSelectedItemPosition()));
+                params.put("moter_examhip_left_power1", Utils.getPowerSpinnerData(getApplicationContext(),frag_left.getSpinner8().getSelectedItemPosition()));
+                params.put("moter_examhip_left_power2", Utils.getPowerSpinnerData(getApplicationContext(),frag_left.getSpinner9().getSelectedItemPosition()));
+                params.put("moter_examhip_left_power3", Utils.getPowerSpinnerData(getApplicationContext(),frag_left.getSpinner10().getSelectedItemPosition()));
+                params.put("moter_examhip_left_power4", Utils.getPowerSpinnerData(getApplicationContext(),frag_left.getSpinner11().getSelectedItemPosition()));
+                params.put("moter_examhip_left_power5", Utils.getPowerSpinnerData(getApplicationContext(),frag_left.getSpinner12().getSelectedItemPosition()));
+                params.put("moter_examhip_left_power6", Utils.getPowerSpinnerData(getApplicationContext(),frag_left.getSpinner13().getSelectedItemPosition()));
+                params.put("moter_examhip_left_rom1", Utils.getEdittextData(frag_left.getEdtxt_1()));
+                params.put("moter_examhip_left_rom2", Utils.getEdittextData(frag_left.getEdtxt_1()));
+                params.put("moter_examhip_left_rom3", Utils.getEdittextData(frag_left.getEdtxt_1()));
+                params.put("moter_examhip_left_rom4", Utils.getEdittextData(frag_left.getEdtxt_1()));
+                params.put("moter_examhip_left_rom5", Utils.getEdittextData(frag_left.getEdtxt_1()));
+                params.put("moter_examhip_left_rom6", Utils.getEdittextData(frag_left.getEdtxt_1()));
+                params.put("moter_examhip_right_tone1", Utils.getToneSpinnerData(getApplicationContext(),frag_right.getSpinner1().getSelectedItemPosition()));
+                params.put("moter_examhip_right_tone2", Utils.getToneSpinnerData(getApplicationContext(),frag_right.getSpinner2().getSelectedItemPosition()));
+                params.put("moter_examhip_right_tone3", Utils.getToneSpinnerData(getApplicationContext(),frag_right.getSpinner3().getSelectedItemPosition()));
+                params.put("moter_examhip_right_tone4", Utils.getToneSpinnerData(getApplicationContext(),frag_right.getSpinner4().getSelectedItemPosition()));
+                params.put("moter_examhip_right_tone5", Utils.getToneSpinnerData(getApplicationContext(),frag_right.getSpinner5().getSelectedItemPosition()));
+                params.put("moter_examhip_right_tone6", Utils.getToneSpinnerData(getApplicationContext(),frag_right.getSpinner6().getSelectedItemPosition()));
+                params.put("moter_examhip_right_power1", Utils.getPowerSpinnerData(getApplicationContext(),frag_right.getSpinner8().getSelectedItemPosition()));
+                params.put("moter_examhip_right_power2", Utils.getPowerSpinnerData(getApplicationContext(),frag_right.getSpinner9().getSelectedItemPosition()));
+                params.put("moter_examhip_right_power3", Utils.getPowerSpinnerData(getApplicationContext(),frag_right.getSpinner10().getSelectedItemPosition()));
+                params.put("moter_examhip_right_power4", Utils.getPowerSpinnerData(getApplicationContext(),frag_right.getSpinner11().getSelectedItemPosition()));
+                params.put("moter_examhip_right_power5", Utils.getPowerSpinnerData(getApplicationContext(),frag_right.getSpinner12().getSelectedItemPosition()));
+                params.put("moter_examhip_right_power6", Utils.getPowerSpinnerData(getApplicationContext(),frag_right.getSpinner13().getSelectedItemPosition()));
+                params.put("moter_examhip_right_rom1", Utils.getEdittextData(frag_right.getEdtxt_1()));
+                params.put("moter_examhip_right_rom2", Utils.getEdittextData(frag_right.getEdtxt_1()));
+                params.put("moter_examhip_right_rom3", Utils.getEdittextData(frag_right.getEdtxt_1()));
+                params.put("moter_examhip_right_rom4", Utils.getEdittextData(frag_right.getEdtxt_1()));
+                params.put("moter_examhip_right_rom5", Utils.getEdittextData(frag_right.getEdtxt_1()));
+                params.put("moter_examhip_right_rom6", Utils.getEdittextData(frag_right.getEdtxt_1()));
+//                params.put("moterexamship_image", base_string);
                 Log.d(TagUtils.getTag(), "hip params:-" + params.toString());
                 return params;
             }
@@ -388,12 +310,10 @@ public class FragementActi1 extends AppCompatActivity {
     }
 
     private void setupViewPager(ViewPager viewPager) {
-        frag_left = new Android();
-        frag_right = new Windows();
-//		frag_parameters=new Ios();
+        frag_left = new HipFragment();
+        frag_right = new HipFragment();
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
         adapter.addFrag(frag_left, "Left");
-//        adapter.addFrag(frag_parameters, "Movement");
 		adapter.addFrag(frag_right, "Right");
         viewPager.setAdapter(adapter);
     }

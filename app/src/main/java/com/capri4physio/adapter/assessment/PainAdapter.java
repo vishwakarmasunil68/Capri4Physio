@@ -19,10 +19,12 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.capri4physio.R;
+import com.capri4physio.fragment.assessment.PainFragment;
 import com.capri4physio.listener.ViewItemClickListener;
 import com.capri4physio.model.assessment.PainItem;
 import com.capri4physio.net.ApiConfig;
 import com.capri4physio.util.Constants;
+import com.capri4physio.util.TagUtils;
 
 import java.util.HashMap;
 import java.util.List;
@@ -46,12 +48,13 @@ public class PainAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>  
             ,past_surgery,allergies,osteoporotic,depression,Hepatitis,hereditary_disease;
     private List<PainItem> mList;
     private ViewItemClickListener<PainItem> mCallback;
-
-    public PainAdapter(Context context, List<PainItem> mList, ViewItemClickListener<PainItem> callback) {
+    PainFragment painFragment;
+    public PainAdapter(Context context, List<PainItem> mList, ViewItemClickListener<PainItem> callback,PainFragment painFragment) {
         this.context = context;
         inflater = LayoutInflater.from(context);
         this.mList = mList;
         mCallback = callback;
+        this.painFragment=painFragment;
     }
 
     @Override
@@ -100,49 +103,7 @@ public class PainAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>  
         holder.img_edit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                dialog=new Dialog(context,android.R.style.Theme_DeviceDefault_Light_Dialog);
-
-                //setting custom layout to dialog
-                dialog.setContentView(R.layout.pain_dialogedit);
-                dialog.setTitle("Edit - history exam");
-
-//                //adding text dynamically
-                 pain_side = (EditText) dialog.findViewById(R.id.pain_side);
-                Button  button= (Button) dialog.findViewById(R.id.button);
-                 severity_pain = (EditText) dialog.findViewById(R.id.severity_pain);
-                pressure_pain   = (EditText) dialog.findViewById(R.id.pressure_pain);
-                 pain_nature = (EditText) dialog.findViewById(R.id.pain_nature);
-                 pain_onset = (EditText) dialog.findViewById(R.id.pain_onset);
-                 pain_duration = (EditText) dialog.findViewById(R.id.pain_duration);
-                  location = (EditText) dialog.findViewById(R.id.location);
-                 diurnal_variations = (EditText) dialog.findViewById(R.id.diurnal_variations);
-                 trigger_point = (EditText) dialog.findViewById(R.id.trigger_point);
-                 aggravating_factors = (EditText) dialog.findViewById(R.id.aggravating_factors);
-                 relieving_factors = (EditText) dialog.findViewById(R.id.relieving_factors);
-
-                pain_side.setText(mList.get(position).getPainSide());
-                severity_pain.setText(mList.get(position).getSeverityPain());
-                pressure_pain.setText(mList.get(position).getPressurePain());
-                pain_nature.setText(mList.get(position).getPainNature());
-                pain_onset.setText(mList.get(position).getPainOnset());
-                pain_duration.setText(mList.get(position).getPainDuration());
-                location.setText(mList.get(position).getLocation());
-                diurnal_variations.setText(mList.get(position).getDiurnalVariations());
-                trigger_point.setText(mList.get(position).getTriggerPoint());
-                aggravating_factors.setText(mList.get(position).getAggravatingFactors());
-                relieving_factors.setText(mList.get(position).getRelievingFactors());
-
-                //adding button click event
-                Button dismissButton = (Button) dialog.findViewById(R.id.button);
-                dismissButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        getpnotes(mList.get(position).getId());
-
-
-                    }
-                });
-                dialog.show();
+                painFragment.updateFragment(mList.get(position));
             }
         });
 
@@ -155,6 +116,8 @@ public class PainAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>  
                 //setting custom layout to dialog
                 dialog.setContentView(R.layout.pain_dialog_edit);
                 dialog.setTitle("View - pain exam");
+
+                Log.d(TagUtils.getTag(),"pain string:-"+mList.get(position).toString());
 
 //                //adding text dynamically
                 TextView pain_side = (TextView) dialog.findViewById(R.id.pain_side);
@@ -172,7 +135,7 @@ public class PainAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>  
 
                 pain_side.setText(mList.get(position).getPainSide());
                 severity_pain.setText(mList.get(position).getSeverityPain());
-                pressure_pain.setText(mList.get(position).getPressurePain());
+                pressure_pain.setText(mList.get(position).getThresholdSite());
                 pain_nature.setText(mList.get(position).getPainNature());
                 pain_onset.setText(mList.get(position).getPainOnset());
                 pain_duration.setText(mList.get(position).getPainDuration());

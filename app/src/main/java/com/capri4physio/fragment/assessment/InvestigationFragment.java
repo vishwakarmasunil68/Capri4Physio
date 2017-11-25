@@ -155,7 +155,7 @@ public class InvestigationFragment extends BaseFragment implements HttpUrlListen
             @Override
             public void onClick(View v) {
                 getFragmentManager().popBackStack();
-                HandlerConstant.POP_BACK_HANDLER.sendMessage(HandlerConstant.POP_BACK_HANDLER.obtainMessage(0,"7"));
+                HandlerConstant.POP_BACK_HANDLER.sendMessage(HandlerConstant.POP_BACK_HANDLER.obtainMessage(0,"10"));
             }
         });
 
@@ -265,14 +265,14 @@ public class InvestigationFragment extends BaseFragment implements HttpUrlListen
         Log.e("start","onpause");
         AppCompatActivity activity = (AppCompatActivity) getActivity();
         ActionBar actionBar = activity.getSupportActionBar();
-        actionBar.setTitle("Investigation Exam");
+        actionBar.setTitle("Assesment");
     }
     @Override
     public void onStart() {
         super.onStart();
         AppCompatActivity activity = (AppCompatActivity) getActivity();
         ActionBar actionBar = activity.getSupportActionBar();
-        actionBar.setTitle("Investigation Exam");
+        actionBar.setTitle("Investigations");
     }
     private void deleteAlert(final String id,final int position) {
 

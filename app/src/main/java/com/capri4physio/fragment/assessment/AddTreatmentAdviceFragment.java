@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,24 +13,36 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.Spinner;
 
 import com.capri4physio.R;
+import com.capri4physio.Services.GetWebServicesFragment;
+import com.capri4physio.Services.WebServicesCallBack;
 import com.capri4physio.fragment.BaseFragment;
 import com.capri4physio.listener.HttpUrlListener;
 import com.capri4physio.model.BaseModel;
+import com.capri4physio.model.treatment.TreatmentPOJO;
+import com.capri4physio.model.treatment.TreatmentResultPOJO;
 import com.capri4physio.net.ApiConfig;
 import com.capri4physio.task.UrlConnectionTask;
 import com.capri4physio.util.AppLog;
 import com.capri4physio.util.HandlerConstant;
+import com.capri4physio.util.TagUtils;
 import com.capri4physio.util.Utils;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.google.gson.Gson;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 
 /**
@@ -40,10 +54,11 @@ import java.util.List;
  * @version 1.0
  * @since 2014-03-31
  */
-public class AddTreatmentAdviceFragment extends BaseFragment implements HttpUrlListener {
+public class AddTreatmentAdviceFragment extends BaseFragment implements HttpUrlListener,WebServicesCallBack {
 
+    private static final String GET_ALL_TREATMENT = "get_all_treatment";
     private Button mBtnSave;
-    private EditText mEdtxtGoal;
+    private AutoCompleteTextView mEdtxtGoal;
     private Spinner mEdtxtTherapy;
     private Spinner mEdtxtDoses;
 
@@ -55,6 +70,7 @@ public class AddTreatmentAdviceFragment extends BaseFragment implements HttpUrlL
     InfoApps Detailapp;
     AutoCompleteTextView et_select_dowses;
     ArrayList<String> stringArrayList;
+    private DatabaseReference root;
 
     /**
      * Use this factory method to create a new instance of
@@ -96,7 +112,7 @@ public class AddTreatmentAdviceFragment extends BaseFragment implements HttpUrlL
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_add_treatment_advice, container, false);
 //        patientaray.add("Select Staff name");
-
+        root = FirebaseDatabase.getInstance().getReference().getRoot();
         initView(rootView);
         stringArrayList = new ArrayList<String>();
         patientaray = new ArrayList<String>();
@@ -114,7 +130,7 @@ public class AddTreatmentAdviceFragment extends BaseFragment implements HttpUrlL
         super.initView(view);
 
         mBtnSave = (Button) view.findViewById(R.id.btn_save);
-        mEdtxtGoal = (EditText) view.findViewById(R.id.edtxt_goal);
+        mEdtxtGoal = (AutoCompleteTextView) view.findViewById(R.id.edtxt_goal);
         mEdtxtTherapy = (Spinner) view.findViewById(R.id.edtxt_therapy);
         mEdtxtDoses = (Spinner) view.findViewById(R.id.edtxt_therapy_proquant);
 
@@ -129,10 +145,63 @@ public class AddTreatmentAdviceFragment extends BaseFragment implements HttpUrlL
         //Setting adapter
         et_select_dowses.setAdapter(arrayAdapter);
 
+
+        goalarrayAdapter = new ArrayAdapter<String>(getActivity(),
+                android.R.layout.select_dialog_item, list_goal);
+        //Used to specify minimum number of
+        //characters the user has to type in order to display the drop down hint.
+        mEdtxtGoal.setThreshold(1);
+        //Setting adapter
+        mEdtxtGoal.setAdapter(goalarrayAdapter);
+
+
+        new GetWebServicesFragment(getActivity(), this, GET_ALL_TREATMENT, true).execute(ApiConfig.get_all_admin_treatment);
+
+
+        root.child("dose").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                list_doses.clear();
+                set_doses.clear();
+                for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
+//                    Log.d(TagUtils.getTag(), "doses datashapshot:-" + postSnapshot.getValue());
+                    set_doses.add(postSnapshot.getValue().toString());
+                }
+                list_doses.addAll(set_doses);
+                arrayAdapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.e(TagUtils.getTag(), "Failed to read app title value.", databaseError.toException());
+            }
+        });
+        root.child("goal").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                list_goal.clear();
+                set_goal.clear();
+                for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
+//                    Log.d(TagUtils.getTag(), "doses datashapshot:-" + postSnapshot.getValue());
+                    set_goal.add(postSnapshot.getValue().toString());
+                }
+                list_goal.addAll(set_goal);
+                goalarrayAdapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.e(TagUtils.getTag(), "Failed to read app title value.", databaseError.toException());
+            }
+        });
     }
 
     ArrayAdapter<String> arrayAdapter;
     List<String> list_doses = new ArrayList<>();
+    Set<String> set_doses= new HashSet<>();
+    ArrayAdapter<String> goalarrayAdapter;
+    List<String> list_goal = new ArrayList<>();
+    Set<String> set_goal = new HashSet<>();
 
     @Override
     protected void setListener() {
@@ -165,7 +234,9 @@ public class AddTreatmentAdviceFragment extends BaseFragment implements HttpUrlL
                 params.put(ApiConfig.TREATMENT_THERAPY, mEdtxtTherapy.getSelectedItem().toString().trim());
                 params.put(ApiConfig.TREATMENT_DOSES, et_select_dowses.getText().toString());
                 params.put(ApiConfig.DATE, Utils.getCurrentDate());
-
+                String mGroupId = root.push().getKey();
+                root.child("dose").child(mGroupId).setValue(et_select_dowses.getText().toString());
+                root.child("goal").child(mGroupId).setValue(mEdtxtGoal.getText().toString());
                 new UrlConnectionTask(getActivity(), ApiConfig.ADD_ASSESSMENT_URL, ApiConfig.ID1, true, params, BaseModel.class, this).execute("");
 
             } catch (Exception e) {
@@ -194,8 +265,51 @@ public class AddTreatmentAdviceFragment extends BaseFragment implements HttpUrlL
     }
 
     @Override
+    public void onStart() {
+        super.onStart();
+        AppCompatActivity activity = (AppCompatActivity) getActivity();
+        ActionBar actionBar = activity.getSupportActionBar();
+        actionBar.setTitle("Treatment Plan");
+    }
+
+    @Override
     public void onPostError(String errMsg, int id) {
 
+    }
+
+    @Override
+    public void onGetMsg(String[] msg) {
+        String apicall=msg[0];
+        String response=msg[1];
+        switch (apicall){
+            case GET_ALL_TREATMENT:
+                parseGetAllTreatment(response);
+                break;
+        }
+    }
+    List<String> all_treatment;
+    List<TreatmentResultPOJO> listadminTreatments;
+
+
+    public void parseGetAllTreatment(String response) {
+        Log.d(TagUtils.getTag(), "admin treatment response:-" + response);
+        try {
+            Gson gson = new Gson();
+            TreatmentPOJO treatmentPOJO = gson.fromJson(response, TreatmentPOJO.class);
+            if (treatmentPOJO.getSuccess().equals("true")) {
+                all_treatment = new ArrayList<>();
+                listadminTreatments = treatmentPOJO.getTreatmentResultPOJOList();
+                for (TreatmentResultPOJO treatmentResultPOJO : treatmentPOJO.getTreatmentResultPOJOList()) {
+                    all_treatment.add(treatmentResultPOJO.getTreatment_name());
+                }
+                ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(getActivity(),
+                        android.R.layout.simple_spinner_item, all_treatment);
+                dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                mEdtxtTherapy.setAdapter(dataAdapter);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 

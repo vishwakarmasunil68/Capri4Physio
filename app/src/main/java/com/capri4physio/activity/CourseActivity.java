@@ -7,23 +7,34 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import com.capri4physio.R;
 import com.capri4physio.Services.GetWebServices;
+import com.capri4physio.Services.WebServiceBase;
 import com.capri4physio.Services.WebServicesCallBack;
 import com.capri4physio.adapter.CourceAdapter;
 import com.capri4physio.model.cources.CourcesPOJO;
+import com.capri4physio.model.cources.CourcesResultPOJO;
 import com.capri4physio.net.ApiConfig;
+import com.capri4physio.util.TagUtils;
 import com.capri4physio.util.ToastClass;
 import com.google.gson.Gson;
+
+import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicNameValuePair;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class CourseActivity extends AppCompatActivity implements WebServicesCallBack{
 
+    private static final String CALL_DELETE_COURSE = "call_delete_course_api";
     private final String LIST_COURCES_API="list_cources_api";
 
 
@@ -75,7 +86,11 @@ public class CourseActivity extends AppCompatActivity implements WebServicesCall
                 return super.onOptionsItemSelected(item);
         }
     }
-
+    public void callCourseDeleteAPI(CourcesResultPOJO courcesResultPOJO){
+        ArrayList<NameValuePair> nameValuePairArrayList=new ArrayList<>();
+        nameValuePairArrayList.add(new BasicNameValuePair("c_id",courcesResultPOJO.getC_id()));
+        new WebServiceBase(nameValuePairArrayList,this,CALL_DELETE_COURSE).execute(ApiConfig.DELETE_COURSE_API);
+    }
     @Override
     public void onGetMsg(String[] msg) {
         String apicall=msg[0];
@@ -84,6 +99,23 @@ public class CourseActivity extends AppCompatActivity implements WebServicesCall
             case LIST_COURCES_API:
                 parseCourcseList(response);
                 break;
+            case CALL_DELETE_COURSE:
+                parseDeleteCourse(response);
+        }
+    }
+
+    public void parseDeleteCourse(String response){
+        Log.d(TagUtils.getTag(),"course delete:-"+response);
+        try{
+            JSONObject jsonObject=new JSONObject(response);
+            if(jsonObject.optString("success").equals("true")){
+                ToastClass.showLongToast(getApplicationContext(),"Course Deleted Successfully");
+                callCourseListAPI();
+            }else{
+                ToastClass.showLongToast(getApplicationContext(),"Course Deletion Failed");
+            }
+        }catch (Exception e){
+            e.printStackTrace();
         }
     }
     public void parseCourcseList(String response){

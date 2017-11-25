@@ -1,5 +1,6 @@
 package com.capri4physio.fragment;
 
+import android.app.Activity;
 import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -20,14 +21,17 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.capri4physio.R;
 import com.capri4physio.adapter.MenuAdapter;
+import com.capri4physio.fragment.assessment.ADLExamFragment;
 import com.capri4physio.fragment.assessment.AddMotorExamFragment;
 import com.capri4physio.fragment.assessment.CaseNotesFragment;
 import com.capri4physio.fragment.assessment.CheifComplaintFragment;
 import com.capri4physio.fragment.assessment.HistoryFragment;
 import com.capri4physio.fragment.assessment.InvestigationFragment;
 import com.capri4physio.fragment.assessment.MedicalFragment;
+import com.capri4physio.fragment.assessment.NdtntpExamFragment;
 import com.capri4physio.fragment.assessment.NeuroFragment;
 import com.capri4physio.fragment.assessment.PainFragment;
 import com.capri4physio.fragment.assessment.PatientInfoFragment;
@@ -52,18 +56,18 @@ import com.capri4physio.util.HandlerConstant;
 import com.capri4physio.util.TagUtils;
 import com.capri4physio.util.Utils;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
-import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.display.RoundedBitmapDisplayer;
 
 import org.json.JSONObject;
 
+import java.text.DecimalFormat;
 import java.util.Arrays;
 
 
 public class MyClinicPatientFragment extends BaseFragment implements HttpUrlListener, DialogListener<Bundle>, ViewItemClickListener<String> {
 
     public static TextView mTxtName, mTxtEmail, mTxtPhone, txt_id, mTxtAge, mTxtHeight, mTxtBMI;
-    private ImageView mImgProfile;
+    private de.hdodenhof.circleimageview.CircleImageView mImgProfile;
     private ImageView mImgEdit;
     private MenuAdapter mAdapter;
     private RecyclerView mRecyclerView;
@@ -72,8 +76,10 @@ public class MyClinicPatientFragment extends BaseFragment implements HttpUrlList
 
     private static final String KEY_CLINIC_ID = "clinic_id";
     private static final String KEY_PATIENT_ID = "patient_id";
+    private static final String KEY_BRANCH_CODE = "branch_code";
     private String clinicId = "";
     private String patientId = "";
+    private String patientBranchCode = "";
     private UserDetails mUser = null;
     public static String profilePic, ref_source, mob_number, aadhar_id, address, city, pin_code, con_person, con_per_mob, email, passwod;
     public static String treatment_type, getId, food_habbit, firstname, last_name, age, height, weight, gender, marital_status;
@@ -85,11 +91,12 @@ public class MyClinicPatientFragment extends BaseFragment implements HttpUrlList
      *
      * @return A new instance of fragment LoginFragment.
      */
-    public static MyClinicPatientFragment newInstance(String clinicId, String patientId) {
+    public static MyClinicPatientFragment newInstance(String clinicId, String patientId,String branch_code) {
         MyClinicPatientFragment fragment = new MyClinicPatientFragment();
         Bundle bundle = new Bundle();
         bundle.putString(KEY_CLINIC_ID, clinicId);
         bundle.putString(KEY_PATIENT_ID, patientId);
+        bundle.putString(KEY_BRANCH_CODE, branch_code);
         fragment.setArguments(bundle);
         return fragment;
     }
@@ -116,6 +123,7 @@ public class MyClinicPatientFragment extends BaseFragment implements HttpUrlList
         if (getArguments() != null) {
             clinicId = getArguments().getString(KEY_CLINIC_ID);
             patientId = getArguments().getString(KEY_PATIENT_ID);
+            patientBranchCode = getArguments().getString(KEY_BRANCH_CODE);
         }
 
         mList = getResources().getStringArray(R.array.menu_myclinic_patient);
@@ -142,7 +150,7 @@ public class MyClinicPatientFragment extends BaseFragment implements HttpUrlList
     @Override
     protected void initView(View view) {
         super.initView(view);
-        mImgProfile = (ImageView) view.findViewById(R.id.img_profile);
+        mImgProfile = (de.hdodenhof.circleimageview.CircleImageView) view.findViewById(R.id.img_profile);
         mImgEdit = (ImageView) view.findViewById(R.id.img_edit);
         mTxtName = (TextView) view.findViewById(R.id.txt_name);
         mTxtEmail = (TextView) view.findViewById(R.id.txt_email);
@@ -254,16 +262,33 @@ public class MyClinicPatientFragment extends BaseFragment implements HttpUrlList
 
 //                    Log.e("stat",mUser.getProfilePic());
                     Log.d(TagUtils.getTag(),"profile pic:-"+mUser.getProfilePic());
-                    ImageLoader.getInstance().displayImage(mUser.getProfilePic(), mImgProfile, options);
+                    Glide.with(getActivity().getApplicationContext())
+                            .load(ApiConfig.PROFILE_PIC_BASE_URL+mUser.getProfilePic())
+                            .error(R.drawable.ic_action_person)
+                            .placeholder(R.drawable.ic_action_person)
+                            .dontAnimate()
+                            .into(mImgProfile);
 
                     if (null != mUser.getAge()) {
                         mTxtAge.setText(mUser.getAge() + " years");
-                        mTxtHeight.setText(mUser.getWeight() + " lb");
+                        mTxtHeight.setText(mUser.getWeight() + " KG");
                         mTxtBMI.setText("Bmi: " + mUser.getBmi());
+
                     } else {
                         mTxtAge.setText("30 years");
-                        mTxtHeight.setText("170 lb");
+                        mTxtHeight.setText("170 KG");
                         mTxtBMI.setText("Bmi: 21.64");
+                    }
+
+                    try{
+                        double weight=Double.parseDouble(mUser.getWeight());
+                        double height=Double.parseDouble(mUser.getHeight());
+
+                        height=height/100;
+                        double bmi=weight/(height*height);
+                        mTxtBMI.setText("Bmi: "+getConvertedValue(String.valueOf(bmi)));
+                    }catch (Exception e){
+                        e.printStackTrace();
                     }
 
                 } else {
@@ -294,7 +319,16 @@ public class MyClinicPatientFragment extends BaseFragment implements HttpUrlList
         }
 
     }
-
+    public String getConvertedValue(String price) {
+        try {
+            double val = Double.parseDouble(price);
+            DecimalFormat f = new DecimalFormat("##.##");
+            return String.valueOf(f.format(val));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return price;
+        }
+    }
     @Override
     public void onPostError(String errMsg, int id) {
 
@@ -346,58 +380,70 @@ public class MyClinicPatientFragment extends BaseFragment implements HttpUrlList
                 ft.addToBackStack(null);
                 ft.commit();
                 break;
+
             case 6:
-                InvestigationFragment investigationFragment = InvestigationFragment.newInstance(patientId, s);
-                ft.add(R.id.fragment_container, investigationFragment);
-                ft.addToBackStack(null);
-                ft.commit();
-                break;
-            case 7:
                 NeuroFragment neuroFragment = NeuroFragment.newInstance(patientId, s);
                 ft.add(R.id.fragment_container, neuroFragment);
                 ft.addToBackStack(null);
                 ft.commit();
                 break;
-
+            case 7:
+                NdtntpExamFragment ndtntpExamFragment = NdtntpExamFragment.newInstance(patientId);
+                ft.add(R.id.fragment_container, ndtntpExamFragment);
+                ft.addToBackStack(null);
+                ft.commit();
+                break;
             case 8:
+                ADLExamFragment adlExamFragment = ADLExamFragment.newInstance(patientId);
+                ft.add(R.id.fragment_container, adlExamFragment);
+                ft.addToBackStack(null);
+                ft.commit();
+                break;
+            case 9:
+                InvestigationFragment investigationFragment = InvestigationFragment.newInstance(patientId, s);
+                ft.add(R.id.fragment_container, investigationFragment);
+                ft.addToBackStack(null);
+                ft.commit();
+                break;
+            case 10:
                 PhysiotheraputicFragment physiotheraputicFragment = PhysiotheraputicFragment.newInstance(patientId, "Physiotheraputic");
                 ft.add(R.id.fragment_container, physiotheraputicFragment);
                 ft.addToBackStack(null);
                 ft.commit();
                 break;
 
-            case 9:
+            case 11:
                 MedicalFragment medicalFragment = MedicalFragment.newInstance(patientId, "Medical");
                 ft.add(R.id.fragment_container, medicalFragment);
                 ft.addToBackStack(null);
                 ft.commit();
                 break;
 
-            case 10:
+            case 12:
                 TreatmentFragment tretmentFragment = TreatmentFragment.newInstance(patientId, "Treatment");
                 ft.add(R.id.fragment_container, tretmentFragment);
                 ft.addToBackStack(null);
                 ft.commit();
                 break;
-            case 11:
-                TreatmentGivenFragment treatmentGivenFragment = TreatmentGivenFragment.newInstance(patientId, "TreatmentGiven");
+            case 13:
+                TreatmentGivenFragment treatmentGivenFragment = TreatmentGivenFragment.newInstance(patientId, "TreatmentGiven",patientBranchCode);
                 ft.add(R.id.fragment_container, treatmentGivenFragment);
                 ft.addToBackStack(null);
                 ft.commit();
                 break;
-            case 12:
+            case 14:
                 CaseNotesFragment caseNotesFragment = CaseNotesFragment.newInstance(patientId, "casenote");
                 ft.add(R.id.fragment_container, caseNotesFragment);
                 ft.addToBackStack(null);
                 ft.commit();
                 break;
-            case 13:
+            case 15:
                 ProgressNotesFragment progressNotesFragment = ProgressNotesFragment.newInstance(patientId, "progressnotes");
                 ft.add(R.id.fragment_container, progressNotesFragment);
                 ft.addToBackStack(null);
                 ft.commit();
                 break;
-            case 14:
+            case 16:
                 RemarksFragment remark = RemarksFragment.newInstance(patientId, "remark");
                 ft.add(R.id.fragment_container, remark);
                 ft.addToBackStack(null);
@@ -409,8 +455,15 @@ public class MyClinicPatientFragment extends BaseFragment implements HttpUrlList
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == 101) {
-            Log.d(TagUtils.getTag(), "on activity result");
-            startFragment("5");
+            if (resultCode == Activity.RESULT_OK) {
+                String result = data.getStringExtra("result");
+                if (result.equals("2")) {
+
+                }else{
+                    Log.d(TagUtils.getTag(), "on activity result");
+                    startFragment("5");
+                }
+            }
         }
     }
     @Override

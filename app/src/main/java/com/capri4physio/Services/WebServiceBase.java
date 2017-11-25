@@ -123,7 +123,11 @@ public class WebServiceBase extends AsyncTask<String,Void,String> {
     protected void onPostExecute(String s) {
         super.onPostExecute(s);
         if(progressDialog!=null){
-            progressDialog.dismiss();
+            try {
+                progressDialog.dismiss();
+            }catch (Exception e){
+                e.printStackTrace();
+            }
         }
         if(fragment!=null){
             WebServicesCallBack mcallback = (WebServicesCallBack) fragment;

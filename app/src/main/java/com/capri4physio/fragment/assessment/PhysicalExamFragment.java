@@ -32,6 +32,7 @@ import com.android.volley.toolbox.Volley;
 import com.capri4physio.R;
 import com.capri4physio.adapter.assessment.PhysicalExamAdapter;
 import com.capri4physio.fragment.BaseFragment;
+import com.capri4physio.fragment.UpdatePhysicalExamination;
 import com.capri4physio.listener.HttpUrlListener;
 import com.capri4physio.listener.ViewItemClickListener;
 import com.capri4physio.model.assessment.PhysicalExamModel;
@@ -111,7 +112,7 @@ public class PhysicalExamFragment extends BaseFragment implements HttpUrlListene
         }
 
         mList = new ArrayList<>();
-        mAdapter = new PhysicalExamAdapter(getActivity(), mList, this);
+        mAdapter = new PhysicalExamAdapter(getActivity(), mList, this,this);
     }
 
     @Override
@@ -260,6 +261,13 @@ public class PhysicalExamFragment extends BaseFragment implements HttpUrlListene
         ft.addToBackStack(null);
         ft.commit();
     }
+    public void updateFragment(PhysicalItem physicalItem) {
+        FragmentTransaction ft = getFragmentManager().beginTransaction();
+        UpdatePhysicalExamination updatePhysicalExamination = UpdatePhysicalExamination.newInstance(patientId, assessmentType,physicalItem);
+        ft.replace(R.id.fragment_container, updatePhysicalExamination);
+        ft.addToBackStack(null);
+        ft.commit();
+    }
 
     private void delepnotes(final String textView) {
 
@@ -305,10 +313,9 @@ public class PhysicalExamFragment extends BaseFragment implements HttpUrlListene
     @Override
     public void onPause() {
         super.onPause();
-        Log.e("start", "onStart");
         AppCompatActivity activity = (AppCompatActivity) getActivity();
         ActionBar actionBar = activity.getSupportActionBar();
-        actionBar.setTitle("Physical Exam");
+        actionBar.setTitle("Assesment");
     }
 
     @Override

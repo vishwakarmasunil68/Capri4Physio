@@ -32,6 +32,7 @@ import com.android.volley.toolbox.Volley;
 import com.capri4physio.R;
 import com.capri4physio.net.ApiConfig;
 import com.capri4physio.util.ImageUtil;
+import com.capri4physio.util.TagUtils;
 import com.capri4physio.util.Utils;
 
 import java.io.File;
@@ -48,8 +49,8 @@ public class FragementActi4 extends AppCompatActivity {
 	private ViewPager viewPager;
 	Button savebtn;
 	ProgressDialog pDialog;
-	Android frag_left;
-	Windows frag_right;
+	ToesFragment frag_left;
+	ToesFragment frag_right;
 	Ios frag_parameters;
 	public static String Toeslt1,patient_id,Toeslt2,Toeslt3,Toeslt4,Toeslt5,Toeslp1,Toeslp2,Toeslp3,Toeslp4,Toeslp5,Toeslr1,Toeslr2,Toeslr3,Toeslr4,Toeslr5,Toesrt1,Toesrt2,Toesrt3,Toesrt4,Toesrt5,Toesrp1,Toesrp2,Toesrp3,
 			Toesrp4,Toesrp5,Toesrr1,Toesrr2,Toesrr3,Toesrr4,Toesrr5;
@@ -81,6 +82,7 @@ public class FragementActi4 extends AppCompatActivity {
 		});
 		patient_id =getIntent().getStringExtra("patient_id");
 		viewPager.setOffscreenPageLimit(2);
+		getSupportActionBar().setTitle("Toes Exam");
     }
 	public String ValidateEdit(EditText edit){
 		try {
@@ -225,18 +227,18 @@ public class FragementActi4 extends AppCompatActivity {
 		}
 	}
 	private void addMotorAPi(final String base_string){
-		Toeslt1 = Android.spinner1.getSelectedItem().toString().trim();
-		Toeslt2 = Android.spinner2.getSelectedItem().toString().trim();
-		Toeslp1 = Android.spinner8.getSelectedItem().toString().trim();
-		Toeslp2 = Android.spinner9.getSelectedItem().toString().trim();
-		Toeslr1 =ValidateEdit(Android.editText1);
-		Toeslr2 =ValidateEdit(Android.editText2);
-		Toesrt1=ValidateSpinner(Windows.spinner1);
-		Toesrt2 = ValidateSpinner(Windows.spinner2);
-		Toesrp1 = ValidateSpinner(Windows.spinner8);
-		Toesrp2 = ValidateSpinner(Windows.spinner9);
-		Toesrr1=ValidateEdit(Windows.editText1);
-		Toesrr2=ValidateEdit(Windows.editText2);
+//		Toeslt1 = Android.spinner1.getSelectedItem().toString().trim();
+//		Toeslt2 = Android.spinner2.getSelectedItem().toString().trim();
+//		Toeslp1 = Android.spinner8.getSelectedItem().toString().trim();
+//		Toeslp2 = Android.spinner9.getSelectedItem().toString().trim();
+//		Toeslr1 =ValidateEdit(Android.editText1);
+//		Toeslr2 =ValidateEdit(Android.editText2);
+//		Toesrt1=ValidateSpinner(Windows.spinner1);
+//		Toesrt2 = ValidateSpinner(Windows.spinner2);
+//		Toesrp1 = ValidateSpinner(Windows.spinner8);
+//		Toesrp2 = ValidateSpinner(Windows.spinner9);
+//		Toesrr1=ValidateEdit(Windows.editText1);
+//		Toesrr2=ValidateEdit(Windows.editText2);
         /*Log.e("date",date);
         Log.e("time",time);
         Log.e("reason",reason);*/
@@ -270,20 +272,20 @@ public class FragementActi4 extends AppCompatActivity {
 				Map<String,String> params = new HashMap<String, String>();
 				params.put("moter_exam_date", Utils.getCurrentDate());
 				params.put("patient_id", patient_id);
-				params.put("moter_examtoes_left_tone1", Toeslt1);
-				params.put("moter_examtoes_left_tone2", Toeslt2);
-				params.put("moter_examtoes_left_power1", Toeslp1);
-				params.put("moter_examtoes_left_power2",Toeslp2);
-				params.put("moter_examtoes_left_rom1", Toeslr1);
-				params.put("moter_examtoes_left_rom2", Toeslr2);
-				params.put("moter_examtoes_right_tone1", Toesrt1);
-				params.put("moter_examtoes_right_tone2",Toesrt2);
-				params.put("moter_examtoes_right_power1",Toesrp1);
-				params.put("moter_examtoes_right_power2",Toesrp2);
-				params.put("moter_examtoes_right_rom1", Toesrr1);
-				params.put("moter_examtoes_right_rom2", Toesrr2);
+				params.put("moter_examtoes_left_tone1", Utils.getToneSpinnerData(getApplicationContext(),frag_left.getSpinner1().getSelectedItemPosition()));
+				params.put("moter_examtoes_left_tone2", Utils.getToneSpinnerData(getApplicationContext(),frag_left.getSpinner2().getSelectedItemPosition()));
+				params.put("moter_examtoes_left_power1", Utils.getPowerSpinnerData(getApplicationContext(),frag_left.getSpinner8().getSelectedItemPosition()));
+				params.put("moter_examtoes_left_power2",Utils.getPowerSpinnerData(getApplicationContext(),frag_left.getSpinner9().getSelectedItemPosition()));
+				params.put("moter_examtoes_left_rom1", Utils.getEdittextData(frag_left.getEdtxt_1()));
+				params.put("moter_examtoes_left_rom2", Utils.getEdittextData(frag_left.getEdtxt_2()));
+				params.put("moter_examtoes_right_tone1", Utils.getToneSpinnerData(getApplicationContext(),frag_right.getSpinner1().getSelectedItemPosition()));
+				params.put("moter_examtoes_right_tone2",Utils.getToneSpinnerData(getApplicationContext(),frag_right.getSpinner2().getSelectedItemPosition()));
+				params.put("moter_examtoes_right_power1",Utils.getPowerSpinnerData(getApplicationContext(),frag_right.getSpinner8().getSelectedItemPosition()));
+				params.put("moter_examtoes_right_power2",Utils.getPowerSpinnerData(getApplicationContext(),frag_right.getSpinner9().getSelectedItemPosition()));
+				params.put("moter_examtoes_right_rom1", Utils.getEdittextData(frag_right.getEdtxt_1()));
+				params.put("moter_examtoes_right_rom2", Utils.getEdittextData(frag_right.getEdtxt_2()));
 				params.put("moterexamstoes_images", base_string);
-
+				Log.d(TagUtils.getTag(),"toes parameter:-"+params.toString());
 				return params;
 			}
 		};
@@ -293,8 +295,8 @@ public class FragementActi4 extends AppCompatActivity {
 
 
 	private void setupViewPager(ViewPager viewPager) {
-		frag_left=new Android();
-		frag_right=new Windows();
+		frag_left=new ToesFragment();
+		frag_right=new ToesFragment();
 //		frag_parameters=new Ios();
 		ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
 		adapter.addFrag(frag_left, "Left");

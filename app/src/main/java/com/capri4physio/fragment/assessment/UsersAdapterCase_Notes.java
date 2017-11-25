@@ -1,7 +1,9 @@
 package com.capri4physio.fragment.assessment;
 
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Color;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
@@ -96,7 +98,7 @@ public class UsersAdapterCase_Notes extends RecyclerView.Adapter<UsersAdapterCas
                 InfoApps positiin = (CaseNotesFragment.contactDetails1.get(position));
                  posn = CaseNotesFragment.contactDetails1.get(position).toString();
                 note_iid = CaseNotesFragment.contactDetails1.get(position).getSend_date().toString();
-                delepnotes(positiin);
+                deleteAlert(positiin);
 //                Toast.makeText(ctx, "sgfdkjs"+positiin, Toast.LENGTH_LONG).show();
             }
         });
@@ -131,11 +133,26 @@ public class UsersAdapterCase_Notes extends RecyclerView.Adapter<UsersAdapterCas
         });
     }
 
+    private void deleteAlert(final InfoApps textView) {
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(ctx);
+        builder.setMessage("Are you sure, you want to delete");
+        builder.setCancelable(false);
+        builder.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+                delepnotes(textView);
+
+            }
+        });
+        builder.setNegativeButton(android.R.string.no, null);
+        builder.create();
+        builder.show();
+    }
+
 
     private void getpnotes(final TextView textView){
-
-
-
         final String casedesc =editTextcontents.getText().toString();
         StringRequest stringRequest = new StringRequest(Request.Method.POST, ApiConfig.EDIT_CASE_NOTES  ,
                 new Response.Listener<String>() {

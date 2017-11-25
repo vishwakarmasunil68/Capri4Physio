@@ -92,6 +92,10 @@ public class UserDetails implements Serializable {
     public Integer cliniccount;
     @SerializedName("clinic_id")
     public String clinicId;
+    @SerializedName("from_time")
+    public String from_time;
+    @SerializedName("to_time")
+    public String to_time;
 
     public void setOtp_status(boolean status) {
         this.otp_status = otp_status;
@@ -328,5 +332,21 @@ public class UserDetails implements Serializable {
                 ", treatment_type='" + treatment_type + '\'' +
                 ", patient_code='" + patient_code + '\'' +
                 '}';
+    }
+
+    public String getFrom_time() {
+        return from_time;
+    }
+
+    public void setFrom_time(String from_time) {
+        this.from_time = from_time;
+    }
+
+    public String getTo_time() {
+        return to_time;
+    }
+
+    public void setTo_time(String to_time) {
+        this.to_time = to_time;
     }
 }

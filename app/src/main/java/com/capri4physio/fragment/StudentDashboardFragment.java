@@ -209,73 +209,13 @@ public class StudentDashboardFragment extends BaseFragment {
         requestQueue.add(stringRequest);
     }
 
-    private void viewStudentApiCall() {
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, ApiConfig.viewstudentamount,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        try {
-                            Log.e("response", "" + response);
-                            pDialog.hide();
-
-                            JSONObject jsonObject = new JSONObject(response);
-                            String branch_status = jsonObject.getString("Success");
-                            Log.e("value", branch_status);
-                            if (branch_status.equals("true")) {
-                                std_dashboard.setVisibility(View.VISIBLE);
-                            } else {
-                                exit();
-                            }
-//                                getActivity().finish();
-                        } catch (Exception e) {
-                            Log.e("error", e.toString());
-
-                        }
-                    }
-
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-//                        Toast.makeText(StmtActivity.this,error.toString(),Toast.LENGTH_LONG).show();
-                        Log.w("Postdat", "" + error);
-                    }
-                }) {
-            @Override
-            protected Map<String, String> getParams() {
-                Map<String, String> params = new HashMap<String, String>();
-                params.put(ApiConfig.std_user_id, AppPreferences.getInstance(getActivity()).getUserID());
-                return params;
-            }
-
-        };
-
-        RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
-        requestQueue.add(stringRequest);
-    }
-
     @Override
     protected void setListener() {
         super.setListener();
         mViewBokAppointment.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-//                startActivity(new Intent(getActivity(), MapActivity.class));
-//                MapFragmentView mMapFragment = MapFragmentView.newInstance();
-//                FragmentTransaction ft = getFragmentManager().beginTransaction();
-//                ft.replace(R.id.fragment_container, mMapFragment);
-//                ft.addToBackStack(null);
-//                ft.commit();
                 startActivity(new Intent(getActivity(), SelectCourseActivity.class));
-//                startActivity(new Intent(getActivity(), StudentMapActivity.class));
-
-//                mListener.onFragmentResult(new Bundle(), PatientDashboardActivity.BOOK_APPOINTMENT);
-//                PatientDashboardActivity reportfragment = PatientDashboardActivity.newInstance();
-//                FragmentTransaction ft = getFragmentManager().beginTransaction();
-//                ft.replace(R.id.fragment_container, reportfragment);
-////                getSupportActionBar().setTitle(title);
-//                ft.addToBackStack(null);
-//                ft.commit();
             }
         });
 
@@ -284,10 +224,8 @@ public class StudentDashboardFragment extends BaseFragment {
             public void onClick(View view) {
 
                 PatientAppointmetFragment reportfragment = PatientAppointmetFragment.newInstance();
-//                ViewAppoinmentsPatientFragment reportfragment = ViewAppoinmentsPatientFragment.newInstance();
                 FragmentTransaction ft = getFragmentManager().beginTransaction();
                 ft.replace(R.id.fragment_container, reportfragment);
-//                getSupportActionBar().setTitle(title);
                 ft.addToBackStack(null);
                 ft.commit();
             }
@@ -304,16 +242,6 @@ public class StudentDashboardFragment extends BaseFragment {
             }
         });
 
-//        img_billing.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                ViewInvoicesPatientFragment reportfragment = ViewInvoicesPatientFragment.newInstance();
-//                FragmentTransaction ft = getFragmentManager().beginTransaction();
-//                ft.replace(R.id.fragment_container, reportfragment);
-//                ft.addToBackStack(null);
-//                ft.commit();
-//            }
-//        });
 
     }
 }

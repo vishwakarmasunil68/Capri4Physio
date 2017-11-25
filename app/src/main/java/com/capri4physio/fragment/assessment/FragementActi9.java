@@ -32,6 +32,7 @@ import com.android.volley.toolbox.Volley;
 import com.capri4physio.R;
 import com.capri4physio.net.ApiConfig;
 import com.capri4physio.util.ImageUtil;
+import com.capri4physio.util.TagUtils;
 import com.capri4physio.util.Utils;
 
 import java.io.File;
@@ -48,8 +49,8 @@ public class FragementActi9 extends AppCompatActivity {
 	private ViewPager viewPager;
 	Button savebtn;
 	ProgressDialog pDialog;
-	Android frag_left;
-	Windows frag_right;
+	ForeArmFragment frag_left;
+	ForeArmFragment frag_right;
 	Ios frag_parameters;
 	public static String Forearmlt1,patient_id,Forearmlt2,Forearmlt3,Forearmlt4,Forearmlt5,Forearmlp1,Forearmlp2,Forearmlp3,Forearmlp4,Forearmlp5,Forearmlr1,Forearmlr2,Forearmlr3,Forearmlr4,Forearmlr5,Forearmrt1,Forearmrt2,Forearmrt3,Forearmrt4,Forearmrt5,Forearmrp1,Forearmrp2,Forearmrp3,
 			Forearmrp4,Forearmrp5,Forearmrr1,Forearmrr2,Forearmrr3,Forearmrr4,Forearmrr5;
@@ -77,7 +78,7 @@ public class FragementActi9 extends AppCompatActivity {
 		});
 		patient_id =getIntent().getStringExtra("patient_id");
 		viewPager.setOffscreenPageLimit(2);
-
+		getSupportActionBar().setTitle("ForeArm Exam");
     }
 	public String ValidateEdit(EditText edit){
 		try {
@@ -217,24 +218,6 @@ public class FragementActi9 extends AppCompatActivity {
 		}
 	}
 	private void addMotorAPi(final String base_string){
-		Forearmlt1 = Android.spinner1.getSelectedItem().toString().trim();
-		Forearmlt2 = Android.spinner2.getSelectedItem().toString().trim();
-		Forearmlt3  = Android.spinner3.getSelectedItem().toString().trim();
-		Forearmlp1 = Android.spinner8.getSelectedItem().toString().trim();
-		Forearmlp2 = Android.spinner9.getSelectedItem().toString().trim();
-		Forearmlp3 = Android.spinner10.getSelectedItem().toString().trim();
-		Forearmlr1 =ValidateEdit(Android.editText1);
-		Forearmlr2 =ValidateEdit(Android.editText2);
-		Forearmlr3 = ValidateEdit(Android.editText3);
-		Forearmrt1=	ValidateSpinner( Windows.spinner1);
-		Forearmrt2 = ValidateSpinner( Windows.spinner2);
-		Forearmrt3= ValidateSpinner( Windows.spinner3);
-		Forearmrp1 = ValidateSpinner( Windows.spinner8);
-		Forearmrp2 = ValidateSpinner( Windows.spinner9);
-		Forearmrp3 = ValidateSpinner( Windows.spinner10);
-		Forearmrr1= ValidateEdit(Windows.editText1);
-		Forearmrr2= ValidateEdit(Windows.editText2);
-		Forearmrr3=ValidateEdit(Windows.editText3);
         /*Log.e("date",date);
         Log.e("time",time);
         Log.e("reason",reason);*/
@@ -268,25 +251,21 @@ public class FragementActi9 extends AppCompatActivity {
 				Map<String,String> params = new HashMap<String, String>();
 				params.put("moter_exam_date", Utils.getCurrentDate());
 				params.put("patient_id", patient_id);
-				params.put("moter_examfore_left_tone1", Forearmlt1);
-				params.put("moter_examfore_left_tone2", Forearmlt2);
-				params.put("moter_examfore_left_tone3", Forearmlt3);
-				params.put("moter_examfore_left_power1",Forearmlp1);
-				params.put("moter_examfore_left_power2", Forearmlp2);
-				params.put("moter_examfore_left_power3", Forearmlp3);
-				params.put("moter_examfore_left_rom1", Forearmlr1);
-				params.put("moter_examfore_left_rom2",Forearmlr2);
-				params.put("moter_examfore_left_rom3",Forearmlr3);
-				params.put("moter_examfore_right_tone1",Forearmrt1);
-				params.put("moter_examfore_right_tone2", Forearmrt2);
-				params.put("moter_examfore_right_tone3", Forearmrt3);
-				params.put("moter_examfore_right_power1", Forearmrp1);
-				params.put("moter_examfore_right_power2", Forearmrp2);
-				params.put("moter_examfore_right_power3", Forearmrp3);
-				params.put("moter_examfore_right_rom1", Forearmrr1);
-				params.put("moter_examfore_right_rom2", Forearmrr2);
-				params.put("moter_examfore_right_rom3", Forearmrr3);
+				params.put("moter_examfore_left_tone1", Utils.getToneSpinnerData(getApplicationContext(),frag_left.getSpinner1().getSelectedItemPosition()));
+				params.put("moter_examfore_left_tone2", Utils.getToneSpinnerData(getApplicationContext(),frag_left.getSpinner2().getSelectedItemPosition()));
+				params.put("moter_examfore_left_power1",Utils.getPowerSpinnerData(getApplicationContext(),frag_left.getSpinner8().getSelectedItemPosition()));
+				params.put("moter_examfore_left_power2", Utils.getPowerSpinnerData(getApplicationContext(),frag_left.getSpinner9().getSelectedItemPosition()));
+				params.put("moter_examfore_left_rom1", Utils.getEdittextData(frag_left.getEdtxt_1()));
+				params.put("moter_examfore_left_rom2",Utils.getEdittextData(frag_left.getEdtxt_3()));
+				params.put("moter_examfore_right_tone1",Utils.getToneSpinnerData(getApplicationContext(),frag_right.getSpinner1().getSelectedItemPosition()));
+				params.put("moter_examfore_right_tone2", Utils.getToneSpinnerData(getApplicationContext(),frag_right.getSpinner2().getSelectedItemPosition()));
+				params.put("moter_examfore_right_power1", Utils.getPowerSpinnerData(getApplicationContext(),frag_right.getSpinner8().getSelectedItemPosition()));
+				params.put("moter_examfore_right_power2", Utils.getPowerSpinnerData(getApplicationContext(),frag_right.getSpinner9().getSelectedItemPosition()));
+				params.put("moter_examfore_right_rom1", Utils.getEdittextData(frag_right.getEdtxt_1()));
+				params.put("moter_examfore_right_rom2", Utils.getEdittextData(frag_right.getEdtxt_3()));
 				params.put("moterexamsforearm_image", base_string);
+
+				Log.d(TagUtils.getTag(),"forearm params:-"+params.toString());
 				return params;
 			}
 
@@ -297,8 +276,8 @@ public class FragementActi9 extends AppCompatActivity {
 	}
 
 	private void setupViewPager(ViewPager viewPager) {
-		frag_left=new Android();
-		frag_right=new Windows();
+		frag_left=new ForeArmFragment();
+		frag_right=new ForeArmFragment();
 //		frag_parameters=new Ios();
 		ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
 		adapter.addFrag(frag_left, "Left");

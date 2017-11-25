@@ -1,8 +1,10 @@
 package com.capri4physio.fragment.assessment;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.CardView;
@@ -44,6 +46,7 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import viewreport.Services.WebServiceBase;
@@ -64,17 +67,19 @@ public class AddMotorExamFragment extends Activity implements HttpUrlListener, W
     ListView list;
     Spinner listView1;
     InfoAppsElbow DetailApp;
-//    String[] items = {"Select Joint", "Head,Neck and trunk", "Combined Movement Assesment of spine", "Cervical spine", "Thoraccic spine", "Lumbar spine", "Hip", "Knee", "Ankle", "Toes"
+    //    String[] items = {"Select Joint", "Head,Neck and trunk", "Combined Movement Assesment of spine", "Cervical spine", "Thoraccic spine", "Lumbar spine", "Hip", "Knee", "Ankle", "Toes"
 //            , "Shoulder", "Elbow", "Fore Arm", "Wrist", "Fingers", "Sacroilic Joint"};
-    String[] items = {"Select Joint",  "Combined Movement Assesment of spine", "Cervical spine", "Thoraccic spine", "Lumbar spine", "Hip", "Knee", "Ankle", "Toes"
-            , "Shoulder", "Elbow", "Fore Arm", "Wrist", "Fingers", "Sacroilic Joint"};
+    String[] items = {"Select Joint", "Combined Movement Assesment of Spine",
+            "Cervical Spine", "Thoracic Spine", "Lumbar Spine", "Hip", "Knee", "Ankle", "Toes"
+            , "Shoulder", "Elbow", "Forearm", "Wrist", "Fingers", "Sacroiliac Joint"};
     ArrayAdapter<String> adapter;
     Intent intent;
     ImageView iv_exam;
     RecyclerView rv_images;
     Button btn_skip;
     private final static String BASE_IMAGE_URL = ApiConfig.IMAGE_BASE_URL + "app/webroot/upload/";
-    int motor_case=-1;
+    int motor_case = -1;
+
     @Override
     public void onPostSuccess(Object response, int id) {
         switch (id) {
@@ -94,7 +99,9 @@ public class AddMotorExamFragment extends Activity implements HttpUrlListener, W
 
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
+        Intent returnIntent = new Intent();
+        returnIntent.putExtra("result", "2");
+        setResult(Activity.RESULT_OK, returnIntent);
         finish();
     }
 
@@ -140,8 +147,8 @@ public class AddMotorExamFragment extends Activity implements HttpUrlListener, W
             @Override
             public void onClick(View v) {
                 Intent returnIntent = new Intent();
-                returnIntent.putExtra("result","5");
-                setResult(Activity.RESULT_OK,returnIntent);
+                returnIntent.putExtra("result", "5");
+                setResult(Activity.RESULT_OK, returnIntent);
                 finish();
 //                HandlerConstant.POP_BACK_HANDLER.sendMessage(HandlerConstant.POP_BACK_HANDLER.obtainMessage(0,"5"));
             }
@@ -156,7 +163,8 @@ public class AddMotorExamFragment extends Activity implements HttpUrlListener, W
                 } catch (Exception e) {
                     Log.d("nullpointer", e.toString());
                 }
-                switch (i+1) {
+
+                switch (i + 1) {
 //                    case 1:
 //                        intent = new Intent(getApplicationContext(), FragementActi.class);
 //                        intent.putExtra("patient_id", patientId);
@@ -165,95 +173,108 @@ public class AddMotorExamFragment extends Activity implements HttpUrlListener, W
 //                        motor_case=1;
 //                        break;
                     case 2:
+//                        Combined Movement Assesment of Spine
                         intent = new Intent(getApplicationContext(), MotorActivity1.class);
                         intent.putExtra("patient_id", patientId);
                         rv_images.setVisibility(View.INVISIBLE);
                         showImage(2);
-                        motor_case=2;
+                        motor_case = 2;
                         break;
                     case 3:
+//                        Cervical Spine
                         intent = new Intent(getApplicationContext(), MotorActivity2.class);
                         intent.putExtra("patient_id", patientId);
                         rv_images.setVisibility(View.INVISIBLE);
                         showImage(3);
-                        motor_case=3;
+                        motor_case = 3;
                         break;
                     case 4:
+//                        Thoracic
                         intent = new Intent(getApplicationContext(), MotorActivity3.class);
                         intent.putExtra("patient_id", patientId);
                         rv_images.setVisibility(View.INVISIBLE);
                         showImage(4);
-                        motor_case=4;
+                        motor_case = 4;
                         break;
                     case 5:
+//                        Lumbar
                         intent = new Intent(getApplicationContext(), MotorActivity4.class);
                         intent.putExtra("patient_id", patientId);
                         rv_images.setVisibility(View.INVISIBLE);
                         showImage(5);
-                        motor_case=5;
+                        motor_case = 5;
                         break;
                     case 6:
+//                        Hip
                         intent = new Intent(getApplicationContext(), FragementActi1.class);
                         intent.putExtra("patient_id", patientId);
                         rv_images.setVisibility(View.INVISIBLE);
                         showImage(6);
-                        motor_case=6;
+                        motor_case = 6;
                         break;
                     case 7:
+//                        Knee
                         intent = new Intent(getApplicationContext(), FragementActi2.class);
                         intent.putExtra("patient_id", patientId);
                         rv_images.setVisibility(View.INVISIBLE);
                         showImage(7);
-                        motor_case=7;
+                        motor_case = 7;
                         break;
                     case 8:
+//                        Toes
                         intent = new Intent(getApplicationContext(), FragementActi3.class);
                         intent.putExtra("patient_id", patientId);
                         rv_images.setVisibility(View.INVISIBLE);
                         showImage(8);
-                        motor_case=8;
+                        motor_case = 8;
                         break;
                     case 9:
+//                        Shoulder
                         intent = new Intent(getApplicationContext(), FragementActi4.class);
                         intent.putExtra("patient_id", patientId);
                         rv_images.setVisibility(View.INVISIBLE);
                         showImage(9);
-                        motor_case=9;
+                        motor_case = 9;
                         break;
                     case 10:
+//                        Elbow
                         intent = new Intent(getApplicationContext(), FragementActi7.class);
                         intent.putExtra("patient_id", patientId);
                         rv_images.setVisibility(View.INVISIBLE);
                         showImage(10);
-                        motor_case=10;
+                        motor_case = 10;
                         break;
                     case 11:
+//                        Forearm
                         intent = new Intent(getApplicationContext(), FragementActi8.class);
                         intent.putExtra("patient_id", patientId);
                         rv_images.setVisibility(View.INVISIBLE);
                         showImage(11);
-                        motor_case=11;
+                        motor_case = 11;
                         break;
                     case 12:
+//                        Wrist
                         intent = new Intent(getApplicationContext(), FragementActi9.class);
                         intent.putExtra("patient_id", patientId);
                         rv_images.setVisibility(View.INVISIBLE);
                         showImage(12);
-                        motor_case=12;
+                        motor_case = 12;
                         break;
                     case 13:
+//                        Fingers
                         intent = new Intent(getApplicationContext(), FragementActi10.class);
                         intent.putExtra("patient_id", patientId);
                         rv_images.setVisibility(View.INVISIBLE);
                         showImage(13);
-                        motor_case=13;
+                        motor_case = 13;
                         break;
                     case 14:
+//                        Sacroiliac
                         intent = new Intent(getApplicationContext(), FragementActi11.class);
                         intent.putExtra("patient_id", patientId);
                         rv_images.setVisibility(View.INVISIBLE);
                         showImage(14);
-                        motor_case=14;
+                        motor_case = 14;
                         break;
 
                     case 15:
@@ -261,7 +282,7 @@ public class AddMotorExamFragment extends Activity implements HttpUrlListener, W
                         intent.putExtra("patient_id", patientId);
                         rv_images.setVisibility(View.INVISIBLE);
                         showImage(15);
-                        motor_case=15;
+                        motor_case = 15;
                         break;
 
                 }
@@ -386,13 +407,12 @@ public class AddMotorExamFragment extends Activity implements HttpUrlListener, W
         ArrayList<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
 //        nameValuePairs.add(new BasicNameValuePair("patient_id", ViewCaseReport.patient_id));
         nameValuePairs.add(new BasicNameValuePair("patient_id", patientId));
-        Log.d(TagUtils.getTag(),"namevalue:-"+nameValuePairs.toString());
+        Log.d(TagUtils.getTag(), "namevalue:-" + nameValuePairs.toString());
         switch (index) {
             case 1:
                 new WebServiceBase(nameValuePairs, this, "case1").execute(ApiConfig.BASE_URL + "users/moterexamhltrpview");
                 break;
             case 2:
-//                rv_images.setVisibility(View.INVISIBLE);
                 new WebServiceBase(nameValuePairs, this, "case2").execute(ApiConfig.BASE_URL + "users/moterexamsview");
                 break;
             case 3:
@@ -439,7 +459,7 @@ public class AddMotorExamFragment extends Activity implements HttpUrlListener, W
     }
 
     public void parseImageView(String response, String parameter, int position, String parse_id) {
-        Log.d(TagUtils.getTag(),"response:-"+response);
+        Log.d(TagUtils.getTag(), "response:-" + response);
         List<MotorExamPOJO> list_urls = new ArrayList<>();
         try {
             JSONArray array = new JSONArray(response);
@@ -455,7 +475,7 @@ public class AddMotorExamFragment extends Activity implements HttpUrlListener, W
                     pojo.setId(parse_id1);
                     if (moterhltrp_image.length() > 0) {
 //                        Picasso.with(this).load(BASE_IMAGE_URL + moterhltrp_image).into(iv_exam);
-                        pojo.setUrl(BASE_IMAGE_URL + moterhltrp_image);
+                        pojo.setUrl(ApiConfig.PROFILE_PIC_BASE_URL + moterhltrp_image);
                     } else {
                         pojo.setDate("");
                     }
@@ -471,6 +491,7 @@ public class AddMotorExamFragment extends Activity implements HttpUrlListener, W
         } catch (Exception e) {
 
         }
+        Collections.reverse(list_urls);
         HorizontalAdapter adapter = new HorizontalAdapter(this, list_urls, position);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
@@ -527,7 +548,7 @@ public class AddMotorExamFragment extends Activity implements HttpUrlListener, W
                 @Override
                 public void onClick(View v) {
                     Intent intent = new Intent(context, MoterExamViewActivity.class);
-                    Log.d(TagUtils.getTag(),"imageurl:-"+ horizontalList.get(position).getUrl());
+                    Log.d(TagUtils.getTag(), "imageurl:-" + horizontalList.get(position).getUrl());
                     intent.putExtra("image_url", horizontalList.get(position).getUrl());
                     startActivity(intent);
                 }
@@ -536,7 +557,7 @@ public class AddMotorExamFragment extends Activity implements HttpUrlListener, W
                 @Override
                 public void onClick(View v) {
 //                    deleteScreen(api_position);
-                    deleteScreenBase(api_position, horizontalList.get(position).getId());
+                    deleteAlert(api_position, horizontalList.get(position).getId());
                 }
             });
 
@@ -546,6 +567,24 @@ public class AddMotorExamFragment extends Activity implements HttpUrlListener, W
         public int getItemCount() {
             return horizontalList.size();
         }
+    }
+
+    private void deleteAlert(final int position, final String value) {
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage("Are you sure, you want to delete");
+        builder.setCancelable(false);
+        builder.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+                deleteScreenBase(position, value);
+
+            }
+        });
+        builder.setNegativeButton(android.R.string.no, null);
+        builder.create();
+        builder.show();
     }
 
     public void parseDeleteData(String response, int position) {
@@ -732,11 +771,8 @@ public class AddMotorExamFragment extends Activity implements HttpUrlListener, W
     @Override
     protected void onResume() {
         super.onResume();
-        if(motor_case!=-1){
+        if (motor_case != -1) {
             showImage(motor_case);
         }
     }
-
-
-
 }

@@ -163,7 +163,7 @@ public class CaseNotesFragment extends BaseFragment implements HttpUrlListener, 
             @Override
             public void onClick(View v) {
                 getFragmentManager().popBackStack();
-                HandlerConstant.POP_BACK_HANDLER.sendMessage(HandlerConstant.POP_BACK_HANDLER.obtainMessage(0,"13"));
+                HandlerConstant.POP_BACK_HANDLER.sendMessage(HandlerConstant.POP_BACK_HANDLER.obtainMessage(0,"15"));
             }
         });
         HandlerConstant.POP_INNER_BACK_HANDLER= new Handler(new Handler.Callback() {
@@ -249,18 +249,18 @@ public class CaseNotesFragment extends BaseFragment implements HttpUrlListener, 
     }
     @Override
     public void onPause() {
-        super.onStart();
+        super.onPause();
         Log.e("start","onStart");
         AppCompatActivity activity = (AppCompatActivity) getActivity();
         ActionBar actionBar = activity.getSupportActionBar();
-        actionBar.setTitle("case note");
+        actionBar.setTitle("Assesment");
     }
     @Override
     public void onStart() {
         super.onStart();
         AppCompatActivity activity = (AppCompatActivity) getActivity();
         ActionBar actionBar = activity.getSupportActionBar();
-        actionBar.setTitle("Case note ");
+        actionBar.setTitle("Case Note ");
     }
 
     public void onViewItemClick(MotorItem motorItem, int position, int actionId) {

@@ -164,7 +164,7 @@ public class MedicalFragment extends BaseFragment implements HttpUrlListener, Vi
             @Override
             public void onClick(View v) {
                 getFragmentManager().popBackStack();
-                HandlerConstant.POP_BACK_HANDLER.sendMessage(HandlerConstant.POP_BACK_HANDLER.obtainMessage(0,"10"));
+                HandlerConstant.POP_BACK_HANDLER.sendMessage(HandlerConstant.POP_BACK_HANDLER.obtainMessage(0,"12"));
             }
         });
         HandlerConstant.POP_INNER_BACK_HANDLER= new Handler(new Handler.Callback() {
@@ -238,18 +238,17 @@ public class MedicalFragment extends BaseFragment implements HttpUrlListener, Vi
 
     @Override
     public void onPause() {
-        super.onStart();
-        Log.e("start","onStart");
+        super.onPause();
         AppCompatActivity activity = (AppCompatActivity) getActivity();
         ActionBar actionBar = activity.getSupportActionBar();
-        actionBar.setTitle("Medical Exam");
+        actionBar.setTitle("Assesment");
     }
     @Override
     public void onStart() {
         super.onStart();
         AppCompatActivity activity = (AppCompatActivity) getActivity();
         ActionBar actionBar = activity.getSupportActionBar();
-        actionBar.setTitle("Medical Exam");
+        actionBar.setTitle("Medical Diagnosis");
     }
 
     private void showSnackMessage(String msg) {

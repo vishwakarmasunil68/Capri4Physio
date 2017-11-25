@@ -1,14 +1,24 @@
 package com.capri4physio.activity;
 
+import android.Manifest;
+import android.app.AlarmManager;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.app.Notification;
+import android.app.PendingIntent;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -17,9 +27,13 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
+import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.capri4physio.R;
 import com.capri4physio.Services.ChatService;
 import com.capri4physio.Services.LogoutService;
@@ -39,10 +53,12 @@ import com.capri4physio.net.ApiConfig;
 import com.capri4physio.task.UrlConnectionTask;
 import com.capri4physio.util.AppLog;
 import com.capri4physio.util.AppPreferences;
+import com.capri4physio.util.NotificationPublisher;
+import com.capri4physio.util.TagUtils;
+import com.capri4physio.util.ToastClass;
 import com.capri4physio.util.Utils;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.gson.Gson;
-import com.nostra13.universalimageloader.core.ImageLoader;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -54,10 +70,6 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class PatientDashboardActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener, FragmentListener<Bundle>, HttpUrlListener {
     public static final int BOOK_APPOINTMENT = 1;
-    /**
-     * ATTENTION: This was auto-generated to implement the App Indexing API.
-     * See https://g.co/AppIndexing/AndroidStudio for more information.
-     */
     private GoogleApiClient client;
     private UserDetailModel mUserModel;
 
@@ -66,6 +78,7 @@ public class PatientDashboardActivity extends BaseActivity implements Navigation
     ProgressDialog pDialog;
     InfoApps infoApps;
     public static ArrayList<InfoApps> arrayList;
+    NavigationView navigationView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,7 +92,7 @@ public class PatientDashboardActivity extends BaseActivity implements Navigation
         drawer.setDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
         initView(navigationView.getHeaderView(0));
 
@@ -94,10 +107,35 @@ public class PatientDashboardActivity extends BaseActivity implements Navigation
 
         loadPatientDashboard();
 //        new CatagoryUrlAsynTask().execute();
-        if(!AppPreferences.getInstance(getApplicationContext()).isChatSync()){
-            new ChatService(PatientDashboardActivity.this,AppPreferences.getInstance(getApplicationContext()).getUserID()).execute(ApiConfig.getallchat);
+        if (!AppPreferences.getInstance(getApplicationContext()).isChatSync()) {
+            new ChatService(PatientDashboardActivity.this, AppPreferences.getInstance(getApplicationContext()).getUserID()).execute(ApiConfig.getallchat);
         }
 
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+//        scheduleNotification(getNotification("10 sec delay"), 10000);
+    }
+    private void scheduleNotification(Notification notification, int delay) {
+
+        Intent notificationIntent = new Intent(this, NotificationPublisher.class);
+        notificationIntent.putExtra(NotificationPublisher.NOTIFICATION_ID, 1);
+        notificationIntent.putExtra(NotificationPublisher.NOTIFICATION, notification);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        long futureInMillis = SystemClock.elapsedRealtime() + delay;
+        AlarmManager alarmManager = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
+        alarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, futureInMillis, pendingIntent);
+    }
+
+    private Notification getNotification(String content) {
+        Notification.Builder builder = new Notification.Builder(this);
+        builder.setContentTitle("Scheduled Notification");
+        builder.setContentText(content);
+        builder.setSmallIcon(R.drawable.ic_launcher);
+        return builder.build();
     }
 
     @Override
@@ -105,26 +143,18 @@ public class PatientDashboardActivity extends BaseActivity implements Navigation
         super.initView(view);
         TextView txtName = (TextView) view.findViewById(R.id.txt_name);
         TextView txtEmail = (TextView) view.findViewById(R.id.txt_email);
-        imageView = (CircleImageView) view.findViewById(R.id.imageView);
+
         txtName.setText(AppPreferences.getInstance(this).getUserName());
         txtEmail.setText(AppPreferences.getInstance(this).getEmail());
 
-        try {
-
-            String userDetails = AppPreferences.getInstance(this).getUserDetails();
-            String bitmap = AppPreferences.getInstance(this).getPropic();
-
-            Log.e("stringToBitmap", bitmap.toString());
-            if (bitmap.length() < 2) {
-                ImageLoader.getInstance().displayImage(bitmap, imageView);
-            } else {
-                imageView.setImageDrawable(getResources().getDrawable(R.drawable.ic_action_person));
-//                ImageLoader.getInstance().displayImage(bitmap, imageView);
-            }
-//            Picasso.with(getActivity()).load(bitmap).into(mImgProfile);
-        } catch (Exception e) {
-
-        }
+        CircleImageView imageView = (CircleImageView) view.findViewById(R.id.imageView);
+//            Log.d(TagUtils.getTag(),"profilepic:-"+ApiConfig.PROFILE_PIC_BASE_URL+AppPreferences.getInstance(this).getPropic());
+        Log.d(TagUtils.getTag(), "profilepic:-" + AppPreferences.getInstance(this).getPropic());
+        Glide.with(getApplicationContext()).load(AppPreferences.getInstance(this).getPropic())
+                .placeholder(R.drawable.ic_action_person)
+                .error(R.drawable.ic_action_person)
+                .dontAnimate()
+                .into(imageView);
     }
 
     /**
@@ -184,14 +214,6 @@ public class PatientDashboardActivity extends BaseActivity implements Navigation
 
                     JSONObject jsonObject2 = jsonArray.getJSONObject(i);
                     Log.e("2", jsonObject2.toString());
-//                    String id = jsonObject2.getString("id");
-//                    String staff_code = jsonObject2.getString("bracch_code");
-//                    String smobile = jsonObject2.getString("mobile");
-//                    String semail = jsonObject2.getString("email");
-//                    String password = jsonObject2.getString("show_password");
-//                    String sfirst_name=jsonObject2.getString("first_name");
-//                    String dob = jsonObject2.getString("dob");
-//                    String age = jsonObject2.getString("age");
                     String lat = jsonObject2.getString("lat");
                     String lng = jsonObject2.getString("lng");
                     infoApps = new InfoApps();
@@ -394,6 +416,8 @@ public class PatientDashboardActivity extends BaseActivity implements Navigation
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
+        MenuItem call_menu = menu.findItem(R.id.action_alert);
+        call_menu.setIcon(R.drawable.ic_call_white_24px);
         return true;
     }
 
@@ -406,12 +430,51 @@ public class PatientDashboardActivity extends BaseActivity implements Navigation
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_alert) {
+            showCallDialog();
             return true;
         }
 
         return super.onOptionsItemSelected(item);
-
     }
+
+
+    public void showCallDialog() {
+        final Dialog dialog1 = new Dialog(this, android.R.style.Theme_DeviceDefault_Light_Dialog);
+        dialog1.setCancelable(true);
+        dialog1.setContentView(R.layout.dialog_call);
+        dialog1.show();
+        dialog1.setCancelable(true);
+        Window window = dialog1.getWindow();
+        window.setLayout(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+
+        Button btn_cancel = (Button) dialog1.findViewById(R.id.btn_cancel);
+        Button btn_call = (Button) dialog1.findViewById(R.id.btn_call);
+        btn_cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog1.dismiss();
+            }
+        });
+
+        btn_call.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                try {
+                    Intent intent = new Intent(Intent.ACTION_CALL);
+                    intent.setData(Uri.parse("tel:" + "9873738969"));
+                    if (ActivityCompat.checkSelfPermission(PatientDashboardActivity.this, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
+                        return;
+                    }
+                    startActivity(intent);
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    ToastClass.showShortToast(getApplicationContext(), "Failed to place call");
+                }
+            }
+        });
+    }
+
 
     @Override
     public void onFragmentResult(Bundle bundle, int Id) {
@@ -468,7 +531,7 @@ public class PatientDashboardActivity extends BaseActivity implements Navigation
 //                intent.putExtra(BundleConst.IS_LOGOUT, true);
 //                startActivity(intent);
 //                PatientDashboardActivity.this.finish();
-                new LogoutService(PatientDashboardActivity.this,AppPreferences.getInstance(getApplicationContext()).getUserID()).execute(ApiConfig.logout_users);
+                new LogoutService(PatientDashboardActivity.this, AppPreferences.getInstance(getApplicationContext()).getUserID()).execute(ApiConfig.logout_users);
 
             }
         });

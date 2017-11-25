@@ -2,10 +2,12 @@ package com.capri4physio.model.assessment;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.io.Serializable;
+
 /**
  * Created by prabhunathyadav on 05/06/16.
  */
-public class HistoryItem {
+public class HistoryItem implements Serializable {
 
     @SerializedName("id")
     public String id;
@@ -13,9 +15,11 @@ public class HistoryItem {
     public String diabetes;
     @SerializedName("blood_pressure")
     public String blood_pressure;
+
     public String getBp() {
         return bp;
     }
+
     @SerializedName("bp")
     public String bp;
     @SerializedName("smoking")
@@ -54,6 +58,20 @@ public class HistoryItem {
     public String present_illness;
     @SerializedName("past_illness")
     public String past_illness;
+    @SerializedName("hereditary_disease")
+    public String hereditary_disease;
+    @SerializedName("patient_id")
+    public String patientId;
+    @SerializedName("medical_history")
+    public String medicalHistory;
+    @SerializedName("surgical_history")
+    public String surgicalHistory;
+    @SerializedName("other_history")
+    public String otherHistory;
+    @SerializedName("medicine_used")
+    public String medicineUsed;
+    @SerializedName("date")
+    public String date;
 
 
     public String getDiabetes() {
@@ -132,22 +150,6 @@ public class HistoryItem {
         return hereditary_disease;
     }
 
-    @SerializedName("hereditary_disease")
-    public String hereditary_disease;
-
-    @SerializedName("patient_id")
-    public String patientId;
-    @SerializedName("medical_history")
-    public String medicalHistory;
-    @SerializedName("surgical_history")
-    public String surgicalHistory;
-    @SerializedName("other_history")
-    public String otherHistory;
-    @SerializedName("medicine_used")
-    public String medicineUsed;
-    @SerializedName("date")
-    public String date;
-
     public String getId() {
         return id;
     }
@@ -194,5 +196,40 @@ public class HistoryItem {
 
     public void setPast_illness(String past_illness) {
         this.past_illness = past_illness;
+    }
+
+    @Override
+    public String toString() {
+        return "HistoryItem{" +
+                "id='" + id + '\'' +
+                ", diabetes='" + diabetes + '\'' +
+                ", blood_pressure='" + blood_pressure + '\'' +
+                ", bp='" + bp + '\'' +
+                ", smoking='" + smoking + '\'' +
+                ", fever_and_chill='" + fever_and_chill + '\'' +
+                ", heart_diseases='" + heart_diseases + '\'' +
+                ", bleeding_disorder='" + bleeding_disorder + '\'' +
+                ", recent_infection='" + recent_infection + '\'' +
+                ", pregnancy='" + pregnancy + '\'' +
+                ", htn='" + htn + '\'' +
+                ", tb='" + tb + '\'' +
+                ", cancer='" + cancer + '\'' +
+                ", hiv_aids='" + hiv_aids + '\'' +
+                ", past_surgery='" + past_surgery + '\'' +
+                ", allergies='" + allergies + '\'' +
+                ", osteoporotic='" + osteoporotic + '\'' +
+                ", depression='" + depression + '\'' +
+                ", hepatitis='" + hepatitis + '\'' +
+                ", any_implants='" + any_implants + '\'' +
+                ", present_illness='" + present_illness + '\'' +
+                ", past_illness='" + past_illness + '\'' +
+                ", hereditary_disease='" + hereditary_disease + '\'' +
+                ", patientId='" + patientId + '\'' +
+                ", medicalHistory='" + medicalHistory + '\'' +
+                ", surgicalHistory='" + surgicalHistory + '\'' +
+                ", otherHistory='" + otherHistory + '\'' +
+                ", medicineUsed='" + medicineUsed + '\'' +
+                ", date='" + date + '\'' +
+                '}';
     }
 }

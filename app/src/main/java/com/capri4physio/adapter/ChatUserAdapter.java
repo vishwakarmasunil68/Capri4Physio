@@ -74,7 +74,6 @@ public class ChatUserAdapter extends RecyclerView.Adapter<ChatUserAdapter.MyView
             ll_chat = (LinearLayout) view.findViewById(R.id.ll_chat);
             ll_main = (LinearLayout) view.findViewById(R.id.ll_main);
             frame_video = (FrameLayout) view.findViewById(R.id.frame_video);
-
         }
     }
 
@@ -180,7 +179,7 @@ public class ChatUserAdapter extends RecyclerView.Adapter<ChatUserAdapter.MyView
                                     if (video_file.exists()) {
                                         openVideoFile(FileUtil.getVideoChatDir() + File.separator + file_name);
                                     } else {
-                                        downloadVideoFile(holder.iv_video_download, FileUtil.getVideoChatDir() + File.separator + file_name, "http://oldmaker.com/fijiyo/chat/chatupload/" + file_name);
+                                        downloadVideoFile(holder.iv_video_download, FileUtil.getVideoChatDir() + File.separator + file_name, "http://caprispine.in/chat/chatupload/" + file_name);
                                     }
                                 }
                             });
@@ -201,8 +200,6 @@ public class ChatUserAdapter extends RecyclerView.Adapter<ChatUserAdapter.MyView
                 }
             }
         }
-
-
         holder.itemView.setTag(horizontalList.get(position));
     }
 

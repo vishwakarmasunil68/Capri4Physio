@@ -119,7 +119,7 @@ public class AddAppointments extends BaseFragment implements AdapterView.OnItemS
     String st = "0";
     public static ListView contactList;
     // URL of object to be parsed
-    String JsonURL = "http://oldmaker.com/fijiyo/index.php/users/addappointment";
+    String JsonURL = "http://caprispine.in/fijiyo/index.php/users/addappointment";
     InfoApps Detailapp;
     List<String> mrng_time, getbooked_time;
     List<Integer> list_removed_position = new ArrayList<>();
@@ -282,7 +282,7 @@ public class AddAppointments extends BaseFragment implements AdapterView.OnItemS
                     listview.setVisibility(View.INVISIBLE);
                     initProgressDialog("Please wait..");
                     addExpenseApiCall1(listview, edit_date.getText().toString());
-//                    new CallServices1(listview,edit_date.getText().toString()).execute("http://oldmaker.com/fijiyo/index.php/users/enquirylistdatewise");
+//                    new CallServices1(listview,edit_date.getText().toString()).execute("http://caprispine.in/fijiyo/index.php/users/enquirylistdatewise");
 
                 } else {
                     Utils.showMessage(getActivity(), getResources().getString(R.string.err_network));
@@ -481,7 +481,7 @@ public class AddAppointments extends BaseFragment implements AdapterView.OnItemS
         /*Log.e("date",date);
         Log.e("time",time);
         Log.e("reason",reason);*/
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, "http://oldmaker.com/fijiyo/index.php/users/appoimentlistdatewise",
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, "http://caprispine.in/fijiyo/index.php/users/appoimentlistdatewise",
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {

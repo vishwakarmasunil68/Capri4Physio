@@ -17,9 +17,14 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -87,7 +92,7 @@ public class AddInvestigationFragment extends BaseFragment implements HttpUrlLis
                 AppLog.i("Capri4Physio", "Patient Response : " + baseModel.getStatus());
 
                 getFragmentManager().popBackStack();
-
+                HandlerConstant.POP_INNER_BACK_HANDLER.sendMessage(HandlerConstant.POP_INNER_BACK_HANDLER.obtainMessage(0, ""));
                 break;
         }
     }
@@ -124,7 +129,7 @@ public class AddInvestigationFragment extends BaseFragment implements HttpUrlLis
             patientId = getArguments().getString(KEY_PATIENT_ID);
             assessmentType = getArguments().getString(KEY_TYPE);
         }
-
+        setHasOptionsMenu(true);
     }
 
     @Override
@@ -158,33 +163,38 @@ public class AddInvestigationFragment extends BaseFragment implements HttpUrlLis
         mSavebtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (selectedImagePath != null) {
-//                    progressBar.setVisibility(View.VISIBLE);
-                    Thread thread2 = new Thread(new Runnable() {
-                        public void run() {
-                            doFileUpload2();
-                            try {
-                                getActivity().runOnUiThread(new Runnable() {
-                                                                public void run() {
-                                                                    try {
-                                                                        initProgressDialog("Please wait...");
-                                                                    } catch (Exception e) {
-                                                                        e.printStackTrace();
-                                                                    }
-
-                                                                }
-                                                            }
-
-                                );
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
-                        }
-                    });
-                    thread2.start();
-                }
+                addInvestigation(false);
             }
         });
+    }
+
+    public void addInvestigation(final boolean is_adding) {
+        if (selectedImagePath != null) {
+//                    progressBar.setVisibility(View.VISIBLE);
+            initProgressDialog("Please wait...");
+            Thread thread2 = new Thread(new Runnable() {
+                public void run() {
+                    doFileUpload2(is_adding);
+                    try {
+                        getActivity().runOnUiThread(new Runnable() {
+                                                        public void run() {
+                                                            try {
+
+                                                            } catch (Exception e) {
+                                                                e.printStackTrace();
+                                                            }
+
+                                                        }
+                                                    }
+
+                        );
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+            thread2.start();
+        }
     }
 
     private void dialogOption() {
@@ -212,18 +222,8 @@ public class AddInvestigationFragment extends BaseFragment implements HttpUrlLis
         startActivityForResult(takePictureIntent, PICK_IMAGE_CAPTURE);
         if (takePictureIntent.resolveActivity(getActivity().getPackageManager()) != null) {
             File photoFile = null;
-            /*try {
-                startActivityForResult(Intent.createChooser(takePictureIntent, "Select Picture"), PICK_IMAGE_REQUEST);
-//                photoFile = createImageFile();
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }*/
+
             if (photoFile != null) {
-                /*SplashActivity.mImageCaptureUri = Uri.fromFile(photoFile);
-                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, SplashActivity.mImageCaptureUri);
-                //takePictureIntent.putExtra("android.intent.extras.CAMERA_FACING", 1);
-                takePictureIntent.putExtra("return-data", true);
-                startActivityForResult(takePictureIntent, PICK_FROM_CAMERA);*/
 
             }
         }
@@ -250,15 +250,6 @@ public class AddInvestigationFragment extends BaseFragment implements HttpUrlLis
         intent.putExtra(Intent.EXTRA_MIME_TYPES, ACCEPT_MIME_TYPES);
         intent.setAction(Intent.ACTION_GET_CONTENT);
         startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_REQUEST);
-//        Intent viewIntent = new Intent();
-//        Intent editIntent = new Intent();
-//        viewIntent.setType( "image/*");
-//        editIntent.setType( "application/pdf");
-//        viewIntent.setAction(Intent.ACTION_PICK);
-//        editIntent.setAction(Intent.ACTION_PICK);
-//        Intent chooserIntent = Intent.createChooser(editIntent, "Open in...");
-//        chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, new Intent[] { viewIntent });
-//        startActivity(chooserIntent);
     }
 
     public String getPath(Uri uri) throws URISyntaxException {
@@ -280,6 +271,27 @@ public class AddInvestigationFragment extends BaseFragment implements HttpUrlLis
         }
 
         return null;
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        // Do something that differs the Activity's menu here
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.menu_add_branch, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+
+            case R.id.menu_add:
+                addInvestigation(true);
+                return false;
+            default:
+                break;
+        }
+
+        return false;
     }
 
     @TargetApi(Build.VERSION_CODES.KITKAT)
@@ -493,6 +505,14 @@ public class AddInvestigationFragment extends BaseFragment implements HttpUrlLis
 //        mPath.setText(path);
 
 
+    @Override
+    public void onStart() {
+        super.onStart();
+        AppCompatActivity activity = (AppCompatActivity) getActivity();
+        ActionBar actionBar = activity.getSupportActionBar();
+        actionBar.setTitle("Investigations");
+    }
+
     private void addApiCall() {
 
         if (Utils.isNetworkAvailable(getActivity())) {
@@ -523,7 +543,9 @@ public class AddInvestigationFragment extends BaseFragment implements HttpUrlLis
         pDialog.show();
     }
 
-    private void doFileUpload2() {
+
+
+    private void doFileUpload2(final boolean is_adding) {
         Log.i("RESPONSE", "file1");
 
         try {
@@ -546,7 +568,7 @@ public class AddInvestigationFragment extends BaseFragment implements HttpUrlLis
             HttpResponse response = client.execute(post);
             resEntity = response.getEntity();
             response_str = EntityUtils.toString(resEntity);
-            getFragmentManager().popBackStack();
+//            getFragmentManager().popBackStack();
             try {
                 pDialog.dismiss();
             } catch (Exception e) {
@@ -571,7 +593,15 @@ public class AddInvestigationFragment extends BaseFragment implements HttpUrlLis
                         }
                         try {
                             System.out.println("<><><>res" + response_str);
-                            HandlerConstant.POP_INNER_BACK_HANDLER.sendMessage(HandlerConstant.POP_INNER_BACK_HANDLER.obtainMessage(0, ""));
+                            if (is_adding) {
+                                mReportType.setText("");
+                                mChooseFile.setText("");
+                                mDesc.setText("");
+                                selectedImagePath = "";
+                            } else {
+                                getFragmentManager().popBackStack();
+                                HandlerConstant.POP_INNER_BACK_HANDLER.sendMessage(HandlerConstant.POP_INNER_BACK_HANDLER.obtainMessage(0, ""));
+                            }
                         } catch (Exception e) {
                             e.printStackTrace();
                         }

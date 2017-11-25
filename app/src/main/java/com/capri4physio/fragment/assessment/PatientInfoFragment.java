@@ -13,10 +13,13 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.v4.content.FileProvider;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Base64;
@@ -24,6 +27,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
@@ -31,6 +35,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.android.volley.Request;
@@ -39,7 +44,11 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.bumptech.glide.Glide;
 import com.capri4physio.R;
+import com.capri4physio.Services.GetWebServicesFragment;
+import com.capri4physio.Services.WebServiceUploadFragment;
+import com.capri4physio.Services.WebServicesCallBack;
 import com.capri4physio.activity.CropActivity;
 import com.capri4physio.activity.SplashActivity;
 import com.capri4physio.fragment.BaseFragment;
@@ -47,21 +56,20 @@ import com.capri4physio.fragment.ViewPatientFragment;
 import com.capri4physio.listener.HttpUrlListener;
 import com.capri4physio.model.BaseModel;
 import com.capri4physio.model.UserDetails;
+import com.capri4physio.model.branch.BranchPOJO;
 import com.capri4physio.net.ApiConfig;
 import com.capri4physio.util.AppLog;
+import com.capri4physio.util.FileUtil;
 import com.capri4physio.util.TagUtils;
 import com.capri4physio.util.Utils;
-import com.squareup.picasso.Picasso;
 
 import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.mime.HttpMultipartMode;
 import org.apache.http.entity.mime.MultipartEntity;
 import org.apache.http.entity.mime.content.FileBody;
 import org.apache.http.entity.mime.content.StringBody;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.util.EntityUtils;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -72,8 +80,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -89,8 +99,10 @@ import de.hdodenhof.circleimageview.CircleImageView;
  * @version 1.0
  * @since 2014-03-31
  */
-public class PatientInfoFragment extends BaseFragment implements HttpUrlListener {
+public class PatientInfoFragment extends BaseFragment implements HttpUrlListener,WebServicesCallBack {
 
+    private static final String GET_ALL_BRANCHES = "get_all_branches";
+    private static final String CALL_PROFILE_UPDATE_API = "call_profile_update";
     private Button mBtnSave;
     String file, selectedImagePath;
     private RadioGroup mRadioGroupGender;
@@ -127,6 +139,7 @@ public class PatientInfoFragment extends BaseFragment implements HttpUrlListener
     private String stGender = "Male";
     private String stMarital = "Single";
     UserDetails userDetails;
+    Spinner spinner_branch;
 
     /**
      * Use this factory method to create a new instance of
@@ -137,7 +150,7 @@ public class PatientInfoFragment extends BaseFragment implements HttpUrlListener
     public static PatientInfoFragment newInstance(String patientId, UserDetails user) {
         PatientInfoFragment fragment = new PatientInfoFragment();
         Bundle bundle = new Bundle();
-        bundle.putSerializable("user_data",user);
+        bundle.putSerializable("user_data", user);
         bundle.putString(KEY_PATIENT_ID, patientId);
         bundle.putString(KEY_PATIENT_ID, patientId);
         fragment.setArguments(bundle);
@@ -160,8 +173,8 @@ public class PatientInfoFragment extends BaseFragment implements HttpUrlListener
 
         if (getArguments() != null) {
             patientId = getArguments().getString(KEY_PATIENT_ID);
-            userDetails= (UserDetails) getArguments().getSerializable("user_data");
-            Log.d(TagUtils.getTag(),"user details:-"+userDetails.toString());
+            userDetails = (UserDetails) getArguments().getSerializable("user_data");
+            Log.d(TagUtils.getTag(), "user details:-" + userDetails.toString());
             // assessmentType = getArguments().getString(KEY_TYPE);
         }
 
@@ -206,15 +219,7 @@ public class PatientInfoFragment extends BaseFragment implements HttpUrlListener
         radio_veg = (RadioButton) view.findViewById(R.id.radio_veg);
         radio_nonveg = (RadioButton) view.findViewById(R.id.radio_nonveg);
         radio_eggertarian = (RadioButton) view.findViewById(R.id.radio_eggeterian);
-//        ed3.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-////                onDateSet();
-//                new DatePickerDialog(SignUpactivity.this, date, myCalendar
-//                        .get(Calendar.YEAR), myCalendar.get(Calendar.MONTH),
-//                        myCalendar.get(Calendar.DAY_OF_MONTH)).show();
-//            }
-//        });
+        spinner_branch = (Spinner) view.findViewById(R.id.spinner_branch);
 
         mBtnSave = (Button) view.findViewById(R.id.btn_save);
         mImgDatePicker = (ImageView) view.findViewById(R.id.img_date_picker);
@@ -226,16 +231,22 @@ public class PatientInfoFragment extends BaseFragment implements HttpUrlListener
         mEdtxtHeight.setText(String.valueOf(userDetails.getHeight()));
         mEdtxtWeight.setText(String.valueOf(userDetails.getWeight()));
         edtxt_mobile.setText(String.valueOf(userDetails.getMobile()));
-        edtxt_password.setText(String.valueOf(userDetails.getPassword()));
+        edtxt_password.setText(String.valueOf(userDetails.getShowPassword()));
         Referralsource.setText(String.valueOf(userDetails.getRef_source()));
         ContactPerson.setText(String.valueOf(userDetails.getContact_person()));
         ContactPersonMobile.setText(String.valueOf(userDetails.getContact_person_mob()));
         aadharid.setText(String.valueOf(userDetails.getAadharId()));
         edtxt_email.setText(String.valueOf(userDetails.getEmail()));
-        address.setText(String.valueOf(userDetails.getAddress2()));
+        address.setText(String.valueOf(userDetails.getAddress()));
         city.setText(String.valueOf(userDetails.getCity()));
         Pincode.setText(String.valueOf(userDetails.getPincode()));
 
+        Glide.with(getActivity().getApplicationContext())
+                .load(ApiConfig.PROFILE_PIC_BASE_URL+userDetails.getProfilePic())
+                .error(R.drawable.ic_action_person)
+                .placeholder(R.drawable.ic_action_person)
+                .dontAnimate()
+                .into(mImgProfile);
 
         try {
             String gender = String.valueOf(userDetails.getGender());
@@ -285,10 +296,16 @@ public class PatientInfoFragment extends BaseFragment implements HttpUrlListener
             String bitmap = String.valueOf(userDetails.getProfilePic());
 
             Log.e("stringToBitmap", bitmap.toString());
-            Picasso.with(getActivity()).load(bitmap).into(mImgProfile);
+
         } catch (Exception e) {
 
         }
+        getBranchList();
+
+    }
+
+    public void getBranchList(){
+        new GetWebServicesFragment(getActivity(),this, GET_ALL_BRANCHES,false).execute(ApiConfig.GetURL);
     }
 
     @Override
@@ -362,7 +379,7 @@ public class PatientInfoFragment extends BaseFragment implements HttpUrlListener
             }
         });
     }
-
+    String main_profile_picture="";
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
 
@@ -370,12 +387,28 @@ public class PatientInfoFragment extends BaseFragment implements HttpUrlListener
             return;
 
         Intent intent = null;
-
+        ByteArrayOutputStream stream;
         switch (requestCode) {
             case PICK_FROM_CAMERA:
-                intent = new Intent(getActivity(), CropActivity.class);
-                intent.putExtra("url", SplashActivity.mImageCaptureUri.getPath());
-                startActivityForResult(intent, PIC_CROP);
+//                intent = new Intent(getActivity(), CropActivity.class);
+//                intent.putExtra("url", SplashActivity.mImageCaptureUri.getPath());
+//                startActivityForResult(intent, PIC_CROP);
+
+                File imgFile = new File(pictureImagePath);
+                if (imgFile.exists()) {
+                    main_profile_picture=pictureImagePath;
+                    Bitmap bmp = BitmapFactory.decodeFile(pictureImagePath);
+                    bmp = Bitmap.createScaledBitmap(bmp, bmp.getWidth() / 4, bmp.getHeight() / 4, false);
+                    bitmapImage=bmp;
+                    mImgProfile.setImageBitmap(bitmapImage);
+                    stream= new ByteArrayOutputStream();
+                    bitmapImage.compress(Bitmap.CompressFormat.PNG, 0, stream);
+                    byteArray = stream.toByteArray();
+                    mImgBase64 = Base64.encodeToString(byteArray, 0);
+                    AppLog.e("Capri4Physio", "Base64 IMG - " + mImgBase64);
+                }
+
+
 
                 break;
             case PICK_FROM_FILE:
@@ -408,18 +441,29 @@ public class PatientInfoFragment extends BaseFragment implements HttpUrlListener
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
+                main_profile_picture=picturePath;
+                if(new File(main_profile_picture).exists()){
+                    Bitmap bmp = BitmapFactory.decodeFile(main_profile_picture);
+                    bmp = Bitmap.createScaledBitmap(bmp, bmp.getWidth() / 4, bmp.getHeight() / 4, false);
+                    bitmapImage=bmp;
+                    mImgProfile.setImageBitmap(bitmapImage);
+                    stream= new ByteArrayOutputStream();
+                    bitmapImage.compress(Bitmap.CompressFormat.PNG, 0, stream);
+                    byteArray = stream.toByteArray();
+                    mImgBase64 = Base64.encodeToString(byteArray, 0);
+                    AppLog.e("Capri4Physio", "Base64 IMG - " + mImgBase64);
+                }
 
-
-                intent = new Intent(getActivity(), CropActivity.class);
-                intent.putExtra("url", picturePath);
-                startActivityForResult(intent, PIC_CROP);
+//                intent = new Intent(getActivity(), CropActivity.class);
+//                intent.putExtra("url", picturePath);
+//                startActivityForResult(intent, PIC_CROP);
 
                 break;
 
             case PIC_CROP:
                 bitmapImage = CropActivity.croppedImage;
                 mImgProfile.setImageBitmap(bitmapImage);
-                ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                stream = new ByteArrayOutputStream();
                 bitmapImage.compress(Bitmap.CompressFormat.PNG, 0, stream);
                 byteArray = stream.toByteArray();
                 mImgBase64 = Base64.encodeToString(byteArray, 0);
@@ -464,24 +508,24 @@ public class PatientInfoFragment extends BaseFragment implements HttpUrlListener
         final AlertDialog dialog = builder.create();
         dialog.show();
     }
-
+    String pictureImagePath="";
     private void dispatchTakePictureIntent() {
-        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        if (takePictureIntent.resolveActivity(getActivity().getPackageManager()) != null) {
-            File photoFile = null;
-            try {
-                photoFile = createImageFile();
-            } catch (IOException ex) {
-                ex.printStackTrace();
-            }
-            if (photoFile != null) {
-                SplashActivity.mImageCaptureUri = Uri.fromFile(photoFile);
-                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, SplashActivity.mImageCaptureUri);
-                //takePictureIntent.putExtra("android.intent.extras.CAMERA_FACING", 1);
-                takePictureIntent.putExtra("return-data", true);
-                startActivityForResult(takePictureIntent, PICK_FROM_CAMERA);
-            }
+        String strMyImagePath = FileUtil.getBaseFilePath() + File.separator + "temp.png";
+
+        pictureImagePath = strMyImagePath;
+        File file = new File(pictureImagePath);
+        Uri outputFileUri = Uri.fromFile(file);
+        Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            cameraIntent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            Uri contentUri = FileProvider.getUriForFile(getActivity().getApplicationContext(), "com.capri4physio.fileProvider", file);
+            cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, contentUri);
+
+        } else {
+            cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, outputFileUri);
+
         }
+        startActivityForResult(cameraIntent, PICK_FROM_CAMERA);
     }
 
     private void openGallery() {
@@ -528,40 +572,12 @@ public class PatientInfoFragment extends BaseFragment implements HttpUrlListener
 
         if (Utils.isNetworkAvailable(getActivity())) {
 
-            if (selectedImagePath != null) {
+            if (main_profile_picture != null) {
 //                progressBar.setVisibility(View.VISIBLE);
-                Thread thread2 = new Thread(new Runnable() {
-                    public void run() {
-                        doFileUpload2();
-                        getActivity().runOnUiThread(new Runnable() {
-                            public void run() {
-
-
-                            }
-                        });
-                    }
-                });
-                thread2.start();
+              callPatientUpdateFragment(main_profile_picture);
             } else {
-                getpatientlist();
+                callPatientUpdateFragment("");
             }
-
-            /*try {
-                JSONObject params = new JSONObject();
-                params.put(ApiConfig.PATIENT_ID, patientId);
-                params.put(ApiConfig.FIRST_NAME, mEdtxtFname.getText().toString());
-                params.put(ApiConfig.LAST_NAME, mEdtxtLname.getText().toString());
-
-                params.put(ApiConfig.FIRST_NAME, mEdtxtFname.getText().toString());
-                params.put(ApiConfig.FIRST_NAME, mEdtxtFname.getText().toString());
-                params.put(ApiConfig.DATE, Utils.getCurrentDate());
-
-                new UrlConnectionTask(getActivity(), ApiConfig.ADD_ASSESSMENT_URL, ApiConfig.ID1, true, params, BaseModel.class, this).execute("");
-
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-*/
         } else {
             Utils.showMessage(getActivity(), getResources().getString(R.string.err_network));
         }
@@ -632,6 +648,81 @@ public class PatientInfoFragment extends BaseFragment implements HttpUrlListener
 
         return true;
     }
+    List<BranchPOJO> branchPOJOList = new ArrayList<>();
+    String branch_code="";
+    @Override
+    public void onGetMsg(String[] msg) {
+        String apicall=msg[0];
+        String response=msg[1];
+        switch (apicall){
+            case GET_ALL_BRANCHES:
+                parseAllBranches(response);
+                break;
+            case CALL_PROFILE_UPDATE_API:
+                parseProfileUpdate(response);
+                break;
+        }
+    }
+    public void parseProfileUpdate(String response){
+        Log.d(TagUtils.getTag(),"update response:-"+response);
+//        viewStaff();
+        getFragmentManager().popBackStack();
+    }
+
+
+    public void parseAllBranches(String response) {
+        Log.d(TagUtils.getTag(), "response:-" + response);
+        branchPOJOList.clear();
+        try {
+            JSONArray jsonArray = new JSONArray(response);
+            for (int i = 0; i < jsonArray.length(); i++) {
+                JSONObject jsonObject = jsonArray.optJSONObject(i);
+                BranchPOJO branchPOJO = new BranchPOJO(jsonObject.optString("branch_id"),
+                        jsonObject.optString("branch_name"),
+                        jsonObject.optString("branch_code"),
+                        jsonObject.optString("branch_status"));
+                branchPOJOList.add(branchPOJO);
+            }
+            List<String> braStringList = new ArrayList<>();
+            for (BranchPOJO branchPOJO : branchPOJOList) {
+                braStringList.add(branchPOJO.getBranch_name() + " (" + branchPOJO.getBranch_code() + ")");
+            }
+
+            ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<String>(
+                    getActivity().getApplicationContext(), R.layout.dropsimpledown, braStringList);
+            spinner_branch.setAdapter(spinnerArrayAdapter);
+
+
+            int position=-1;
+            for(int i=0;i<branchPOJOList.size();i++){
+                BranchPOJO branchPOJO=branchPOJOList.get(i);
+                if(userDetails.getBracch_code().equals(branchPOJO.getBranch_code())){
+                   position=i;
+                }
+            }
+
+
+
+            spinner_branch.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                    branch_code = branchPOJOList.get(position).getBranch_code();
+                }
+
+                @Override
+                public void onNothingSelected(AdapterView<?> parent) {
+
+                }
+            });
+
+            if(position!=-1){
+                spinner_branch.setSelection(position);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
 
     public static class DatePickerFragment extends DialogFragment implements DatePickerDialog.OnDateSetListener {
@@ -698,20 +789,20 @@ public class PatientInfoFragment extends BaseFragment implements HttpUrlListener
         actionBar.setTitle("Patient Information");
     }
 
-    private String GetGender(){
+    private String GetGender() {
 
-        if(mRadioGroupGender.getCheckedRadioButtonId()==R.id.radio_male){
+        if (mRadioGroupGender.getCheckedRadioButtonId() == R.id.radio_male) {
             return "male";
-        }else{
+        } else {
             return "female";
         }
     }
 
-    private String GetMartialStatus(){
+    private String GetMartialStatus() {
 
-        if(mRadioGroupMarital.getCheckedRadioButtonId()==R.id.radio_single){
+        if (mRadioGroupMarital.getCheckedRadioButtonId() == R.id.radio_single) {
             return "single";
-        }else{
+        } else {
             return "married";
         }
     }
@@ -725,7 +816,12 @@ public class PatientInfoFragment extends BaseFragment implements HttpUrlListener
         final String last_name = mEdtxtLname.getText().toString().trim();
         final String Age = mEdtxtAge.getText().toString().trim();
         final String Height = mEdtxtHeight.getText().toString();
-        final float hght = Float.parseFloat(Height);
+        float hght = 0;
+        try {
+            hght= Float.parseFloat(Height);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
         float hhh = (hght * 2);
 //            final String image = selectedImagePath;
         final String weight = mEdtxtWeight.getText().toString().trim();
@@ -749,7 +845,7 @@ public class PatientInfoFragment extends BaseFragment implements HttpUrlListener
         final String u_gender = GetGender();
         final String u_marital_status = GetMartialStatus();
 
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, ApiConfig.BASE_URL + "users/updatepatient",
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, ApiConfig.UPDATE_PATIENT,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
@@ -793,6 +889,7 @@ public class PatientInfoFragment extends BaseFragment implements HttpUrlListener
                 params.put("marital_status", u_marital_status);
                 params.put("mobile", phon);
                 params.put("aadhar_id", aadhar);
+                params.put("branch_code", branch_code);
                 params.put("address2", add);
                 params.put("pincode", pc);
                 params.put("city", citi);
@@ -800,7 +897,7 @@ public class PatientInfoFragment extends BaseFragment implements HttpUrlListener
                 params.put("ref_source", reff);
                 params.put("contact_person", conper);
                 params.put("contact_person_mob", conpermob);
-                Log.d(TagUtils.getTag(),"params:-"+params.toString());
+                Log.d(TagUtils.getTag(), "params:-" + params.toString());
                 return params;
             }
 
@@ -820,11 +917,12 @@ public class PatientInfoFragment extends BaseFragment implements HttpUrlListener
         ft.commit();
     }
 
-    private void doFileUpload2() {
-        Log.i("RESPONSE", "file1");
-
+    public void callPatientUpdateFragment(String image_path){
         try {
-            Log.i("RESPONSE", "file2");
+
+            MultipartEntity reqEntity = new MultipartEntity(HttpMultipartMode.BROWSER_COMPATIBLE);
+
+
             final String first_name = mEdtxtFname.getText().toString().trim();
             final String last_name = mEdtxtLname.getText().toString().trim();
             final String Age = mEdtxtAge.getText().toString().trim();
@@ -851,13 +949,8 @@ public class PatientInfoFragment extends BaseFragment implements HttpUrlListener
             Log.e("bmoi", wght + "," + Height + "," + bmi);
             final String u_gender = GetGender();
             final String u_marital_status = GetMartialStatus();
-            HttpClient client = new DefaultHttpClient();
-            HttpPost post = new HttpPost(ApiConfig.BASE_URL + "users/updatepatient");
-            MultipartEntity reqEntity = new MultipartEntity();
-            File file1 = new File(selectedImagePath);
-            Log.e("file1", selectedImagePath);
-            FileBody bin1 = new FileBody(file1);
-            reqEntity.addPart("profile_pic", bin1);
+
+
             reqEntity.addPart("p_id", new StringBody(String.valueOf(userDetails.getId())));
             reqEntity.addPart("first_name", new StringBody(first_name));
             reqEntity.addPart("last_name", new StringBody(last_name));
@@ -873,49 +966,29 @@ public class PatientInfoFragment extends BaseFragment implements HttpUrlListener
             reqEntity.addPart("aadhar_id", new StringBody(aadhar));
             reqEntity.addPart("address2", new StringBody(add));
             reqEntity.addPart("pincode", new StringBody(pc));
+            reqEntity.addPart("branch_code", new StringBody(branchPOJOList.get(spinner_branch.getSelectedItemPosition()).getBranch_code()));
             reqEntity.addPart("city", new StringBody(citi));
             reqEntity.addPart("food_habit", new StringBody(stFoodhabit.trim()));
             reqEntity.addPart("ref_source", new StringBody(reff));
             reqEntity.addPart("contact_person", new StringBody(conper));
             reqEntity.addPart("contact_person_mob", new StringBody(conpermob));
-            post.setEntity(reqEntity);
-            HttpResponse response = client.execute(post);
-            resEntity = response.getEntity();
-            response_str = EntityUtils.toString(resEntity);
-            Log.e("RESPONSE", response_str);
-            activity.runOnUiThread(new Runnable() {
-                public void run() {
-                    viewStaff();
-                    Toast.makeText(getActivity(), "Profile Successfully updated ", Toast.LENGTH_LONG).show();
-                }
-            });
-        } catch (Exception e) {
-            Utils.showError(getActivity(), getResources().getString(R.string.error), getResources().getString(R.string.err_gender));
-            e.printStackTrace();
-            Log.e("error", e.toString());
-        }
-        try {
-            if (resEntity != null) {
-                Log.e("RESPONSE", response_str);
-                getActivity().runOnUiThread(new Runnable() {
-                    public void run() {
-                        try {
-                            System.out.println("<><><>res" + response_str);
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                    }
-                });
-            } else {
-                Log.i("RESPONSE", "file4");
+            reqEntity.addPart("city", new StringBody(citi));
+
+            if(image_path.length()>0) {
+
+                File file1 = new File(image_path);
+                Log.e("file1", image_path);
+                FileBody bin1 = new FileBody(file1);
+                reqEntity.addPart("profile_pic", bin1);
+            }else{
+                reqEntity.addPart("profile_pic", new StringBody(""));
             }
-        } catch (Exception ex) {
-            Log.e("Debug", "error: " + ex.getMessage(), ex);
+            new WebServiceUploadFragment(reqEntity,getActivity(), this, CALL_PROFILE_UPDATE_API).execute(ApiConfig.UPDATE_PATIENT);
 
-
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
-
 }
 
 

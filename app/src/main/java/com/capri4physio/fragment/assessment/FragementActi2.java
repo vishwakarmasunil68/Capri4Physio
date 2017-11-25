@@ -34,6 +34,7 @@ import com.android.volley.toolbox.Volley;
 import com.capri4physio.R;
 import com.capri4physio.net.ApiConfig;
 import com.capri4physio.util.ImageUtil;
+import com.capri4physio.util.TagUtils;
 import com.capri4physio.util.Utils;
 
 import java.io.File;
@@ -50,9 +51,8 @@ public class FragementActi2 extends AppCompatActivity {
     private ViewPager viewPager;
     Button savebtn;
     ProgressDialog pDialog;
-    Android frag_left;
-    Windows frag_right;
-    Ios frag_parameters;
+    KneeFragment frag_left;
+    KneeFragment frag_right;
     public static String knlt1, patient_id, knlt2, knlt3, knlt4, knlp1, knlp2, knlp3, knlp4, knlr1, knlr2, knlr3, knlr4, respiration_Base3, knrt1, knrt2, knrt3, knrt4, knrp1, knrp2, knrp3,
             knrp4, knrr1, knrr2, knrr3, knrr4;
 
@@ -82,11 +82,13 @@ public class FragementActi2 extends AppCompatActivity {
         patient_id = getIntent().getStringExtra("patient_id");
         viewPager.setOffscreenPageLimit(2);
 
+        getSupportActionBar().setTitle("Knee Exam");
+
     }
 
     private void setupViewPager(ViewPager viewPager) {
-        frag_left = new Android();
-        frag_right = new Windows();
+        frag_left = new KneeFragment();
+        frag_right = new KneeFragment();
 //        frag_parameters = new Ios();
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
         adapter.addFrag(frag_left, "Left");
@@ -232,31 +234,31 @@ public class FragementActi2 extends AppCompatActivity {
     }
 
     private void addMotorAPi(final String base_string) {
-        knlt1 = Android.spinner1.getSelectedItem().toString().trim();
-        knlt2 = Android.spinner2.getSelectedItem().toString().trim();
-        knlt3 = Android.spinner3.getSelectedItem().toString().trim();
-        knlt4 = Android.spinner4.getSelectedItem().toString().trim();
-        knlp1 = Android.spinner8.getSelectedItem().toString().trim();
-        knlp2 = Android.spinner9.getSelectedItem().toString().trim();
-        knlp3 = Android.spinner10.getSelectedItem().toString().trim();
-        knlp4 = Android.spinner11.getSelectedItem().toString().trim();
-        ;
-        knlr1 = ValidateEdit(Android.editText1);
-        knlr2 = ValidateEdit(Android.editText2);
-        knlr3 = ValidateEdit(Android.editText3);
-        knlr4 = ValidateEdit(Android.editText4);
-        knrt1 = ValidateSpinner(Windows.spinner1);
-        knrt2 = ValidateSpinner(Windows.spinner2);
-        knrt3 = ValidateSpinner(Windows.spinner3);
-        knrt4 = ValidateSpinner(Windows.spinner4);
-        knrp1 = ValidateSpinner(Windows.spinner8);
-        knrp2 = ValidateSpinner(Windows.spinner9);
-        knrp3 = ValidateSpinner(Windows.spinner10);
-        knrp4 = ValidateSpinner(Windows.spinner11);
-        knrr1 = ValidateEdit(Windows.editText1);
-        knrr2 = ValidateEdit(Windows.editText2);
-        knrr3 = ValidateEdit(Windows.editText3);
-        knrr4 = ValidateEdit(Windows.editText4);
+//        knlt1 = Android.spinner1.getSelectedItem().toString().trim();
+//        knlt2 = Android.spinner2.getSelectedItem().toString().trim();
+//        knlt3 = Android.spinner3.getSelectedItem().toString().trim();
+//        knlt4 = Android.spinner4.getSelectedItem().toString().trim();
+//        knlp1 = Android.spinner8.getSelectedItem().toString().trim();
+//        knlp2 = Android.spinner9.getSelectedItem().toString().trim();
+//        knlp3 = Android.spinner10.getSelectedItem().toString().trim();
+//        knlp4 = Android.spinner11.getSelectedItem().toString().trim();
+//        ;
+//        knlr1 = ValidateEdit(Android.editText1);
+//        knlr2 = ValidateEdit(Android.editText2);
+//        knlr3 = ValidateEdit(Android.editText3);
+//        knlr4 = ValidateEdit(Android.editText4);
+//        knrt1 = ValidateSpinner(Windows.spinner1);
+//        knrt2 = ValidateSpinner(Windows.spinner2);
+//        knrt3 = ValidateSpinner(Windows.spinner3);
+//        knrt4 = ValidateSpinner(Windows.spinner4);
+//        knrp1 = ValidateSpinner(Windows.spinner8);
+//        knrp2 = ValidateSpinner(Windows.spinner9);
+//        knrp3 = ValidateSpinner(Windows.spinner10);
+//        knrp4 = ValidateSpinner(Windows.spinner11);
+//        knrr1 = ValidateEdit(Windows.editText1);
+//        knrr2 = ValidateEdit(Windows.editText2);
+//        knrr3 = ValidateEdit(Windows.editText3);
+//        knrr4 = ValidateEdit(Windows.editText4);
         /*Log.e("date",date);
         Log.e("time",time);
         Log.e("reason",reason);*/
@@ -293,32 +295,20 @@ public class FragementActi2 extends AppCompatActivity {
                 Map<String, String> params = new HashMap<String, String>();
                 params.put("moter_exam_date", Utils.getCurrentDate());
                 params.put("patient_id", patient_id);
-                params.put("moter_kneeleft_tone1", knlt1);
-                params.put("moter_kneeleft_tone2", knlt2);
-                params.put("moter_kneeleft_tone3", knlt3);
-                params.put("moter_kneeleft_tone4", knlt4);
-                params.put("moter_kneeleft_power1", knlp1);
-                params.put("moter_kneeleft_power2", knlp2);
-                params.put("moter_kneeleft_power3", knlp3);
-                params.put("moter_kneeleft_power4", knlp4);
-                params.put("moter_kneeleft_rom1", knlr1);
-                params.put("moter_kneeleft_rom2", knlr2);
-                params.put("moter_kneeleft_rom3", knlr3);
-                params.put("moter_kneeleft_rom4", knlr4);
-                params.put("moter_kneeright_tone1", knrt1);
-                params.put("moter_kneeright_tone2", knrt2);
-                params.put("moter_kneeright_tone3", knrt3);
-                params.put("moter_kneeright_tone4", knrt4);
-                params.put("moter_kneeright_power1", knrp1);
-                params.put("moter_kneeright_power2", knrp2);
-                params.put("moter_kneeright_power3", knrp3);
-                params.put("moter_kneeright_power4", knrp4);
-                params.put("moter_kneeright_rom1", knrr1);
-                params.put("moter_kneeright_rom2", knrr2);
-                params.put("moter_kneeright_rom3", knrr3);
-                params.put("moter_kneeright_rom4", knrr4);
-                params.put("moter_kneeright_rom4", knrr4);
+                params.put("moter_kneeleft_tone1", Utils.getToneSpinnerData(getApplicationContext(),frag_left.getSpinner1().getSelectedItemPosition()));
+                params.put("moter_kneeleft_tone2", Utils.getToneSpinnerData(getApplicationContext(),frag_left.getSpinner2().getSelectedItemPosition()));
+                params.put("moter_kneeleft_power1", Utils.getPowerSpinnerData(getApplicationContext(),frag_left.getSpinner8().getSelectedItemPosition()));
+                params.put("moter_kneeleft_power2", Utils.getPowerSpinnerData(getApplicationContext(),frag_left.getSpinner9().getSelectedItemPosition()));
+                params.put("moter_kneeleft_rom1",  Utils.getEdittextData(frag_left.getEdtxt_1()));
+                params.put("moter_kneeleft_rom2",  Utils.getEdittextData(frag_left.getEdtxt_2()));
+                params.put("moter_kneeright_tone1", Utils.getToneSpinnerData(getApplicationContext(),frag_right.getSpinner1().getSelectedItemPosition()));
+                params.put("moter_kneeright_tone2", Utils.getToneSpinnerData(getApplicationContext(),frag_right.getSpinner2().getSelectedItemPosition()));
+                params.put("moter_kneeright_power1", Utils.getPowerSpinnerData(getApplicationContext(),frag_right.getSpinner8().getSelectedItemPosition()));
+                params.put("moter_kneeright_power2", Utils.getPowerSpinnerData(getApplicationContext(),frag_right.getSpinner9().getSelectedItemPosition()));
+                params.put("moter_kneeright_rom1",  Utils.getEdittextData(frag_right.getEdtxt_1()));
+                params.put("moter_kneeright_rom2",  Utils.getEdittextData(frag_right.getEdtxt_1()));
                 params.put("moterexamsknee_images", base_string);
+                Log.d(TagUtils.getTag(),"knee Params:-"+params.toString());
                 return params;
             }
 

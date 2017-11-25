@@ -19,7 +19,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.capri4physio.Invoice.InfoApps1;
 import com.capri4physio.R;
@@ -27,7 +26,9 @@ import com.capri4physio.fragment.assessment.HttpULRConnect;
 import com.capri4physio.fragment.assessment.InfoApps;
 import com.capri4physio.net.ApiConfig;
 import com.capri4physio.util.AppPreferences;
+import com.capri4physio.util.ToastClass;
 
+import org.apache.commons.lang.time.DateUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -151,15 +152,24 @@ public class ViewExpenseReport extends AppCompatActivity implements DatePickerDi
         btn_submit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (ed1.getText().toString().isEmpty()){
-                    Toast.makeText(getApplicationContext(),"Please select date",Toast.LENGTH_LONG).show();
 
-                }
-                if (ed2.getText().toString().isEmpty()){
-                    Toast.makeText(getApplicationContext(),"Please select date",Toast.LENGTH_LONG).show();
-                }
-                else {
-                    startActivity(new Intent(ViewExpenseReport.this, ViewIncomeExpensetReport.class));
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                try {
+                    Date from_d = sdf.parse(ed1.getText().toString());
+                    Date to_d = sdf.parse(ed2.getText().toString());
+
+                    if (from_d.before(new Date())) {
+                        if (DateUtils.isSameDay(to_d, new Date()) || to_d.after(new Date())) {
+                            startActivity(new Intent(ViewExpenseReport.this, ViewIncomeExpensetReport.class));
+                        } else {
+                            ToastClass.showShortToast(getApplicationContext(), "you have selected passed to date");
+                        }
+                    } else {
+                        ToastClass.showShortToast(getApplicationContext(), "You have selected coming from date");
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    ToastClass.showShortToast(getApplicationContext(), "Invalid Date Formats");
                 }
             }
         });

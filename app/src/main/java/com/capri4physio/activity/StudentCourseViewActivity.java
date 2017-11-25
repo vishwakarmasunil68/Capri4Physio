@@ -125,7 +125,7 @@ public class StudentCourseViewActivity extends AppCompatActivity implements View
             public void onClick(View v) {
                 if (et_remark.getText().toString().length() > 0) {
                     studentCourseResultPOJO.setAdminStatus(et_remark.getText().toString());
-                    updateStudent();
+                    updateStudent(false);
                 } else {
                     ToastClass.showShortToast(getApplicationContext(), "Please write some remark");
                 }
@@ -482,20 +482,20 @@ public class StudentCourseViewActivity extends AppCompatActivity implements View
                 iv_full_fees.setImageResource(R.drawable.ic_approved);
                 iv_confirm_full.setVisibility(View.GONE);
             } else {
-                if(studentCourseResultPOJO.getAdminRegFees().equals("true")
-                        &&studentCourseResultPOJO.getSc_admin_rem_fees().equals("true")){
+                if (studentCourseResultPOJO.getAdminRegFees().equals("true")
+                        && studentCourseResultPOJO.getSc_admin_rem_fees().equals("true")) {
                     iv_full_fees.setImageResource(R.drawable.ic_approved);
                     iv_confirm_full.setVisibility(View.GONE);
-                }else{
-                    if(studentCourseResultPOJO.getScFullfees().length()>0){
+                } else {
+                    if (studentCourseResultPOJO.getScFullfees().length() > 0) {
                         iv_full_fees.setImageResource(R.drawable.ic_filled);
                         iv_confirm_full.setVisibility(View.VISIBLE);
-                    }else{
-                        if(studentCourseResultPOJO.getScRemFees().length()>0
-                                &&studentCourseResultPOJO.getScRegFees().length()>0){
+                    } else {
+                        if (studentCourseResultPOJO.getScRemFees().length() > 0
+                                && studentCourseResultPOJO.getScRegFees().length() > 0) {
                             iv_full_fees.setImageResource(R.drawable.ic_filled);
                             iv_confirm_full.setVisibility(View.VISIBLE);
-                        }else{
+                        } else {
                             iv_full_fees.setImageResource(R.drawable.ic_not_filled);
                             iv_confirm_full.setVisibility(View.GONE);
                         }
@@ -545,7 +545,8 @@ public class StudentCourseViewActivity extends AppCompatActivity implements View
         }
     }
 
-    public void updateStudent() {
+    public void updateStudent(boolean deduct_seat) {
+
         ArrayList<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
         nameValuePairs.add(new BasicNameValuePair("sc_sid", studentCourseResultPOJO.getScSid()));
         nameValuePairs.add(new BasicNameValuePair("sc_sname", studentCourseResultPOJO.getScSname()));
@@ -570,38 +571,93 @@ public class StudentCourseViewActivity extends AppCompatActivity implements View
         nameValuePairs.add(new BasicNameValuePair("sc_admin_rem_fees", studentCourseResultPOJO.getSc_admin_rem_fees()));
         nameValuePairs.add(new BasicNameValuePair("admin_full_fees", studentCourseResultPOJO.getAdminFullFees()));
         new WebServiceBase(nameValuePairs, this, UPDATE_STUDENT).execute(ApiConfig.update_student_course);
+        if (deduct_seat) {
+            updateCourse();
+        }
     }
+
+    public void updateCourse() {
+        try {
+            ArrayList<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
+            nameValuePairs.add(new BasicNameValuePair("c_name", courcesResultPOJO.getC_name()));
+            nameValuePairs.add(new BasicNameValuePair("c_comt", courcesResultPOJO.getC_comt()));
+            nameValuePairs.add(new BasicNameValuePair("c_from_date", courcesResultPOJO.getC_from_date()));
+            nameValuePairs.add(new BasicNameValuePair("c_to_date", courcesResultPOJO.getC_to_date()));
+            nameValuePairs.add(new BasicNameValuePair("c_place", courcesResultPOJO.getC_place()));
+            nameValuePairs.add(new BasicNameValuePair("c_sheet_available", courcesResultPOJO.getC_sheet_available()));
+            int seat_rem = Integer.parseInt(courcesResultPOJO.getC_rem_seat());
+            seat_rem = seat_rem - 1;
+            nameValuePairs.add(new BasicNameValuePair("c_rem_seat", String.valueOf(seat_rem)));
+            int showing_seat = Integer.parseInt(courcesResultPOJO.getC_showing_sheet());
+            if (showing_seat > 1) {
+                showing_seat = showing_seat - 1;
+            } else {
+                if (showing_seat == 1) {
+                    if (seat_rem > 2) {
+                        showing_seat = 3;
+                    } else {
+                        showing_seat = seat_rem;
+                    }
+                }
+            }
+            nameValuePairs.add(new BasicNameValuePair("c_showing_sheet", String.valueOf(showing_seat)));
+            nameValuePairs.add(new BasicNameValuePair("c_reg_fees", courcesResultPOJO.getC_reg_fees()));
+            nameValuePairs.add(new BasicNameValuePair("c_rem_fees", courcesResultPOJO.getC_rem_fees()));
+            nameValuePairs.add(new BasicNameValuePair("c_fees", courcesResultPOJO.getC_fees()));
+            nameValuePairs.add(new BasicNameValuePair("c_pno", courcesResultPOJO.getC_pno()));
+            nameValuePairs.add(new BasicNameValuePair("c_id", courcesResultPOJO.getC_id()));
+            new WebServiceBase(nameValuePairs, StudentCourseViewActivity.this, UPDATE_COURCE).execute(ApiConfig.update_course_api);
+            sendNotification(studentCourseResultPOJO.getScSid(), courcesResultPOJO.getC_name());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void sendNotification(String student_id, String course_name) {
+        ArrayList<NameValuePair> arrayList = new ArrayList<>();
+        arrayList.add(new BasicNameValuePair("student_id", student_id));
+        arrayList.add(new BasicNameValuePair("course_name", course_name));
+        new WebServiceBase(arrayList, this, "send_notification").execute(ApiConfig.SEND_NOTIFICATION);
+    }
+
+    private static final String UPDATE_COURCE = "update_course";
 
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.iv_confirm_app:
                 studentCourseResultPOJO.setAdminApplicationForm("true");
-                updateStudent();
+                updateStudent(false);
                 break;
             case R.id.iv_confirm_photo:
                 studentCourseResultPOJO.setAdminPhotoUpload("true");
-                updateStudent();
+                updateStudent(false);
                 break;
             case R.id.iv_confirm_cert:
                 studentCourseResultPOJO.setAdminCertificateUpload("true");
-                updateStudent();
+                updateStudent(false);
                 break;
             case R.id.iv_confirm_id:
                 studentCourseResultPOJO.setAdminIcard("true");
-                updateStudent();
+                updateStudent(false);
                 break;
             case R.id.iv_confirm_reg:
                 studentCourseResultPOJO.setAdminRegFees("true");
-                updateStudent();
+                updateStudent(false);
                 break;
             case R.id.iv_confirm_full:
                 studentCourseResultPOJO.setAdminFullFees("true");
-                updateStudent();
+                updateStudent(true);
                 break;
+
             case R.id.iv_rem_confirm:
-                studentCourseResultPOJO.setSc_admin_rem_fees("true");
-                updateStudent();
+                if (studentCourseResultPOJO.getAdminRegFees().equals("false")) {
+                    ToastClass.showShortToast(getApplicationContext(), "Please First Confirm the Registration Fees.");
+                } else {
+                    studentCourseResultPOJO.setSc_admin_rem_fees("true");
+                    studentCourseResultPOJO.setAdminFullFees("true");
+                    updateStudent(true);
+                }
                 break;
         }
     }
@@ -615,6 +671,21 @@ public class StudentCourseViewActivity extends AppCompatActivity implements View
             case UPDATE_STUDENT:
                 parseUpdateStudent(response);
                 break;
+            case UPDATE_COURCE:
+                parseUpdateCourseActivity(response);
+        }
+    }
+
+    public void parseUpdateCourseActivity(String response) {
+        Log.d(TagUtils.getTag(), "response:-" + response);
+        try {
+            if (new JSONObject(response).optString("Success").equals("true")) {
+            } else {
+                ToastClass.showShortToast(getApplicationContext(), "Something went wrong");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            ToastClass.showShortToast(getApplicationContext(), "Something went wrong");
         }
     }
 

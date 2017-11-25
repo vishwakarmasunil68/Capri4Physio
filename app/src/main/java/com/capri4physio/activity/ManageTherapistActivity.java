@@ -10,6 +10,8 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 
@@ -109,6 +111,7 @@ public class ManageTherapistActivity extends AppCompatActivity implements WebSer
             Gson gson = new Gson();
             DoctorPOJO doctorPOJO = gson.fromJson(response, DoctorPOJO.class);
             if (doctorPOJO.getSuccess().equals("true")) {
+                doctorResultPOJOList.clear();
                 List<String> doctorStringList = new ArrayList<>();
                 doctorResultPOJOList.addAll(doctorPOJO.getDoctorResultPOJOList());
                 for (DoctorResultPOJO doctorResultPOJO : doctorResultPOJOList) {
@@ -125,6 +128,15 @@ public class ManageTherapistActivity extends AppCompatActivity implements WebSer
 
 
             } else {
+                doctorResultPOJOList.clear();
+                
+                adapter = new DoctorAdapter(this, doctorResultPOJOList);
+                LinearLayoutManager horizontalLayoutManagaer
+                        = new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.VERTICAL, false);
+                rv_therapist.setLayoutManager(horizontalLayoutManagaer);
+                rv_therapist.setHasFixedSize(true);
+                rv_therapist.setItemAnimator(new DefaultItemAnimator());
+                rv_therapist.setAdapter(adapter);
                 ToastClass.showShortToast(getApplicationContext(), "No Doctor Found. Please Select another branch");
             }
 
@@ -168,6 +180,18 @@ public class ManageTherapistActivity extends AppCompatActivity implements WebSer
             if(branchPOJOList.size()>0){
                 getTherapists(branchPOJOList.get(0));
             }
+
+            spinner_branch.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                    getTherapists(branchPOJOList.get(position));
+                }
+
+                @Override
+                public void onNothingSelected(AdapterView<?> parent) {
+
+                }
+            });
 
         } catch (Exception e) {
             e.printStackTrace();
